@@ -68,11 +68,11 @@ def run(SITE_ID, APP):
         logging.info(f"Updating {xml_src}")
         xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)
         shutil.copyfile(xml_src, xml_old)
-        tree.write(xml_src, encoding='utf-8', xml_declaration=True) 
+        tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
         with open(attachment_src, "wt") as af:
             af.write(attachment_xml)
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script fixes embedded audio files in Lessons content",

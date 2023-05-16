@@ -57,8 +57,7 @@ with open('../config/conversion_issues.json', 'r') as f:
             else:
                 print(f"Tool {toolkey} has no associated found info or help url")
 
-    
+
 # Write out the file
 with open('conversion_issues_new.json', 'w') as f:
         json.dump(data, f, indent=2, sort_keys=False)
-

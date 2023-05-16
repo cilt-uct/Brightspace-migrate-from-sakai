@@ -11,7 +11,7 @@
  display: none;
 }
 
-#issues_found_list { 
+#issues_found_list {
 }
 
 #issues_not_found_list {
@@ -37,6 +37,5 @@ li.found {
 }
 
 #tools > div {
- padding: 8px; 
+ padding: 8px;
 }
-

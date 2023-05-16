@@ -9,7 +9,7 @@ import os
 import re
 import shutil
 import copy
-import argparse 
+import argparse
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
@@ -46,7 +46,7 @@ def run(SITE_ID, APP):
             # print(ET.tostring(item))
 
         tree.write(xml_src)
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replaces the images used for templates in th HTML lesson item",
@@ -56,7 +56,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

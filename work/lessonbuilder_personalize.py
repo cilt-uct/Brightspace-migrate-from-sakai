@@ -9,7 +9,7 @@ import os
 import re
 import shutil
 import copy
-import argparse 
+import argparse
 # import xml.etree.ElementTree as ET
 import lxml.etree as ET
 from bs4 import BeautifulSoup
@@ -21,17 +21,17 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-REPLACE_DICT = [', {{firstname}}', 
+REPLACE_DICT = [', {{firstname}}',
                 ', {{fullname}}',
                 '{{firstname}}, ',
                 '{{fullname}}, ',
                 'for {{firstname}}',
                 'for {{fullname}}',
                 '{{firstname}} {{lastname}}, ',
-                '{{fullname}}\'s', 
+                '{{fullname}}\'s',
                 '{{firstname}}\'s',
                 '{{firstname}}, {{lastname}}',
-                '{{firstname}}, {{lastname}}, {{fullname}}', 
+                '{{firstname}}, {{lastname}}, {{fullname}}',
                 '{{firstname}}', '{{lastname}}', '{{fullname}}']
 
 def run(SITE_ID, APP):
@@ -53,7 +53,7 @@ def run(SITE_ID, APP):
                 lesson_tree.xpath(".//*[contains(@name,'lastname')]") + \
                 lesson_tree.xpath(".//*[contains(@name,'fullname')]"):
         item.set('name', re.sub("|".join(sorted(REPLACE_DICT, key = len, reverse = True)), '', item.get('name')).strip())
-        
+
         if APP['debug']:
             print(item.get('name'))
 
@@ -64,7 +64,7 @@ def run(SITE_ID, APP):
         item.set('description', re.sub("|".join(sorted(REPLACE_DICT, key = len, reverse = True)), '', item.get('description')).strip())
 
         if APP['debug']:
-            print(item.get('description'))   
+            print(item.get('description'))
 
     # let's handle the html body
     for item in lesson_tree.xpath(".//item[@type='5' and contains(@html,'firstname')]") + \
@@ -80,7 +80,7 @@ def run(SITE_ID, APP):
 
     lesson_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
     logging.info(f'\tDone')
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replace personalize text in Lessons {{firstname}}, {{lastname}}, and {{fullname}}",
@@ -88,7 +88,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

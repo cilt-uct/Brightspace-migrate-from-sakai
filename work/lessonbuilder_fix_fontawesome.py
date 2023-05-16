@@ -65,8 +65,8 @@ def run(SITE_ID, APP):
             item.set('html', str(html))
             # print(ET.tostring(item))
 
-        tree.write(xml_src, encoding='utf-8', xml_declaration=True) 
-    
+        tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replaces the font awesome icons with the correct classes",
@@ -76,7 +76,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

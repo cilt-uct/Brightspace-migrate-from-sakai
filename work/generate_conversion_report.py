@@ -103,7 +103,7 @@ def populate_tools(dom, found_ul, items):
 
     for line in items:
         key = line['key']
-        
+
         # CSS
         cls = [ 'found' ]
         el = dom.new_tag('li', **{"class": ' '.join(cls), "id": key})
@@ -203,10 +203,10 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
                 populate_tools(dom, tool_used_list, found_tools)
 
             with open(output_file, "w", encoding = 'utf-8') as file:
-                file.write(str(dom.prettify()))           
+                file.write(str(dom.prettify()))
                 logging.info(f'\treport-file: {output_file}')
                 logging.info(f'\treport-url: {output_url}')
-        
+
     except Exception as e:
         logging.exception(e)
         raise e
@@ -215,7 +215,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
 def do_check(step, **soups):
     func = globals()[ step['key'] ]
     args = project(soups, step['args'])
-    
+
     return func(**args) is not None
 
 def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
@@ -243,7 +243,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     # restricted extensions
     restricted_ext = lib.utils.read_yaml(APP['content']['restricted-ext'])
 
-    # run through all the tools and see 
+    # run through all the tools and see
     for k in conf['tools']:
         k['is_found'] = True if site_soup.find("tool", {"toolId": k['key']}) else False
 
@@ -327,7 +327,7 @@ def run(SITE_ID, APP, issue_key = None, link_id = None, now_st = None):
         now_st = ""
     else:
         now_st = f"_{now_st}"
-    
+
     try:
         with open(APP['report']['json']) as json_file:
             process(conf=json.load(json_file), issue_key=issue_key, SITE_ID=SITE_ID, APP=APP, link_id=link_id, now_st=now_st)
@@ -346,11 +346,10 @@ def main():
     parser.add_argument("ISSUE_KEY", nargs='?', help="The ISSUE_KEY")  # optional arg
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(SITE_ID=args['SITE_ID'], APP=APP, issue_key=args['ISSUE_KEY'])
 
 if __name__ == '__main__':
     main()
-

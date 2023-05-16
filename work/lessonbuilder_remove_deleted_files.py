@@ -26,12 +26,12 @@ def is_deleted(item, content_xml, site_id):
     sakai_id = item.get("sakaiid")
 
     if sakai_id.startswith(f'/group/{site_id}'):
-        # it is a valid reference to a resource 
+        # it is a valid reference to a resource
 
-        for resource in content_xml.findall(f".//resource[@id='{sakai_id}']"):        
+        for resource in content_xml.findall(f".//resource[@id='{sakai_id}']"):
             return False # so we did not find it
         return True
-    
+
     return False
 
 def update(item, SITE_ID):
@@ -40,7 +40,7 @@ def update(item, SITE_ID):
 
     if APP['debug']:
         print(f"Updating item {item.get('id')} of type {item.get('html')}")
-        # print("{} {} {}".format(item.get('id'), item.get('html'), title)) 
+        # print("{} {} {}".format(item.get('id'), item.get('html'), title))
 
     content_path = str(item.get('sakaiid')).replace(f'/group/{SITE_ID}/', '')
     html = BeautifulSoup(f"<p><em>File not available: {content_path}</em></p>", 'html.parser')
@@ -76,13 +76,13 @@ def run(SITE_ID, APP):
 
     # Get Embedded <item type="7" html="video/*" or html="audio/*"></item>
     # for item in lesson_tree.xpath(".//item[@type='7' and contains(@html,'video')]") \
-    #             + lesson_tree.xpath(".//item[@type='7' and contains(@html,'audio')]"): 
+    #             + lesson_tree.xpath(".//item[@type='7' and contains(@html,'audio')]"):
 
     # Type 7 is Multimedia
     # Type 1 is Resource
     for item in lesson_tree.xpath(".//item[@type='7']") \
                 + lesson_tree.xpath(".//item[@type='1']"):
-        
+
         # print("{} {} {} {} {}".format(item.get('type'), is_deleted(item, content_tree, SITE_ID), item.get('sakaiid'), item.get('name'), item.get('html')))
 
         if is_deleted(item, content_tree, SITE_ID):
@@ -91,7 +91,7 @@ def run(SITE_ID, APP):
     # we can handle image files in another way later on - because they are type="5" (normal html)
     # <img ... src="https://[server]/access/content/[sakaiid]">
 
-    lesson_tree.write(lessons_file, encoding='utf-8', xml_declaration=True) 
+    lesson_tree.write(lessons_file, encoding='utf-8', xml_declaration=True)
     logging.info(f'\tDone')
 
 def main():
@@ -103,7 +103,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

@@ -23,7 +23,7 @@ def run(SITE_ID, APP):
     archive = "{}{}-archive/".format(APP['archive_folder'], SITE_ID)
     shutil.rmtree(archive)
     return True
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script clears the archive folder for a site)",
@@ -31,7 +31,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

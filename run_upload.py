@@ -105,7 +105,7 @@ def setup_log_file(filename, SITE_ID, logs):
 
     # remove previous log files
     for old_log_files in glob.glob('{}/tmp/{}_workflow_*.log'.format(parent, SITE_ID)):
-        os.remove(old_log_files)   
+        os.remove(old_log_files)
 
     with open(filename, "w") as f:
         for l in json.loads(logs):
@@ -126,7 +126,7 @@ def create_jira(url, site_id, site_title, jira_state, now, jira_log):
     if APP['jira']['last'] > 0:
         N = APP['jira']['last']
         jira_log = jira_log[-N:]
-        
+
     with MyJira() as j:
         fields = {
             'project': {'key': APP['jira']['key']},
@@ -153,12 +153,12 @@ def transition_jira(site_id):
         j.setToInProgressIssue(fields)
 
 def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
-   
+
     if step['action'] == "mail":
         if 'template' in step:
 
             # print("sending email with template: '{}'".format(step['template']))
-                 
+
             return send_template_email(
                 APP,
                 template=step['template'] + ".html",
@@ -172,14 +172,14 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
 
     elif step['action'] == "get_files":
         # print("getting files from log file and adding them to DB")
-       
+
         _file = open(log_file, "r")
         lines = _file.readlines()
         _file.close()
 
         # check if log contains files ...
         rough_list = list(filter(lambda s: FILE_REGEX.match(s), lines))
-        
+
         output_files = dict()
         for l in rough_list:
             m = re.findall(r'(file-.*):\s(.*)', l)
@@ -194,10 +194,10 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             mod = importlib.import_module('work.{}'.format(step['action']))
             func = getattr(mod, 'run')
             new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-            
+
             if 'use_date' in step:
                 new_kwargs['now_st'] = kwargs['now_st']
-                
+
             if 'use_new_id' in step:
                 new_kwargs['new_id'] = kwargs['new_id']
 
@@ -223,7 +223,7 @@ def start_workflow(link_id, site_id, APP):
         DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
     else:
         logging.error("Authentication required")
-        return 0     
+        return 0
 
     site_title = site_id
     site_url   = site_id
@@ -312,4 +312,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

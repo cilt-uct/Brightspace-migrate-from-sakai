@@ -53,7 +53,7 @@ def unique(list1):
     return np.unique(x).tolist()
 
 ## Current Templates:
-#   - styled : [DEFAULT] includes styles, and scripts 
+#   - styled : [DEFAULT] includes styles, and scripts
 #   - small  : includes just style
 def make_well_formed(html, title = None, template = "styled"):
 
@@ -80,11 +80,11 @@ def make_well_formed(html, title = None, template = "styled"):
             title_tag = tmpl.new_tag("title")
             title_tag.append(title)
             tmpl.head.append(title_tag) # insert title tag
-            
+
         col = tmpl.body.find("div", class_="col-sm-10 offset-sm-1")
         col.append(new_html)
         new_html = copy.copy(tmpl)
-    
+
     if (has_head is not None):
         # remove previous meta, title and style links
         for rm in new_html.head.find_all(['meta','title','link']):
@@ -93,7 +93,7 @@ def make_well_formed(html, title = None, template = "styled"):
         # add the appropriate meta and style links
         for tag in tmpl.head.find_all(['meta','link']):
             new_html.head.append(tag)
-    
+
         if (title is not None):
             title_tag = tmpl.new_tag("title")
             title_tag.append(title)
@@ -101,7 +101,7 @@ def make_well_formed(html, title = None, template = "styled"):
 
     if (has_body is not None):
         xpath = new_html.select('body > div[class="container-fluid"] > div[class="row"] > div[class="col-sm-10 offset-sm-1"]')
-        
+
         if (len(xpath) == 0):
             # ok so the columns are not there - lets add it then
 
@@ -109,7 +109,7 @@ def make_well_formed(html, title = None, template = "styled"):
             row_tag = new_html.new_tag('div', **{"class":"row"})
             col_tag = new_html.new_tag('div', **{"class":"col-sm-10 offset-sm-1"})
 
-            row_tag.append(col_tag)    
+            row_tag.append(col_tag)
             container_tag.append(row_tag)
 
             body_children = list(html.body.children)
@@ -134,10 +134,10 @@ def remove_unwanted_characters(file):
     data = data.replace('\x1e', '').replace('&amp;#xb;' ,'').replace('&#xb;','').replace('&amp;#x2;' ,'').replace('&#x2;' ,'').replace('&#160;','').replace('&#11;','').replace('&amp;#x8;' ,'')
     data = data.replace('&amp;#x1;', '').replace('&#x1;' ,'').replace('&amp;#x1f;', '').replace('&#x1f;' ,'').replace('&amp;#x4;', '').replace('&#x4;' ,'')
     data = data.replace('&amp;#x7;', '').replace('&#x7;' ,'')
-    
+
     # newline and tab
     data = data.replace('&#xa;', '').replace('&#x9;', ' ')
-    
+
     # character replacement
     data = data.replace('&#14;','ffi').replace('&#12;','fi')
 
@@ -152,7 +152,7 @@ def remove_unwanted_characters(file):
 
     # replace one-or-more spaces/non-breaking-spaces with a single space
     # data = re.sub(r'\s+', ' ', data)
-    
+
     fin = open(file, "wt")
     fin.write(data)
     fin.close()
@@ -165,14 +165,14 @@ def remove_unwanted_characters_tq(file):
 
     # weird characters
     data = data.replace('&#11;','')
-    
+
     fin = open(file, "wt")
     fin.write(data)
 
 def write_test_case(html, id):
     print(f"{parent}/tmp-{id}.html")
     with open(f"{parent}/tmp-{id}.html", "w", encoding = 'utf-8') as file:
-        file.write(str(html.prettify()))  
+        file.write(str(html.prettify()))
 
 def create_folders(dir_, clean = False):
     if clean:
@@ -187,7 +187,7 @@ def create_folders(dir_, clean = False):
 def get_size(filename):
     if not os.path.exists(filename):
         return None
-    
+
     return os.path.getsize(filename)
 
 def format_bytes(size):

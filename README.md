@@ -1,11 +1,11 @@
 
-# Brightspace : Migrate from Sakai  
+# Brightspace : Migrate from Sakai
 This repo exports a site from Sakai (https://www.sakailms.org/), runs a set of workflow steps to improve the import outcome, constructs a zip file, uploads to Brightspace (https://www.d2l.com/brightspace/), and after import runs a workflow to enroll users and do some clean-up
 
 The entire process is tied to the **Migrate to Brightspace [LTI] (tsugi-migrate-to-brightspace)** tool defined here: https://github.com/cilt-uct/tsugi-migrate-to-brightspace
- 
+
  The LTI contains the database (see *Database Schema*) that is used to store the state of the conversion process.
- 
+
 ## Workflow
 The workflows are divided into 3 parts (matching with the task):
 
@@ -19,7 +19,7 @@ The workflow steps are defined in the `work` folder with the corresponding file 
 
 ### Directories
 The file `base.sh` define the important folders used in the migration scripts.
- 
+
 -  `SAKAI_DATA_FOLDER` this folder is setup the be a shared storage between all Sakai Application Servers and is a large enough space to include other folders for the migration process.
 
 -  `ARCHIVE_FOLDER` this folder is *exactly* the same as `archive.storage.path` (see *Sakai Configuration Settings*).
@@ -86,12 +86,12 @@ webservices.log-denied=true
 ```
 
 Define a regular expression for `webservices.allow` that includes the IP for the server on which these scripts are running.
-  
+
 The ARCHIVE_FOLDER path specified in `base.sh` should provide access to the `archive.storage.path` location.
 
 ## Sakai Code Dependencies
 For reference, see the UCT 21.x Sakai branch https://github.com/cilt-uct/sakai/tree/21.x
- 
+
 Sakai 21.x builds may need to backport these changes at minimum:
 
 ### SAK-47123 Add SakaiScript method for archiving a site

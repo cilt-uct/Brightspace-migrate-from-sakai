@@ -47,7 +47,7 @@ def run(SITE_ID, APP, now_st = None):
     for py in glob.glob('{}/*{}_fixed*.zip'.format(APP['output'], SITE_ID)):
         os.remove(py)
 
-    if (zipfolder(zip_file, src_folder)): 
+    if (zipfolder(zip_file, src_folder)):
         zip_size = get_size(zip_file)
 
         # created file gets logged so it can be used in workflow
@@ -65,7 +65,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID to create a zip for")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

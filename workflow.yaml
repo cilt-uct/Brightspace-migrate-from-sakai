@@ -61,7 +61,7 @@ STEPS:
   - action: lessonbuilder_update_quiz_title
 
   # Tests and Quizzes
-  - action: test_and_quiz_replace_wiris 
+  - action: test_and_quiz_replace_wiris
   - action: test_and_quiz_QP_replace_wiris
 
   # Resources / Content
@@ -70,7 +70,7 @@ STEPS:
   # Site
   - action: site_change_id
     use_new_id: 1
-    
+
   # Rubrics
   - action: export_rubrics
 

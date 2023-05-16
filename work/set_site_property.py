@@ -46,7 +46,7 @@ def run(SITE_ID, APP, **kwargs):
         # Zeep client for login and out
         login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(auth['url']), transport=transport)
         login_client.transport.session.verify = False
-    
+
         session_details = login_client.service.loginToServer(auth['username'], auth['password']).split(',')
         logging.debug(f'session_details {session_details}')
 
@@ -70,7 +70,7 @@ def run(SITE_ID, APP, **kwargs):
     except zeep.exceptions.Fault as fault:
         logging.error("Webservices error calling method on {} with username {}".format(auth['url'], auth['username']))
         raise Exception(fault)
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Workflow operation to update Sakai site property with migration status",
@@ -80,7 +80,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

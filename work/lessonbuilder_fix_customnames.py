@@ -38,14 +38,14 @@ def run(SITE_ID, APP):
             print(f"item filename={filename} name={item.get('name')} sakaiid={item.get('sakaiid')}")
             item.set('name', filename)
             rewrite = True
-        
+
     # Update the lessonbuilder XML
     if rewrite:
         logging.info(f"Updating {xml_src}")
         xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)
         shutil.copyfile(xml_src, xml_old)
-        tree.write(xml_src, encoding='utf-8', xml_declaration=True) 
-    
+        tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script fixes AMA-350",

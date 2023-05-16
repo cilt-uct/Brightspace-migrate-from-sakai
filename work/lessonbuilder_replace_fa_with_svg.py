@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## Replace lesson FontAwesome icons with SVG images
-## REF: 
+## REF:
 
 import sys
 import os
@@ -28,7 +28,7 @@ def replace_with_img(html, path, img, _cls = None):
         new_span['aria-hidden'] = 'true'
         if (_cls is not None):
             new_span['class'] = _cls
-        img = html.new_tag('img', alt="", src=f"{shared_path}{img}")           
+        img = html.new_tag('img', alt="", src=f"{shared_path}{img}")
         new_span.append(img)
 
         icon.replace_with(new_span)
@@ -60,7 +60,7 @@ def run(SITE_ID, APP):
             replace_with_img(html, 'h2 span[class="fa fa-bullseye fa-fw"]', 'icon_learning_outcomes.svg')
             replace_with_img(html, 'h2 span[class="fa fa-fw fa-key"]', 'icon_key_information.svg')
             replace_with_img(html, 'h2 span[class="fa fa-check-square fa-fw"]', 'icon_key_activities.svg')
-            
+
             replace_with_img(html, 'h2 span[class="fa fa-book"]', 'icon_reading.svg')
             replace_with_img(html, 'h3 span[class="fa fa-book"]', 'icon_reading.svg')
 
@@ -85,7 +85,7 @@ def run(SITE_ID, APP):
             # print(ET.tostring(item))
 
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Replace lesson FontAwesome icons with SVG images",
@@ -95,7 +95,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

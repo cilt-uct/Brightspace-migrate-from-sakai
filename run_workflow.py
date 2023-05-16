@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## This script accesses a Vula DB (config.py) and exports the rubrics of a site to a packaged zip file.
-## REF: 
+## REF:
 
 import sys
 import os
@@ -130,7 +130,7 @@ def setup_log_file(filename, SITE_ID, logs):
 
     # remove previous log files
     for old_log_files in glob.glob('{}/tmp/{}_workflow_*.log'.format(parent, SITE_ID)):
-        os.remove(old_log_files)   
+        os.remove(old_log_files)
 
     with open(filename, "w") as f:
         for l in json.loads(logs):
@@ -163,7 +163,7 @@ def set_site_property(site_id, key, value):
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
         new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-        
+
         new_kwargs[key] = value
         func(**new_kwargs)  # this runs the steps - and writes to log file
 
@@ -183,12 +183,12 @@ def transition_jira(site_id):
         j.setToInProgressIssue(fields)
 
 def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
-   
+
     if step['action'] == "mail":
         if 'template' in step:
 
             # print("sending email with template: '{}'".format(step['template']))
-                 
+
             return send_template_email(
                 APP,
                 template=step['template'] + ".html",
@@ -202,14 +202,14 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
 
     elif step['action'] == "get_files":
         # print("getting files from log file and adding them to DB")
-       
+
         _file = open(log_file, "r")
         lines = _file.readlines()
         _file.close()
 
         # check if log contains files ...
         rough_list = list(filter(lambda s: FILE_REGEX.match(s), lines))
-        
+
         output_files = dict()
         for l in rough_list:
             m = re.findall(r'(file-.*):\s(.*)', l)
@@ -230,10 +230,10 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             mod = importlib.import_module('work.{}'.format(step['action']))
             func = getattr(mod, 'run')
             new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-            
+
             if 'use_date' in step:
                 new_kwargs['now_st'] = kwargs['now_st']
-                
+
             if 'use_new_id' in step:
                 new_kwargs['new_id'] = kwargs['new_id']
 
@@ -259,7 +259,7 @@ def start_workflow(link_id, site_id, APP):
         DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
     else:
         logging.error("Authentication required")
-        return 0     
+        return 0
 
     site_title = site_id
     site_url   = site_id
@@ -324,13 +324,13 @@ def start_workflow(link_id, site_id, APP):
 
             state = 'running'
             update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
-            
+
             if workflow_steps['STEPS'] is not None:
                 for step in workflow_steps['STEPS']:
                     logging.info("Executing workflow step: {}".format(step['action']))
                     if 'state' in step:
                         state = step['state']
-    
+
                     if run_workflow_step(step=step, site_id=site_id, log_file=log_file, db_config=DB_AUTH,
                                              to=record['notification'], started_by=record['started_by_email'],
                                              now_st=now_st, new_id=new_id, amathuba_id=record['imported_site_id'],
@@ -344,7 +344,7 @@ def start_workflow(link_id, site_id, APP):
             else:
                 logging.warning("There are no workflows steps in this workflow.")
         else:
-            raise Exception(f'Archive failed for {link_id} : {site_id}') 
+            raise Exception(f'Archive failed for {link_id} : {site_id}')
 
         logging.info("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
         update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
@@ -399,4 +399,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -46,7 +46,7 @@ def set_site_property(site_id, key, value):
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
         new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-        
+
         new_kwargs[key] = value
         func(**new_kwargs)  # this runs the steps - and writes to log file
 
@@ -179,7 +179,7 @@ def check_sftp(inbox, outbox):
     try:
         ssh_client.connect(SFTP['host'], 22, SFTP['username'], SFTP['password'])
         sftp = ssh_client.open_sftp()
-        
+
         inbox_files = sftp_file_list(sftp, inbox)
         outbox_files = sftp_file_list(sftp, outbox)
 
@@ -250,7 +250,7 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
             cmd = "python3 {}/run_update.py {} {}".format(SCRIPT_FOLDER, link_id, site_id).split()
             if APP['debug']:
                 cmd.append("-d")
-                        
+
             # async
             p = Popen(cmd)
             logging.info("Import completed: starting PID[{}] for {} : {} ({})".format(p.pid, link_id, site_id, title))

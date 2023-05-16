@@ -20,7 +20,7 @@ from lib.utils import *
 def update_page(page, level):
     page_title = page.get("title")
     page_id = page.get("pageid")
-    
+
     if debug:
         print(f"Reading tree page {page_title}({page_id}) level {level}")
 
@@ -49,7 +49,7 @@ def move_down(page, page_title, page_id, child_page):
             page_title,
             page_id
         ))
-    
+
     items = child_page.xpath(".//item")
     if not items:
         if debug:
@@ -73,7 +73,7 @@ def move_down(page, page_title, page_id, child_page):
             name = page_title + " - " + child_page_title
         item.set("name", name)
         page.append(item)
-    
+
     lessonbuilder_element.remove(child_page)
 
 def highest_sequence(page):
@@ -113,7 +113,7 @@ def get_top_parent(root):
         # so we don't have a topparent value
         # see if we have ANY pages
         any_page = root.xpath(".//page")
-        
+
         # if any_page has pages return the first one otherwise return empty
         return any_page[0] if any_page else None
     else:
@@ -148,7 +148,7 @@ def run(SITE_ID, APP):
     lessonbuilder_root = lessonbuilder_xml.getroot()
 
     logging.warning("Note: This update accepts that there are no 'sections'!")
-    
+
     section_count = assert_no_sections(lessonbuilder_root)
     if section_count > 0:
         logging.warning("There are {section_count} section items in lessons, exiting...")
@@ -174,7 +174,7 @@ def run(SITE_ID, APP):
             if top_parent_list is not None:
                 update_page(top_parent_list, 1)
                 lessonbuilder_xml.write(xml_src, encoding='utf-8', xml_declaration=True)
-                
+
                 logging.info('\tDone')
             else:
                 logging.warning('No lesson pages.')
@@ -188,7 +188,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID to change lessons for")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

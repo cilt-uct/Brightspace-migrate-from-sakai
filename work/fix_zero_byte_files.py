@@ -57,7 +57,7 @@ def run(SITE_ID, APP):
 
     check_resources(src_folder, 'attachment.xml')
     check_resources(src_folder, 'content.xml')
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Check for zero-byte files",
@@ -67,7 +67,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

@@ -56,7 +56,7 @@ def rename_to_final_destination(client, old_name, new_name):
         # IOError – if newpath is a folder, or something else goes wrong
         raise Exception(f"Failed to rename: {old_name}") from io
 
-def set_uploaded_at(db_config, link_id, site_id):   
+def set_uploaded_at(db_config, link_id, site_id):
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
         with connection:
@@ -157,7 +157,7 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('-p', '--progress', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
     APP['ftp']['show_progress'] = args['progress']
 

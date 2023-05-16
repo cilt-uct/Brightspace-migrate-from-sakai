@@ -21,7 +21,7 @@ def run(SITE_ID, APP):
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
     xml_src = r'{}/assignment.xml'.format(src_folder)
-    
+
     with open(xml_src, 'r') as f:
         contents = f.read()
 
@@ -40,8 +40,8 @@ def run(SITE_ID, APP):
     if rewrite:
         xml_old = r'{}/assignment.old'.format(src_folder)
         shutil.copyfile(xml_src, xml_old)
-        asn_tree.write(xml_src, encoding='utf-8', xml_declaration=True) 
-    
+        asn_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Fix empty Assignment titles",
@@ -51,7 +51,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

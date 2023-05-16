@@ -94,7 +94,7 @@ def run(SITE_ID, APP):
             print("No attachment")
     else:
         print("No attachments")
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
@@ -104,7 +104,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

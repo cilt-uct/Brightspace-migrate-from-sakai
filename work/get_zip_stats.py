@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## This script will get statistics on the zip files for this site
-## REF: 
+## REF:
 
 import sys
 import os
@@ -15,7 +15,7 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.utils import *
- 
+
 def run(SITE_ID, APP, now_st = None):
 
     if now_st is None:
@@ -28,7 +28,7 @@ def run(SITE_ID, APP, now_st = None):
     file_type = "Main"
     for py in glob.glob('{}/*{}*{}.zip'.format(APP['output'], SITE_ID, now_st)):
         if re.match(fixed, py):
-            file_type = "Fixed" 
+            file_type = "Fixed"
         if re.match(rubric, py):
             file_type = "Rubric"
 
@@ -42,7 +42,7 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
-        
+
     run(args['SITE_ID'], APP,"2022-09-26_201902")
 
 if __name__ == '__main__':

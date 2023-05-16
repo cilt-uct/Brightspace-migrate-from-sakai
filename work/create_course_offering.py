@@ -25,7 +25,7 @@ from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
 
-# Departments options if term is "other"            
+# Departments options if term is "other"
 other_departments = {
     'other' : 'other',     # University - wide Community or Activity
     'COM' : 'COM-other',   # Faculty of Commerce
@@ -47,7 +47,7 @@ def enroll(SITE_ID, APP, import_id, role):
     site_xml_src = f'{dir}/site.xml'
     user_xml_src = f'{dir}/user.xml'
 
-    # it would be beter to split this out into the original workflow and 
+    # it would be beter to split this out into the original workflow and
     # create a column entry for this field so that even if the archive folder disapears
     # it can still be processed
 
@@ -56,7 +56,7 @@ def enroll(SITE_ID, APP, import_id, role):
         user_tree = ET.parse(user_xml_src)
 
         try:
-            # get a array of role abilities for which the role is 'Support staff' or 'Site owner' 
+            # get a array of role abilities for which the role is 'Support staff' or 'Site owner'
             # return the userId's in a list
             user_ids = list(map( lambda el: el.get('userId'), site_tree.xpath(".//ability[@roleId='Support staff']") + \
                                                             site_tree.xpath(".//ability[@roleId='Site owner']")))
@@ -79,9 +79,9 @@ def get_record(db_config, link_id, site_id):
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
         with connection:
             with connection.cursor() as cursor:
-                sql = """SELECT IFNUll(`A`.target_title, `A`.title) as `name`, 
-                                IFNULL(`A`.target_course, '') as `course`, 
-                                IFNULL(`A`.target_dept, '') as `dept`, 
+                sql = """SELECT IFNUll(`A`.target_title, `A`.title) as `name`,
+                                IFNULL(`A`.target_course, '') as `course`,
+                                IFNULL(`A`.target_dept, '') as `dept`,
                                 IF(IFNULL(`A`.target_term, 0) = 9999, 'other', IFNULL(`A`.target_term, 0))  as `term`,
                                 `A`.create_course_offering,
                                 `A`.provider
@@ -100,7 +100,7 @@ def set_site_property(site_id, key, value):
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
         new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-        
+
         new_kwargs[key] = value
         func(**new_kwargs)  # this runs the steps - and writes to log file
 
@@ -117,7 +117,7 @@ def update_target_site(db_config, link_id, site_id, org_unit_id, is_created):
         with connection:
             with connection.cursor() as cursor:
                 # Create a new record
-                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, 
+                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1,
                                 target_site_id = %s, target_site_created = %s
                          WHERE `link_id` = %s and site_id = %s;"""
                 cursor.execute(sql, (org_unit_id, is_created, link_id, site_id))
@@ -136,11 +136,11 @@ def run(SITE_ID, APP, link_id):
         DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
     else:
         logging.error("Authentication required {}".format(APP['auth']['db']))
-        return 0     
+        return 0
 
     record = get_record(DB_AUTH, link_id, SITE_ID)
     if record:
-        try: 
+        try:
             name = "{} {}".format(record['course'], record['term'])
             course = record['course']
             dept = record['dept']
@@ -158,15 +158,15 @@ def run(SITE_ID, APP, link_id):
             if course == 'other':
                 name = re.sub("(20\d{2})", term, record['name'])
                 course = f'{dept}_{cheap_hash(name)}'
-                
-            # 4 required fields for course creation, 
+
+            # 4 required fields for course creation,
             # optional are:
             #     'provider': Add enrollment information for the provided courses per term
             #       'create': True will create the course even if it already exists
             #   'check_name': True will also check the name of the course with course code for uniqueness
-            payload = {'name': name, 
+            payload = {'name': name,
                         'course': course,
-                        'dept': dept, 
+                        'dept': dept,
                         'term': term,
                         'provider': provider}
 
@@ -188,7 +188,7 @@ def run(SITE_ID, APP, link_id):
     else:
         logging.info(f'Record for {SITE_ID} - not creating (Create Course Offering = 0)')
 
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Workflow operation to create a course template, course offering and enroll Lecturers",
@@ -203,4 +203,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

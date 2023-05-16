@@ -76,7 +76,7 @@ def upload(db_config, link_id, site_id, title):
         cmd = "python3 {}/run_upload.py {} {}".format(SCRIPT_FOLDER, link_id, site_id).split()
         if APP['debug']:
             cmd.append("-d")
-                    
+
         # async
         p = Popen(cmd)
         logging.info("Upload : starting PID[{}] for {} : {} ({})".format(p.pid, link_id, site_id, title))

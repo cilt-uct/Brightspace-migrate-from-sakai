@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## Checks the DB for sites to be migrated
-## REF: 
+## REF:
 
 import sys
 import os
@@ -50,7 +50,7 @@ def another_running(db_config, link_id, site_id):
         with connection:
             with connection.cursor() as cursor:
                 sql = """SELECT link_id FROM migration_site `A`
-                            where  `A`.link_id <> %s and `A`.site_id = %s and `active` = 1 
+                            where  `A`.link_id <> %s and `A`.site_id = %s and `active` = 1
                             and `A`.state in ('exporting','running')"""
                 cursor.execute(sql, (link_id, site_id))
                 cursor.fetchall()
@@ -64,7 +64,7 @@ def another_running(db_config, link_id, site_id):
 def check_migrations(APP):
 
     logging.debug("Checking form migration records")
-    
+
     site_id = ''
     site_url = ''
     site_title = "check_migrations"
@@ -167,4 +167,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

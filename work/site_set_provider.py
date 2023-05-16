@@ -55,7 +55,7 @@ def update_providers(db_config, link_id, site_id, provider_list):
         return False
 
     return True
-        
+
 def run(SITE_ID, APP, link_id):
     logging.info('Update site provider : {}'.format(SITE_ID))
 
@@ -71,14 +71,14 @@ def run(SITE_ID, APP, link_id):
         RUN_DB = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
     else:
         logging.error("Authentication required (Target)")
-        return 0     
+        return 0
 
     if (APP['debug']):
         print(f'{SITE_ID}\n{APP}\n{SRC_DB}\n{RUN_DB}')
 
     if update_providers(RUN_DB, link_id, SITE_ID, getProviders(SRC_DB, SITE_ID)):
         logging.info('\tDone')
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script runs the workflow for a site",

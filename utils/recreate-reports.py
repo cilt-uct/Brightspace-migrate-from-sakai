@@ -73,7 +73,7 @@ def run(APP):
             if work.archive_site.archive_site_retry(site['site_id'], APP):
                 work.generate_conversion_report.run(site['site_id'], APP, link_id = site['link_id'], now_st = now_st)
                 work.clear_archive.run(site['site_id'], APP)
-                
+
         except Exception as e:
             logging.exception(e)
 
@@ -91,4 +91,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

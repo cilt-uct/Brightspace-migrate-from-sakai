@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## This script will check the resources in the site and move the larger ones as defined in
-## placeholder.csv with placeholder files and move the originals to a webdav folder 
+## placeholder.csv with placeholder files and move the originals to a webdav folder
 ## to be uploaded with upload_with_webdav.py later
 ## REF: AMA-30
 
@@ -52,8 +52,8 @@ def move_to_webdav(src_folder, dest_folder, tmp_file, filename):
     else:
         #normal operation all is fine
         shutil.copyfile(file_src, file_target)
-        shutil.copyfile(file_tmp, file_src) 
-        
+        shutil.copyfile(file_tmp, file_src)
+
     return True
 
 def run(SITE_ID, APP):
@@ -70,8 +70,8 @@ def run(SITE_ID, APP):
     xml_src = r'{}/content.xml'.format(src_folder)
     xml_old = r'{}/content.old'.format(src_folder)
     shutil.copyfile(xml_src, xml_old)
-    shutil.copyfile(xml_src, '{}/content.xml'.format(dest_folder))   
-    
+    shutil.copyfile(xml_src, '{}/content.xml'.format(dest_folder))
+
     remove_unwanted_characters(xml_src)
 
     placeholder_default = []
@@ -104,17 +104,17 @@ def run(SITE_ID, APP):
 
                 # we don't replace the site information file
                 if (base64.b64decode(name.attrib['value']).decode('ascii') != 'Site Information'):
-                    print('{} {} {} {} {}'.format(resource.tag, 
-                                    resource.attrib['body-location'], 
-                                    format_bytes(int(resource.attrib['content-length'])), 
-                                    resource.attrib['content-type'], 
+                    print('{} {} {} {} {}'.format(resource.tag,
+                                    resource.attrib['body-location'],
+                                    format_bytes(int(resource.attrib['content-length'])),
+                                    resource.attrib['content-type'],
                                     base64.b64decode(name.attrib['value']).decode('ascii')))
                     # try with
                     # if (int(file_type['Size']) <= int(resource.attrib['content-length'])):
 
-                    # minimum size 
+                    # minimum size
                     if (int(local_size) < int(resource.attrib['content-length'])):
-                        
+
                         # met the threshold we move the file to webadv
                         if move_to_webdav(src_folder, dest_folder, file_type['File'], resource.attrib['body-location']):
                             logging.debug("Replacing with {}".format(file_type['File']))
@@ -126,7 +126,7 @@ def run(SITE_ID, APP):
                     if move_to_webdav(src_folder, dest_folder, placeholder_default['File'], resource.attrib['body-location']):
                         logging.debug("Replacing file with tmp.zip because it's larger than 20971520")
                     else:
-                        logging.debug("{} Not replacing this file.".format(str(base64.b64decode(name.attrib['value']))))   
+                        logging.debug("{} Not replacing this file.".format(str(base64.b64decode(name.attrib['value']))))
 
 def main():
     global APP
@@ -137,7 +137,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID to process")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

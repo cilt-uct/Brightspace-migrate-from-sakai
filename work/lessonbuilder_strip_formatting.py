@@ -58,9 +58,9 @@ def run(SITE_ID, APP):
 
             tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
-        logging.info(f'\tDone')    
+        logging.info(f'\tDone')
 
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replace all the wiris math components with something Brightspace can use",
@@ -68,7 +68,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
     run(args['SITE_ID'], APP)
 

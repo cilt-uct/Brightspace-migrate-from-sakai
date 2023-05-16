@@ -9,7 +9,7 @@ import os
 import re
 import shutil
 import copy
-import argparse 
+import argparse
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
@@ -33,7 +33,7 @@ def run(SITE_ID, APP):
         return
 
     xml_src = r'{}{}-archive/samigo_question_pools.xml'.format(APP['archive_folder'], SITE_ID)
-    
+
     remove_unwanted_characters(xml_src)
 
     tree = ET.parse(xml_src)
@@ -45,7 +45,7 @@ def run(SITE_ID, APP):
             if item.text:
                 if item.text.find('data-mathml') > 0:
                     html = BeautifulSoup(item.text.replace("<![CDATA[", "").replace("]]>", ""), 'html.parser')
-                    # print(html.prettify())                 
+                    # print(html.prettify())
                     # print('-------------------------------------------------')
                     for el in html.findAll("img", {"class" : "Wirisformula"}):
                         math_ml_raw = el['data-mathml'].replace("«", "<").replace("»", ">").replace("¨", "\"").replace("§", "&")
@@ -57,7 +57,7 @@ def run(SITE_ID, APP):
 
         tree.write(xml_src)
 
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input samigo_question_pools.xml and replace all the wiris math components with something Brightspace can use",
@@ -65,7 +65,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

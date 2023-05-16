@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## This script will try and archive a Sakai site - this will create a ZIP file and return True if success
-## REF: 
+## REF:
 
 import sys
 import os
@@ -25,13 +25,13 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
- 
+
 class SizeExceededError(Exception):
     pass
 
 def archive_site(SITE_ID, APP, auth):
 
-    succeeded = False 
+    succeeded = False
 
     # Disable SSL cert validation (for srvubuclexxx direct URLs)
     session = Session()
@@ -76,7 +76,7 @@ def archive_site(SITE_ID, APP, auth):
 
         start_time = time.time()
         archive_result = sakai_client.service.archiveSite(session_details[0], SITE_ID)
-        
+
         if (archive_result == "success"):
             logging.info("Archive for site {} completed".format(SITE_ID))
             succeeded = True
@@ -95,7 +95,7 @@ def archive_site(SITE_ID, APP, auth):
 
     except zeep.exceptions.Fault as fault:
         logging.error("Webservices error calling method on {} with username {}".format(auth['url'], auth['username']))
-        raise Exception(fault)   
+        raise Exception(fault)
 
 def archive_site_retry(SITE_ID, APP, max_tries=3):
 
@@ -111,7 +111,7 @@ def archive_site_retry(SITE_ID, APP, max_tries=3):
         print(f'{SITE_ID}\n{APP}\n{SAKAI}')
 
     for i in range(max_tries):
-        try: 
+        try:
            succeeded = archive_site(SITE_ID, APP, SAKAI)
            break
 
@@ -144,7 +144,7 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
-        
+
     archive_site_retry(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

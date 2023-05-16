@@ -12,7 +12,7 @@ from lib.local_auth import *
 ## https://jira.readthedocs.io/examples.html
 class MyJira(object):
 
-    def __init__(self) -> None:        
+    def __init__(self) -> None:
         self._jira = None
 
         try:
@@ -24,7 +24,7 @@ class MyJira(object):
 
     def __enter__(self):
         return self
-  
+
     def __exit__(self, *args, **kwargs):
         # We don't have to disconnect to JIRA REST as the session just expires
         # print("args: ", args)

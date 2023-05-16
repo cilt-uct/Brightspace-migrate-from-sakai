@@ -42,7 +42,7 @@ def run(SITE_ID, APP):
                 math_ml_raw = el['data-mathml'].replace("«", "<").replace("»", ">").replace("¨", "\"").replace("§", "&")
                 math_ml = BeautifulSoup(math_ml_raw,'html.parser')
                 el.replace_with(math_ml)
-                
+
                 # «math xmlns=¨http://www.w3.org/1998/Math/MathML¨»
                 #     «msqrt»
                 #         «mn»33«/mn»
@@ -55,13 +55,13 @@ def run(SITE_ID, APP):
                 #         </mstyle>
                 #     </semantics>
                 # </math>
-                
+
             # write_test_case(html)
             item.set('html', str(html))
             # print(ET.tostring(item))
 
         tree.write(xml_src)
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replace all the wiris math components with something Brightspace can use",
@@ -69,7 +69,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

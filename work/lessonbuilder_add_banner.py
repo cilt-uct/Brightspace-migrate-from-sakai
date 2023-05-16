@@ -65,8 +65,8 @@ def run(SITE_ID, APP):
             item.set('html', str(html))
             # print(ET.tostring(item))
 
-        tree.write(xml_src, encoding='utf-8', xml_declaration=True) 
-    
+        tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and adds a default banner to the body if it doesn't exist yet",
@@ -74,7 +74,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

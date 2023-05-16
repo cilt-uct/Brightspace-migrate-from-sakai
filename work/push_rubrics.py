@@ -86,7 +86,7 @@ def run(SITE_ID, APP, import_id, transfer_id, title, now_st = None):
         # Push it via API for import
         payload = {'org_id': import_id}
         files = [('file', (file_name, zip_file, 'application/zip'))]
-        response = requests.post("{}{}".format(APP['middleware']['base_url'], APP['middleware']['import_url']), 
+        response = requests.post("{}{}".format(APP['middleware']['base_url'], APP['middleware']['import_url']),
                                  data=payload, files=files)
         response.raise_for_status()
     else:
@@ -104,7 +104,7 @@ def main():
     parser.add_argument("TITLE", help="The site title")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP, args['IMPORT_ID'], args['TRANSFER_ID'], args['TITLE'])

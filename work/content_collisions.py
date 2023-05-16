@@ -22,7 +22,7 @@ def run(SITE_ID, APP):
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
     xml_src = r'{}/content.xml'.format(src_folder)
-    
+
     if os.path.isfile(xml_src):
         with open(xml_src, 'r') as f:
             contents = f.read()
@@ -38,7 +38,7 @@ def run(SITE_ID, APP):
                 raise Exception(f"File/folder name collision: {collection_id}")
     else:
         logging.warning(f"No content.xml found for {SITE_ID}")
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Force the mime-types for specific extentions",
@@ -48,7 +48,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

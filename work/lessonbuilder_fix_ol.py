@@ -62,14 +62,14 @@ def run(SITE_ID, APP):
                 if (style.length > 0):
                     li['style'] = style.cssText
                 else:
-                    del li['style']            
+                    del li['style']
 
             # write_test_case(html)
             item.set('html', str(html))
             # print(ET.tostring(item))
 
-        tree.write(xml_src, encoding='utf-8', xml_declaration=True) 
-    
+        tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replaces adds a class to the ol and removes styling on li",
@@ -79,7 +79,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

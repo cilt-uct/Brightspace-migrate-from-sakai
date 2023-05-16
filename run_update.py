@@ -65,7 +65,7 @@ def setup_log_file(filename, SITE_ID, logs):
 
     # remove previous log files
     for old_log_files in glob.glob('{}/tmp/{}_workflow_*.log'.format(parent, SITE_ID)):
-        os.remove(old_log_files)   
+        os.remove(old_log_files)
 
     with open(filename, "w") as f:
         for l in json.loads(logs):
@@ -83,7 +83,7 @@ def set_site_property(site_id, key, value):
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
         new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-        
+
         new_kwargs[key] = value
         func(**new_kwargs)  # this runs the steps - and writes to log file
 
@@ -103,7 +103,7 @@ def close_jira(site_id):
         j.closeIssue(fields)
 
 def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
-   
+
     if step['action'] == "mail":
         if 'template' in step:
             return send_template_email(
@@ -123,7 +123,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             logging.warn("No template found in mail step")
 
     elif step['action'] == "sleep":
-        if 'time' in step:       
+        if 'time' in step:
             logging.info("Sleeping for {} seconds".format(step['time']))
             time.sleep(int(step['time']))
     else:
@@ -132,10 +132,10 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             mod = importlib.import_module('work.{}'.format(step['action']))
             func = getattr(mod, 'run')
             new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-            
+
             if 'use_date' in step:
                 new_kwargs['now_st'] = kwargs['now_st']
-                
+
             if 'use_new_id' in step:
                 new_kwargs['new_id'] = kwargs['new_id']
 
@@ -171,7 +171,7 @@ def start_workflow(link_id, site_id, APP):
         DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
     else:
         logging.error("Authentication required")
-        return 0     
+        return 0
 
     # datetime object containing current date and time that the workflow was started
     now = datetime.now()
@@ -190,7 +190,7 @@ def start_workflow(link_id, site_id, APP):
 
     try:
         record = lib.db.get_record(db_config=DB_AUTH, link_id=link_id, site_id=site_id)
-        
+
         if (record is None):
             raise Exception(f'Could not find record to start update for {link_id} : {site_id}')
 
@@ -204,7 +204,7 @@ def start_workflow(link_id, site_id, APP):
 
         workflow_steps = lib.utils.read_yaml(WORKFLOW_FILE)
         update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
-        
+
         if workflow_steps['STEPS'] is not None:
             for step in workflow_steps['STEPS']:
                 logging.info("Executing update workflow step: {}".format(step['action']))

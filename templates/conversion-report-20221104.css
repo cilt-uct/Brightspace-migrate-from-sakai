@@ -67,7 +67,7 @@ span.equivalent::before {
    margin-top: 5px;
 }
 .tool_name {
-  margin-left: 25px; 
+  margin-left: 25px;
 } */
 .tool_detail {
    font-weight: normal;
@@ -94,7 +94,7 @@ p > .ama-logo {
 }
 
 #tools > div {
- padding: 8px; 
+ padding: 8px;
 }
 .img {
     width: auto;
@@ -135,7 +135,7 @@ p > .ama-logo {
     font-family: inherit;
     color: #231f20;
     font-weight: bold;
-   
+
 }
 
 #site_title, #course_title {
@@ -221,14 +221,14 @@ p > .ama-logo {
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: 90%; 
+    max-height: 90%;
 }
 .issues-list li{
     margin-top: 10px;
     font-size: 16px;
 }
 .issues-found-banner {
-    background-color: #1f3769;   
+    background-color: #1f3769;
     color: white;
     padding: 5px;
 }
@@ -248,7 +248,7 @@ p > .ama-logo {
 } */
 
 .tools-banner {
-    background-color: #1f3769;   
+    background-color: #1f3769;
     color: white;
     padding: 15px;
 }
@@ -260,12 +260,12 @@ p > .ama-logo {
 .tools-banner.img {
     display: inline-block;
 }
-  
+
 .tools-icon {
     width: 60px;
     float: left;
     margin-top: 5;
-    vertical-align: middle;   
+    vertical-align: middle;
 }
 .text {
     color: white;
@@ -281,11 +281,11 @@ p > .ama-logo {
     display: inline-block;
 }
 .support {
-    background-color: #1fa485;   
+    background-color: #1fa485;
     color: white;
-    font-weight: bold; 
+    font-weight: bold;
     font-size: 18px;
-    padding: 5px 5px; 
+    padding: 5px 5px;
     word-spacing: 2px;
     display: flex;
     flex-direction: row;
@@ -351,7 +351,7 @@ p > .ama-logo {
 }
 
 .issues-row.column:after {
-    content: ""; 
+    content: "";
     display: block;
     padding-bottom: 100%;
 }
@@ -396,10 +396,10 @@ p > .ama-logo {
     top: 50%;
     transform: translateY(-50%);
     z-index: -1;
-    margin: 0 auto;    
+    margin: 0 auto;
 }
 .no-issues {
-   background-color: #1fa485;   
+   background-color: #1fa485;
     color: white;
     display: inline-block;
     padding: 5px;
@@ -427,7 +427,7 @@ div.icon-calendar::before {
     top: 50%;
     transform: translateY(-50%);
     z-index: -1;
-    margin: 0 auto; 
+    margin: 0 auto;
 }
 div.icon-folder::before {
     content: url('img/Folder_Icon.svg');
@@ -436,7 +436,7 @@ div.icon-folder::before {
     top: 50%;
     transform: translateY(-50%);
     z-index: -1;
-    margin: 0 auto; 
+    margin: 0 auto;
 }
 div.icon-css::before {
     content: url('img/Css_Icon.svg');
@@ -516,7 +516,7 @@ div.icon-todo::before {
     clear: both;
 }
 .issues-found-banner, .tools-banner {
-    background-color: #1f3769;   
+    background-color: #1f3769;
     color: white;
     padding: 5px;
     height: auto;
@@ -573,7 +573,7 @@ div.icon-todo::before {
     .issues-row {
         gap: 0rem;
     }
-        
+
     .issues-row > .column {
         margin-bottom: 6rem;
         margin-right: 6rem;

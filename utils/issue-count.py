@@ -18,4 +18,3 @@ with open('../config/conversion_issues.json', 'r') as f:
     print("\n==== tools ====")
     for i in data['tools']:
         print("key: {} Tool: {}".format(i['key'], i['name']))
-

@@ -51,7 +51,7 @@ def run(SITE_ID, APP, now_st = None):
                 file.write(str(tree))
 
     return True
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script adds a prefix to the title of the site",
@@ -59,7 +59,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

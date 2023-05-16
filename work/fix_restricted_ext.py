@@ -121,7 +121,7 @@ def run(SITE_ID, APP):
 
     check_resources(src_folder, disallowed, paths_map, 'attachment.xml')
     check_resources(src_folder, disallowed, paths_map, 'content.xml')
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="AMA-316 Zip restricted files",
@@ -131,7 +131,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

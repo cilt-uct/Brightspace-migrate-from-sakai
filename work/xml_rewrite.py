@@ -32,8 +32,8 @@ def run(SITE_ID, APP):
         tree = ET.parse(xml_src)
         tree.write(xml_src, xml_declaration=True)
 
-        logging.info(f'\tDone')    
-    
+        logging.info(f'\tDone')
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="XML rewrite test",
@@ -41,7 +41,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
     run(args['SITE_ID'], APP)
 

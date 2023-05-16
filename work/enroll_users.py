@@ -28,7 +28,7 @@ def run(SITE_ID, APP, import_id):
     site_xml_src = f'{dir}/site.xml'
     user_xml_src = f'{dir}/user.xml'
 
-    # it would be beter to split this out into the original workflow and 
+    # it would be beter to split this out into the original workflow and
     # create a column entry for this field so that even if the archive folder disapears
     # it can still be processed
     if os.path.exists(site_xml_src) and os.path.exists(user_xml_src):
@@ -36,7 +36,7 @@ def run(SITE_ID, APP, import_id):
         user_tree = ET.parse(user_xml_src)
 
         try:
-            # get a array of role abilities for which the role is 'Support staff' or 'Site owner' 
+            # get a array of role abilities for which the role is 'Support staff' or 'Site owner'
             # return the userId's in a list
             user_ids = list(map( lambda el: el.get('userId'), site_tree.xpath(".//ability[@roleId='Support staff']") + \
                                                             site_tree.xpath(".//ability[@roleId='Site owner']")))
@@ -53,7 +53,7 @@ def run(SITE_ID, APP, import_id):
             raise Exception(f'Could not enroll users from {SITE_ID} in Amathuba site {import_id}') from e
     else:
         raise Exception(f'XML file does not exist anymore {dir}/site.xml or user.xml')
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Workflow operation to enrol site owners of converted site into reference and teaching site",
@@ -64,7 +64,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP, args['IMPORT_ID'])
 
 if __name__ == '__main__':

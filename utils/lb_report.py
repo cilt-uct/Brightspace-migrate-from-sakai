@@ -71,7 +71,7 @@ def run(SITE_ID, APP):
 
     if java_i == py_i and java_p == py_p:
         print(f"OK: {SITE_ID} {orig_p} pages items reduced from {orig_i} to {py_i}")
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
@@ -81,7 +81,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

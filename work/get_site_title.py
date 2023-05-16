@@ -23,7 +23,7 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
- 
+
 class SizeExceededError(Exception):
     pass
 
@@ -36,7 +36,7 @@ def get_site_title(SITE_ID, APP):
         SAKAI = {'url' : tmp[0], 'username' : tmp[1], 'password' : tmp[2]}
     else:
         logging.error("Authentication required")
-        return False 
+        return False
 
     # Disable SSL cert validation (for srvubuclexxx direct URLs)
     session = Session()
@@ -58,7 +58,7 @@ def get_site_title(SITE_ID, APP):
         logging.debug("Getting Sakai site title for {} on server {}" .format(SITE_ID, session_details[1]))
 
         title_result = sakai_client.service.getSiteTitle(session_details[0], SITE_ID)
-        
+
         if title_result and not title_result.startswith("org.sakaiproject.exception.IdUnusedException"):
             logging.debug("Title for site {} is {}".format(SITE_ID, title_result))
             site_title = title_result
@@ -76,7 +76,7 @@ def get_site_title(SITE_ID, APP):
 
     except zeep.exceptions.Fault as fault:
         logging.error("Webservices error calling method on {} with username {}".format(SAKAI['url'], SAKAI['username']))
-        raise Exception(fault)   
+        raise Exception(fault)
 
 def main():
     global APP
@@ -86,7 +86,7 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
-        
+
     site_title = get_site_title(args['SITE_ID'], APP)
     print(f"Site title: {site_title}")
 

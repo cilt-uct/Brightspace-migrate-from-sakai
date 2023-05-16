@@ -23,7 +23,7 @@ def run(SITE_ID, APP, new_id):
 
     if APP['debug']:
         print(f'{SITE_ID} > {new_id}')
-        
+
     xml_src = r'{}{}-archive/site.xml'.format(APP['archive_folder'], SITE_ID)
     with open(xml_src, 'r', encoding='utf8') as f:
         contents = f.read()
@@ -61,12 +61,12 @@ def run(SITE_ID, APP, new_id):
                     f.seek(0)
                     f.write(content)
                     f.truncate()
-    
+
     if APP['debug']:
         print("all done")
 
     return True
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script adds a prefix to the ID of the site - to differentiate imports",
@@ -74,7 +74,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     now = datetime.now()

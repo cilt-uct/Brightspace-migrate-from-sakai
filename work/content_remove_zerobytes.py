@@ -23,7 +23,7 @@ def run(SITE_ID, APP):
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 
     xml_src = r'{}/content.xml'.format(src_folder)
-    
+
     with open(xml_src, 'r') as f:
         contents = f.read()
 
@@ -44,8 +44,8 @@ def run(SITE_ID, APP):
     if found_zero_bytes:
         xml_old = r'{}/content.old.pre-zero'.format(src_folder)
         shutil.copyfile(xml_src, xml_old)
-        content_tree.write(xml_src, encoding='utf-8', xml_declaration=True) 
-    
+        content_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Remove zero-byte files from content.xml and folder",
@@ -55,7 +55,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

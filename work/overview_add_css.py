@@ -27,7 +27,7 @@ def do_work(site_info_file):
 
     with open(f'{parent}/templates/styled.html', 'r') as f:
         tmpl_contents = f.read()
-        
+
     html = BeautifulSoup(src_contents, 'html.parser')
     tmpl = BeautifulSoup(tmpl_contents, 'html.parser')
 
@@ -39,8 +39,8 @@ def do_work(site_info_file):
     for tag in tmpl.head.find_all(['meta','link']):
         html.head.append(tag)
 
-    # print(html.head.prettify())   
-    
+    # print(html.head.prettify())
+
     with open(f"{site_info_file}", "w", encoding = 'utf-8') as file:
         return file.write(str(html.prettify()))
 
@@ -65,7 +65,7 @@ def run(SITE_ID, APP):
         file.write(str(tree))
 
     return True
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script searches for 'Site Information.html' in context.xml and if found will add the the appropriate header (from templates/styled.html)",
@@ -73,7 +73,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

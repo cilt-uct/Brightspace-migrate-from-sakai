@@ -231,7 +231,7 @@ def exportVulaRubric(db_config, site_id, rubrics_file):
         logging.debug(f'\t{resp}')
 
     return os.path.exists(rubrics_file)
-        
+
 
 def run(SITE_ID, APP, now_st = None):
 

@@ -50,8 +50,8 @@ while [ : ]; do
         SITE_ID=$2
         shift 2
         ;;
-    --) shift; 
-        break 
+    --) shift;
+        break
         ;;
   esac
 done

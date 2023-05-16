@@ -54,7 +54,7 @@ def run(SITE_ID, APP):
             # print(ET.tostring(item))
 
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and removes the icon from the h1.lessontitle",
@@ -64,7 +64,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

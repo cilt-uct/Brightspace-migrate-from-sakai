@@ -29,7 +29,7 @@ def run(SITE_ID, APP):
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
     xml_src = os.path.join(src_folder, "attachment.xml")
-    
+
     if not os.path.exists(xml_src):
         logging.info(f"No attachments in {SITE_ID}")
         return
@@ -141,7 +141,7 @@ def run(SITE_ID, APP):
     if rewrite:
         # Update attachment.xml
         content_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
@@ -151,7 +151,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':

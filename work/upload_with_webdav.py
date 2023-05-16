@@ -51,7 +51,7 @@ def tqdmWrapViewBar(*args, **kwargs):
 def get_size(filename):
     if not os.path.exists(filename):
         return None
-    
+
     return os.path.getsize(filename)
 
 def Func_CallBack():
@@ -65,7 +65,7 @@ def process_webdav(SITE_ID, target_folder):
 
     # print(f'{webdav_folder}\n{target_folder}')
 
-    xml_src = r'{}/content.xml'.format(webdav_folder)    
+    xml_src = r'{}/content.xml'.format(webdav_folder)
     remove_unwanted_characters(xml_src)
 
     tree = ET.parse(xml_src)
@@ -97,10 +97,10 @@ def process_webdav(SITE_ID, target_folder):
 
                     # see if the file we want to upload exists
                     if os.path.exists(local_file):
-                        # print('{} {} {} {} {} {}'.format(resource.tag, 
-                        #                 resource.attrib['body-location'], 
-                        #                 format_bytes(int(resource.attrib['content-length'])), 
-                        #                 resource.attrib['content-type'], 
+                        # print('{} {} {} {} {} {}'.format(resource.tag,
+                        #                 resource.attrib['body-location'],
+                        #                 format_bytes(int(resource.attrib['content-length'])),
+                        #                 resource.attrib['content-type'],
                         #                 name,
                         #                 resource.attrib['rel-id']))
 
@@ -111,8 +111,8 @@ def process_webdav(SITE_ID, target_folder):
 
                             # if the file size is the same - assume it is there and continue to next file
                             if (local_size != int(before_upload['size'])):
-                                logging.info('Uploading {} -> {} : {}'.format(format_bytes(int(local_size)), 
-                                                                        format_bytes(int(before_upload['size'])), 
+                                logging.info('Uploading {} -> {} : {}'.format(format_bytes(int(local_size)),
+                                                                        format_bytes(int(before_upload['size'])),
                                                                         resource.attrib['rel-id']))
 
                                 # cbk, pbar = tqdmWrapViewBar(ascii=True, unit='b', unit_scale=True)
@@ -122,13 +122,13 @@ def process_webdav(SITE_ID, target_folder):
                                 after_upload = webdav.info(remote_file)
                                 logging.info('     Done {}'.format(format_bytes(int(after_upload['size']))))
                             else:
-                                logging.info('Same file {} == {} : {}'.format(format_bytes(int(local_size)), 
-                                                                        format_bytes(int(before_upload['size'])), 
+                                logging.info('Same file {} == {} : {}'.format(format_bytes(int(local_size)),
+                                                                        format_bytes(int(before_upload['size'])),
                                                                         resource.attrib['rel-id']))
                         else:
                             logging.error("{} remote file does not exist.".format(resource.attrib['rel-id']))
-                except Exception as e: 
-                    logging.error("{} processing failed for file {}".format(resource.attrib['rel-id'], e))   
+                except Exception as e:
+                    logging.error("{} processing failed for file {}".format(resource.attrib['rel-id'], e))
 
 def main():
     global APP
@@ -138,7 +138,7 @@ def main():
     parser.add_argument("FOLDER", help="The Folder to upload to")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     process_webdav(args['SITE_ID'], args['FOLDER'])

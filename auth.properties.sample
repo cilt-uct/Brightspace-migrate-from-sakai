@@ -1,5 +1,5 @@
-# The file contains the URL's and authentication details to 
-# connect to the various databases and servers that are used in the migration scripts. 
+# The file contains the URL's and authentication details to
+# connect to the various databases and servers that are used in the migration scripts.
 
 # JIRA
 Jira_url=https://jira.some.domain
@@ -31,7 +31,7 @@ BrightspaceMiddleware_password=SECRET
 Brightspace_username=USER
 Brightspace_password=SECRET
 
-# Brightspace production UI login 
+# Brightspace production UI login
 BrightspaceWeb_username=USER
 BrightspaceWeb_password=SECRET
 

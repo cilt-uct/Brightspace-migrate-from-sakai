@@ -8,4 +8,3 @@ STEPS:
   # Transition to next workflow operation
   - action: get_files
     state: 'importing'
-

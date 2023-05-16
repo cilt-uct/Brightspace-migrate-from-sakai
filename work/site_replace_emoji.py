@@ -28,7 +28,7 @@ def run(SITE_ID, APP):
 
     tree = BeautifulSoup(contents, 'xml')
     root = tree.select_one("archive")
-    
+
     if root:
         if APP['debug']:
             print("{} run: {}".format(root.attrs['site'], root.attrs['site'] == SITE_ID))
@@ -50,7 +50,7 @@ def run(SITE_ID, APP):
                 f.write(content)
                 f.truncate()
     return True
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script replaces emoji's lessons/announcements/discussions/Q&A/Assignments/overview",
@@ -58,7 +58,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

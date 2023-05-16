@@ -123,7 +123,7 @@ def run(SITE_ID, APP):
                 drop_attachments(site_folder, SITE_ID, path_segments)
 
     return True
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script drops tool content where the tool is unused",
@@ -131,7 +131,7 @@ def main():
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

@@ -48,7 +48,7 @@ APP = {
   'archive_folder': ARCHIVE_FOLDER,
   'output': OUTPUT_FOLDER,
   'webdav_folder': WEBDAV_FOLDER,
-  
+
   # Only accept True or False
   'debug': False,
   'clean_up': True,
@@ -143,10 +143,10 @@ APP = {
     'log': True,
     'log_output' : Path(SCRIPT_FOLDER) / 'log',
     # this should need to change
-    'outbox': '/incoming/CourseMigration/Outbox', 
+    'outbox': '/incoming/CourseMigration/Outbox',
     'inbox': '/incoming/CourseMigration/Inbox'
   },
-  
+
   # to differentiate zip files (added to front)
   'zip': {
     'site': 'completed_site_',
@@ -178,7 +178,7 @@ APP = {
             'audio/vnd.wave' : '.wav'
         }
   },
-  'path': Path().absolute(), 
+  'path': Path().absolute(),
   # Here for the config unittest
   'loaded' : True
 }

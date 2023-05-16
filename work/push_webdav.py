@@ -63,7 +63,7 @@ def process_webdav(SITE_ID, target_folder):
 
                 # Upload everything we have
 
-                # Checking existence of the resource we want to replace 
+                # Checking existence of the resource we want to replace
                 #if webdav.check(remote_file):
                 #    before_upload = webdav.info(remote_file)
                 #    local_size = os.path.getsize(local_file)
@@ -72,7 +72,7 @@ def process_webdav(SITE_ID, target_folder):
                 #    webdav.upload_sync( remote_path=remote_file, local_path=local_file)
                 #    after_upload = webdav.info(remote_file)
 
-    except Exception as e: 
+    except Exception as e:
         raise Exception(f"Error uploading webdav files: {e}")
 
 def main():
@@ -83,7 +83,7 @@ def main():
     parser.add_argument("FOLDER", help="The Folder to upload to")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
-    
+
     APP['debug'] = APP['debug'] or args['debug']
 
     process_webdav(args['SITE_ID'], args['FOLDER'])

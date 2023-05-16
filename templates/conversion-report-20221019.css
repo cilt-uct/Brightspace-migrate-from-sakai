@@ -1,4 +1,4 @@
-#issues_found_list { 
+#issues_found_list {
 }
 
 #issues_not_found_list {
@@ -24,7 +24,7 @@ li.failed {
 }
 
 #tools > div {
- padding: 8px; 
+ padding: 8px;
 }
 
 li.missing {
@@ -36,4 +36,3 @@ li.found {
  background-color: rgb(5, 129, 61, 0.4);
  padding: 0.5em;
 }
-

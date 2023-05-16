@@ -29,7 +29,7 @@ def run(SITE_ID, APP):
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
     xml_src = os.path.join(src_folder, "attachment.xml")
-    
+
     if not os.path.exists(xml_src):
         logging.info(f"No attachments in {SITE_ID}")
         return
@@ -52,7 +52,7 @@ def run(SITE_ID, APP):
         content_type = item.get('content-type')
         if content_type and content_type in disallowed_type and file_extension == "":
             raise Exception(f"Attachment '{item.get('id')}' is {content_type} without .URL extension: AMA-451")
-    
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
@@ -62,7 +62,7 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
-    
+
     run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':
