@@ -1,0 +1,39 @@
+#issues_found_list { 
+}
+
+#issues_not_found_list {
+ list-style: none;
+}
+
+#tool_unused_list {
+ list-style: none;
+}
+
+li.success {
+ border-left: 3px solid rgb(5, 129, 61);
+ padding: 0.5em;
+}
+
+li.failed {
+ border-left: 3px solid rgb(158, 0, 8);
+ padding: 0.5em;
+}
+
+#tool_list {
+ list-style: none;
+}
+
+#tools > div {
+ padding: 8px; 
+}
+
+li.missing {
+ background-color: lightgray;
+ padding: 0.5em;
+}
+
+li.found {
+ background-color: rgb(5, 129, 61, 0.4);
+ padding: 0.5em;
+}
+

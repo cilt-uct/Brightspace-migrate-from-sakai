@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://tsugidev.uct.ac.za/static/bootstrap-3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://tsugidev.uct.ac.za/static/js/jquery-ui-1.11.4/jquery-ui.min.css" rel="stylesheet">
+    <link href="https://tsugidev.uct.ac.za/static/fontawesome-free-5.8.2-web/css/all.css" rel="stylesheet">
+    <link href="https://tsugidev.uct.ac.za/static/fontawesome-free-5.8.2-web/css/v4-shims.css" rel="stylesheet">
+    <link href="conversion-report-20221104.css" rel="stylesheet">
+    <title>Conversion Report</title>
+</head>
+
+<body>
+    <div id="header_container" class="container">
+        <div class="header">
+            <div class="row">
+                <div class="col-md-2 hidden-xs hidden-sm">
+                    <img src="img/VulaToAma.svg" alt="Vula to Ama"
+                        class="img img-responsive d-none d-md-block" />
+                </div>
+                <div class="col-sm-12 col-md-8 course-header">
+                    <img src="img/Green_line.svg" alt="green-stripe" class="medium_stripe" />
+                    <h1 id="report_title">Conversion Report</h1>
+                    <p id="site_title">ECO1011S,2022</p>
+                </div>
+                <div class="col-xs-2 text-right topill hidden-xs hidden-sm">
+                    <img src="img/Ama_pill.svg" alt="ama pill"
+                        class="top_pill img-responsive pull-right" />
+                </div>
+            </div>
+            <div>
+                <div id="top-report-banner">
+                    <div class="pink-strip">&nbsp;</div>
+                    <div class="report-details">
+                        <div class="image hidden-xs hidden-sm">
+                            <img src="img/Report_icon.svg" alt="report-icon"
+                                class="img img-responsive report-details-icon">
+                        </div>
+                        <div class="text col-xs-12">
+                            <p id="report_info">Report generated DATE for Vula site LINK</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="body_container" class="container">
+        <div id="intro">
+            <div class="intro">
+                <p id="complete-message">Your Vula site has been successfully converted to Amathuba!</p>
+
+                <p id="notes-message">Here are some important things to note:</p>
+                <img src="img/Green_line.svg" title="green-stripe" class="small_stripe" />
+
+                <ul id="general_issues" class="issues-list">
+                    <li>
+                        Vula Resources go to the Amathuba Content tool under a hidden unit called Resources. Students
+                        will only
+                        have access to files under the Content tool. Use the <b>Content Builder</b> to re-arrange files
+                        in Content to make
+                        these discoverable.
+                    </li>
+                    <li>
+                        The course Overview page from Vula is available under your Amathuba course &gt; Content tool
+                        &gt; Resources unit &gt; Site Information. Rename this file and drag it to the top of the
+                        Content tool.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container no-issues" id="no-issues-banner">
+            <div class="issues">
+                <img class="hidden-xs hidden-sm" src="img/No_issues.svg"> 
+                <h3>No issues found <br>
+                    <span class="no-issues-description">The conversion went smoothly. You're good to go.</span>
+                </h3>
+           </div>
+        </div>
+
+        <div class="container issues-found-banner" id="issues-banner">
+            <div class="issues">
+                <img class="hidden-xs hidden-sm" src="img/Magnifying-glass.svg"> 
+                <h3>Issues found <br>
+                    <span class="issues-found-description" id="issues_desc">These issues identified in the conversion process may need attention:</span>
+                </h3>
+           </div>
+        </div>
+
+        <div class="container issues" id="issues-container">
+            <div class="container issues-div">
+
+                <div class="row issues-row" id="issues_list">
+                    <div class="column" id="issue_card_template">
+                        <div class="card rounded">
+                            <div id="card_icon"></div>
+                            <div class="card-body">
+                                <h3 class="card-title" id="issue_title">Issue description</h3>
+                                <img src="img/Grey_strip.svg" alt="Grey_strip" class="grey-strip" />
+                                <p class="card-text" id="issue_desc">Longer description of the issue.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container tools-banner">
+            <div class="issues">
+                <img class="hidden-xs hidden-sm" src="img/Tools.svg"> 
+                <h3>Tools <br>
+                    <span class="tools-description" id="tool_info">Here's how the tools in this site translate to Amathuba</span>
+                </h3>
+           </div>
+        </div>
+
+        <div class="container tools-used">
+
+            <ol id="tool_used_list">
+            </ol>
+
+            <ol id="tool_unused_list" style="display: none">
+                <li>Not Used Tool</li>
+            </ol>
+
+            <p>
+                <img src="img/Ama_logo.svg" alt="amathuba" class="ama-logo" />
+                Direct equivalents in Amathuba.
+                For more detail, see the <a href="https://bit.ly/amathuba-vula-table">Vula and Amathuba Tools Comparison</a>.
+            </p>
+        </div>
+
+        <div class="container support">
+            <p>
+                <img src="img/Email_icon.svg" alt="email icon" width="40" class="image hidden-xs hidden-sm" style="padding-left: 10px;"/> &nbsp; 
+                Need more help or advice? Contact us!
+                <a href="mailto:cilt-helpdesk@uct.ac.za?Subject=Amathuba%20conversion">cilt-helpdesk@uct.ac.za</a>
+            </p>
+        </div>
+        <div class="pull-right spill2 hidden-xs hidden-sm">
+            <img src="img/Small_pill.svg" alt="ama pill" class="img-fluid small-pill" />
+        </div>
+        <br/>
+    </div>
+
+    <script type="text/javascript">
+        /* If inside iframe - send message to resize */
+        const sendPostMessage = () => {
+            window.parent.postMessage(JSON.stringify({
+                subject: "lti.frameResize",
+                height: document.body.scrollHeight,
+                url: window.location.href
+            }), "*");
+        }
+
+        window.onload = () => sendPostMessage();
+        window.onresize = () => sendPostMessage();
+    </script>
+</body>
+
+</html>

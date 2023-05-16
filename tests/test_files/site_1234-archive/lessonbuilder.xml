@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<archive date="20230412112159588" server="vula101a" source="50752e76-1c08-47f2-8d03-54f2d5e5c49f" system="Sakai 2.8">
+    <org.sakaiproject.lessonbuildertool.service.LessonBuilderEntityProducer version="2.4">
+        <lessonbuilder>
+            <page hidden="false" pageid="297090" siteid="50752e76-1c08-47f2-8d03-54f2d5e5c49f" title="Lessons" toolid="2fe7866a-97d5-4040-82dd-8394fef5985c">
+                <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" id="2762537" name="XXXXX" nextpage="false" pageId="297090" prerequisite="false" required="false" requirementtext="" sakaiid="" samewindow="false" sequence="1" showComments="false" subrequirement="false" type="11" width="">
+                    <attributes>{"questionCorrectText":"","questionAnswer":"A1\n","questionGraded":"false","questionType":"shortanswer","questionText":"Q1","questionIncorrectText":""}</attributes>
+                </item>
+            </page>
+            <lessonbuilder functions.require="" name="Lessons" pageId="297090" pagePosition="2" pageVisibility="" toolid="2fe7866a-97d5-4040-82dd-8394fef5985c" />
+        </lessonbuilder>
+    </org.sakaiproject.lessonbuildertool.service.LessonBuilderEntityProducer>
+</archive>

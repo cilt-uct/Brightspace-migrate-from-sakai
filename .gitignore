@@ -1,0 +1,66 @@
+!Build/
+.last_cover_stats
+/META.yml
+/META.json
+/MYMETA.*
+*.o
+*.pm.tdy
+*.bs
+*.pyc
+*.tar.gz
+*.gz
+
+# Devel::Cover
+cover_db/
+
+# Devel::NYTProf
+nytprof.out
+
+# Dizt::Zilla
+/.build/
+
+# Module::Build
+_build/
+Build
+Build.bat
+
+# Module::Install
+inc/
+
+# ExtUtils::MakeMaker
+/blib/
+/_eumm/
+/*.gz
+/Makefile
+/Makefile.old
+/MANIFEST.bak
+/pm_to_blib
+/*.zip
+
+# Test Files 
+**/s.pl
+**/s.py
+**/w.pl
+**/w.py
+**/p.py
+**/t.py
+
+# ignore log files
+log/*.log
+tmp/*.log
+
+# project migration files
+!placeholders.csv
+!placeholders/tmp.gz
+!placeholders/tmp.csv
+!placeholders/tmp.zip
+!placeholders/tmp.txt
+
+# Tests
+projects/migrate_to_brightspace/tests/test_files/output.xml
+
+# Authentication File
+auth.properties
+users.cfg
+
+brightspace_migration.log

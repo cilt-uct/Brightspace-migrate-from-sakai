@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <link href="https://tsugidev.uct.ac.za/static/bootstrap-3.4.1/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://tsugidev.uct.ac.za/static/js/jquery-ui-1.11.4/jquery-ui.min.css" rel="stylesheet"/>
+  <link href="https://tsugidev.uct.ac.za/static/fontawesome-free-5.8.2-web/css/all.css" rel="stylesheet"/>
+  <link href="https://tsugidev.uct.ac.za/static/fontawesome-free-5.8.2-web/css/v4-shims.css" rel="stylesheet"/>
+  <link href="conversion-report-20221104.css" rel="stylesheet"/>
+  <title>
+   HUB1019F_DM_DUP2 conversion report
+  </title>
+ </head>
+ <body>
+  <div class="container" id="header_container">
+   <div class="header">
+    <div class="row">
+     <div class="col-xs-12 col-sm-12 col-md-2">
+      <img alt="Vula to Ama" class="img img-responsive d-none d-md-block hidden-xs hidden-sm" src="img/VulaToAma.svg"/>
+     </div>
+     <div class="col-xs-12 col-sm-12 col-md-8 course-header">
+      <img alt="green-stripe" class="medium_stripe visible-md visible-lg hidden-sm" src="img/Green_line.svg"/>
+      <h1 id="report_title">Conversion Report:</h1>
+      <p id="course_title">HUB1019F_DM_DUP2</p>
+     </div>
+     <div class="col-xs-2 text-right topill">
+      <img alt="ama pill" class="top_pill img-responsive pull-right visible-md visible-lg hidden-sm" src="img/Ama_pill.svg"/>
+     </div>
+    </div>
+    <div id="top-report-banner">
+        <div class="pink-strip">&nbsp;</div>
+            <div class="report-details">
+                <div class="image hidden-xs hidden-sm">
+                    <img src="img/Report_icon.svg" alt="report-icon" class="img img-responsive report-details-icon"/>
+                </div>
+                <div class="text col-xs-12 col-sm-10">
+	            <p id="report-description-text">Report generated 4 Nov 2022 16:15 for Vula site
+                        <a href="https://vula.uct.ac.za/portal/site/83e9dedc-36fe-4bea-91af-217adf184fff" target="_blank">
+                        83e9dedc-36fe-4bea-91af-217adf184fff
+			</a>
+		    </p>
+                </div>
+        </div>
+   </div>
+   </div>
+<div  id="body_container">
+   <div id="intro">
+    <div class="container intro">
+     <p id="complete-message">
+      Your Vula site has been successfully converted to Amathuba!
+     </p>
+     <p id="notes-message">
+      Here are some important things to note:
+     </p>
+     <img class="small_stripe" src="img/Green_line.svg" title="green-stripe"/>
+     <ul class="issues-list" id="general_issues">
+      <li>
+       Vula Resources go to the Amathuba Content tool under a hidden unit called Resources. Students will only
+                        have access to files under the Content tool. Use the
+       <b>
+        Content Builder
+       </b>
+       to re-arrange files in Content to make
+                        these discoverable.
+      </li>
+      <li>
+       The course Overview page from Vula is available under your Amathuba course &gt; Content tool
+                        &gt; Resources unit &gt; Site Information. Rename this file and drag it to the top of the Content tool.
+      </li>
+     </ul>
+    </div>
+   </div>
+   <div class="container issues-found-banner">
+    <div class="container issues">
+        <img class="hidden-xs hidden-sm" src="img/Magnifying-glass.svg" /> 
+        <h3>Issues found <br/>
+            <span>9 issue(s) flagged in this site may need further attention</span>
+        </h3>
+   </div>
+    <!--<div class="image hidden-xs hidden-sm">
+     <img alt="Magnifying glass" class="issues-found-icon" src="img/Magnifying-glass.svg"/>
+    </div>
+    <div class="issues-found-text">
+	<h3>Issues</h3>
+        <p class="issues-found-description" id="issues_desc">
+       9 issue(s) flagged in this site may need further attention
+      </p>
+     </p>
+    </div>-->
+
+   </div>
+   <div class="container issues" id="issues-container">
+    <div class="container issues-div">
+     <div class="issues-row" id="issues_list">
+      <div class="column" id="issue_a9">
+       <div class="card rounded">
+        <div class="card_icon icon-edit tool_sakai.lessonbuildertool" id="card_icon_a9">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_a9">
+          Lessons content links
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_a9">
+          Some Lessons pages contain static hyperlinks to Vula. Update the hyperlinks in the imported Content pages.
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.bz7rikmq8ttd" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="column" id="issue_a6">
+       <div class="card rounded">
+        <div class="card_icon icon-edit tool_sakai.lessonbuildertool" id="card_icon_a6">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_a6">
+          Lessons item descriptions
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_a6">
+          Your Lessons items have optional descriptions, which are not converted. Update the matching Content pages as needed.
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.5tzlo5jh3xb8" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="column" id="issue_c12">
+       <div class="card rounded">
+        <div class="card_icon icon-settings tool_sakai.samigo" id="card_icon_c12">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_c12">
+          Tests &amp; Quizzes Extended Matching Items question
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_c12">
+          Extended Matching Items are not supported. Reformat these into another question type, such as a fill-in-the-blank question.
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ykymotukurtn" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="column" id="issue_c16">
+       <div class="card rounded">
+        <div class="card_icon icon-settings tool_sakai.samigo" id="card_icon_c16">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_c16">
+          Tests &amp; Quizzes Fill in the Blank question
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_c16">
+          You have used a Fill in the Blank question. Currently, there may be issues if there are multiple responses/answers in the question. Please review your question.
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.jknh8nx0khw1" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="column" id="issue_c9">
+       <div class="card rounded">
+        <div class="card_icon icon-settings tool_sakai.samigo" id="card_icon_c9">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_c9">
+          Tests &amp; Quizzes Question Pools
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_c9">
+          Question Pools used in this site are copied to the Question Library. Assessments that use them need updating.
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.j63x8it0gcph" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="column" id="issue_c1">
+       <div class="card rounded">
+        <div class="card_icon icon-settings tool_sakai.samigo" id="card_icon_c1">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_c1">
+          Tests &amp; Quizzes assessment duration
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_c1">
+          There is one or more timed tests or quizzes. Update assessments in Amathuba with these settings as needed..
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.uebokqb6dw9y" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="column" id="issue_c2">
+       <div class="card rounded">
+        <div class="card_icon icon-settings tool_sakai.samigo" id="card_icon_c2">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_c2">
+          Tests &amp; Quizzes descriptions
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_c2">
+          Quiz descriptions are not shown by default in Amathuba. Update the settings for each quiz with a description
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ded0mwxcxak1" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="column" id="issue_c8">
+       <div class="card rounded">
+        <div class="card_icon icon-settings tool_sakai.samigo" id="card_icon_c8">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_c8">
+          Tests &amp; Quizzes inline images
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_c8">
+          Update Quiz or Question Library items that contain inline images with Vula URLs.
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1kmp8j74oikj" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="column" id="issue_c7a">
+       <div class="card rounded">
+        <div class="card_icon icon-settings tool_sakai.samigo" id="card_icon_c7a">
+        </div>
+        <div class="card-body">
+         <h3 class="card-title" id="issue_title_c7a">
+          Tests &amp; Quizzes parts descriptions
+         </h3>
+         <img alt="Grey_strip" class="grey-strip" src="img/Grey_strip.svg"/>
+         <p class="card-text" id="issue_desc_c7a">
+          Quiz part descriptions are converted but are not shown by default. Update the quiz settings for each part in Amathuba.
+          <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ded0mwxcxak1" target="_blank">
+           more info
+          </a>
+         </p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="container tools-banner">
+       <div class="container tools">
+           <img class="hidden-xs hidden-sm" src="img/Tools.svg" /> 
+           <h3>Tools used <br/>
+               <span>Here's how the tools in this site translate to Amathuba:</span>
+           </h3>
+       </div>
+    <!--<div class="image hidden-xs hidden-sm">
+     <img alt="tools" class="img-responsive tools-icon" src="img/Tools.svg"/>
+    </div>
+    <div class="text">
+     <p>
+      <strong>
+       Tools
+      </strong>
+      <br/>
+      <span class="tools-description" id="tool_info">
+       Here's how the tools in this site translate to Amathuba
+      </span>
+     </p>
+    </div>-->
+   </div>
+   <div class="container tools-used">
+    <ol id="tool_used_list">
+     <li class="found" id="sakai.announcements">
+      <span class="tool_image equivalent">
+      </span>
+      <span class="tool_name">
+       Announcements
+      </span>
+      <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1fpbeqzgruu7" target="_blank">
+       more info
+      </a>
+     </li>
+     <li class="found" id="sakai.assignment.grades">
+      <span class="tool_image equivalent">
+      </span>
+      <span class="tool_name">
+       Assignments
+      </span>
+      <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.g0ye9642jv3g" target="_blank">
+       more info
+      </a>
+     </li>
+     <li class="found" id="sakai.chat">
+      <span class="tool_image">
+      </span>
+      <span class="tool_name">
+       Chat Room
+      </span>
+      <span class="tool_detail">
+       | Choose one of these suggested alternatives such as MS Teams or Padlet.
+      </span>
+      <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.7ozxmrvhdlo2" target="_blank">
+       more info
+      </a>
+     </li>
+     <li class="found" id="sakai.syllabus">
+      <span class="tool_image">
+      </span>
+      <span class="tool_name">
+       Course Outline
+      </span>
+      <span class="tool_detail">
+       | Content page in Amathuba
+      </span>
+      <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.w6pyw7w9wbe8" target="_blank">
+       more info
+      </a>
+     </li>
+     <li class="found" id="sakai.forums">
+      <span class="tool_image equivalent">
+      </span>
+      <span class="tool_name">
+       Discussions
+      </span>
+     </li>
+     <li class="found" id="sakai.gradebookng">
+      <span class="tool_image equivalent">
+      </span>
+      <span class="tool_name">
+       Gradebook
+      </span>
+     </li>
+     <li class="found" id="sakai.lessonbuildertool">
+      <span class="tool_image equivalent">
+      </span>
+      <span class="tool_name">
+       Lessons
+      </span>
+      <span class="tool_detail">
+       | Content in Amathuba
+      </span>
+     </li>
+     <li class="found" id="sakai.site.roster">
+      <span class="tool_image equivalent">
+      </span>
+      <span class="tool_name">
+       Participants
+      </span>
+      <span class="tool_detail">
+       | Course Info / Classlist in Amathuba
+      </span>
+     </li>
+     <li class="found" id="sakai.poll">
+      <span class="tool_image">
+      </span>
+      <span class="tool_name">
+       Polls
+      </span>
+      <span class="tool_detail">
+       | Surveys in Amathuba
+      </span>
+      <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.7dzdxgnz9knb" target="_blank">
+       more info
+      </a>
+     </li>
+     <li class="found" id="sakai.qna">
+      <span class="tool_image">
+      </span>
+      <span class="tool_name">
+       Q&amp;A
+      </span>
+      <span class="tool_detail">
+       | Use Forums, Content pages or a recommended alternative.
+      </span>
+      <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ss3bpy1m7pdj" target="_blank">
+       more info
+      </a>
+     </li>
+     <li class="found" id="sakai.resources">
+      <span class="tool_image">
+      </span>
+      <span class="tool_name">
+       Resources
+      </span>
+      <span class="tool_detail">
+       | Managed Files in Amathuba presented through Content
+      </span>
+     </li>
+     <li class="found" id="sakai.signup">
+      <span class="tool_image">
+      </span>
+      <span class="tool_name">
+       Sign-Up
+      </span>
+      <span class="tool_detail">
+       | Choose a recommended alternative
+      </span>
+      <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.g8ixw9vnw1j1" target="_blank">
+       more info
+      </a>
+     </li>
+     <li class="found" id="sakai.iframe.site">
+      <span class="tool_image">
+      </span>
+      <span class="tool_name">
+       Overview
+      </span>
+      <span class="tool_detail">
+       | Content page in Amathuba
+      </span>
+     </li>
+     <li class="found" id="sakai.samigo">
+      <span class="tool_image equivalent">
+      </span>
+      <span class="tool_name">
+       Test and Quizzes
+      </span>
+      <span class="tool_detail">
+       | Quizzes in Amathuba
+      </span>
+      <a href="https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1rivsnj9c8lv" target="_blank">
+       more info
+      </a>
+     </li>
+    </ol>
+    <ol id="tool_unused_list" style="display: none">
+     <li>
+      Not Used Tool
+     </li>
+    </ol>
+    <p>
+     <img alt="amathuba" class="ama-logo" src="img/Ama_logo.svg"/>
+     Direct equivalents in Amathuba.
+		For more detail,, see the
+     <a href="https://bit.ly/amathuba-vula-table">
+      Vula and Amathuba Tools Comparison
+     </a>
+     .
+    </p>
+   </div>
+   <div class="container support">
+       <div>
+           <img src="img/Email_icon.svg"  class="hidden-xs hidden-sm" style="vertical-align: middle;width:50px;"/>
+           <span style="vertical-align: middle;">Need more help or advice? Contact us! 
+           <a href="">cilt-helpdesk@uct.ac.za</a></span>
+       </div> 
+       <!-- <div class="image hidden-xs hidden-sm">
+            <img src="img/Email_icon.svg" alt="email icon" class="support-icon img-responsive"/>
+        </div>
+        <div class="text">
+            <p>Need more help or advice? Contact us!  <a href="mailto:cilt-helpdesk@uct.ac.za?Subject=Amathuba%20conversion">cilt-helpdesk@uct.ac.za</a></p>
+	</div>-->
+   </div>
+   <div class="pull-right spill2">
+    <img alt="ama pill" class="img-fluid small-pill" src="img/Small_pill.svg"/>
+   </div>
+  </div>
+  <script type="text/javascript">
+   /* If inside iframe - send message to resize */
+        const sendPostMessage = () => {
+            window.parent.postMessage(JSON.stringify({
+                subject: "lti.frameResize",
+                height: document.body.scrollHeight,
+                url: window.location.href
+            }), "*");
+        }
+
+        window.onload = () => sendPostMessage();
+        window.onresize = () => sendPostMessage();
+  </script>
+ </body>
+</html>

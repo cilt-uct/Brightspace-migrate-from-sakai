@@ -1,0 +1,7 @@
+{
+    "general":
+        {
+            "tags.to.search": ["span", "div", "p", "i", "b", "font"],
+            "bad.attr": ["background-color", "color", "font-size", "font-family"]
+        }
+}

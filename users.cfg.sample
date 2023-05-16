@@ -1,0 +1,8 @@
+[users]
+00001="Real User Name"
+
+[git]
+00001="Real User Name <user@some.url.com>"
+
+[default]
+0="Real User Name <user@some.url.com>"

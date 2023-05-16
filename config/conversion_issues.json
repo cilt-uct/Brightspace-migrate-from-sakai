@@ -1,0 +1,1121 @@
+{
+  "general": "This is the configuration file for issues and tools for the conversion report",
+  "issues": [
+    {
+      "key": "a1",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-list",
+      "description": "Lessons page levels",
+      "found": "Your Lessons pages have more than 3 levels. The Content tool in Amathuba only supports 3 levels, so you may need to re-arrange the units and pages.",
+      "not_found": "Good to go! Your Lessons pages only have 3 or less levels",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.hnyt9uas0ltz",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "a2",
+      "active": false,
+      "tool": "sakai.lessonbuildertool",
+      "description": "",
+      "found": "There were links to Discussion topics in your Lessons pages. These links are transferred but reference the Forum-level not the Topic-level. You can update the links in the Amanthuba Content tool",
+      "not_found": "Good to go! There were no links to Discussion topics found in your Lessons pages",
+      "args": [
+        "site_folder"
+      ]
+    },
+    {
+      "key": "a3",
+      "active": false,
+      "tool": "sakai.lessonbuildertool",
+      "description": "",
+      "found": "There were links to Discussion forums in your Lessons pages. Currently, these links are not automatically transferred and you will need to re-add the links in the Amathuba Content tool.",
+      "not_found": "Good to go! There were no links to Discussion forums found in your Lessons pages.",
+      "args": [
+        "site_folder"
+      ]
+    },
+    {
+      "key": "a4",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons prerequisites",
+      "found": "Some Lessons items have prerequisites. Set up Amathuba release conditions as needed.",
+      "not_found": "Good to go! There are no Lessons prerequisites.",
+      "args": [
+        "lessons_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.o1xwm7ci1qlx",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "a5",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons hidden pages",
+      "found": "Some Lessons pages are hidden on Vula. Hide the equivalent Content pages on Amathuba as needed.",
+      "not_found": "Good to go! No Lessons pages are hidden.",
+      "args": [
+        "lessons_soup",
+        "site_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.c0u8k2edyoi3",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "a6",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons item descriptions",
+      "found": "Your Lessons items have optional descriptions, which are not converted. Update the matching Content pages as needed.",
+      "not_found": "Good to go! Your Lessons items do not have optional descriptions.",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.5tzlo5jh3xb8",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "a9",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons content links",
+      "found": "Some Lessons pages contain static hyperlinks to Vula. Update the hyperlinks in the imported Content pages.",
+      "not_found": "Good to go! We found no static hyperlinks in your content within your Lessons pages.",
+      "args": [
+        "site_folder",
+        "sakai_url"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.bz7rikmq8ttd",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "a10",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-calendar",
+      "description": "Lessons release dates",
+      "found": "One or more Lessons pages use release dates. Set these again as needed in Amathuba.",
+      "not_found": "Good to go! No Lessons pages have release dates.",
+      "args": [
+        "lessons_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.xtu7sf87tvrv",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "lessons_question_correct",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons questions",
+      "found": "There are Lessons questions with correct answers. The feedback (correct answer) is not automatically shared with the student.",
+      "not_found": "Good to go! No Lessons questions with correct answer.",
+      "args": [
+        "lessons_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.kszd2wgf91v7",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b1",
+      "active": false,
+      "tool": "sakai.resources",
+      "description": "Hidden folders or files",
+      "found": "Some folders and/or files in Resources are hidden. Set these to hidden again in Amathuba, as needed.",
+      "not_found": "Good to go! Your site does not contain hidden folders and files.",
+      "args": [
+        "content_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.9qysqm78di9h",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b2",
+      "active": true,
+      "tool": "sakai.resources",
+      "description": "Folder levels",
+      "found": "Resources folders have more than 3 levels. The Content tool in Amathuba only supports 3 levels, so you may need to re-arrange the units and pages.",
+      "not_found": "Good to go! Your Resources folders have 3 levels or less.",
+      "args": [
+        "site_folder"
+      ]
+    },
+    {
+      "key": "b3",
+      "active": true,
+      "tool": "sakai.assignment.grades",
+      "icon-class": "icon-move",
+      "description": "Assignments using Turnitin",
+      "found": "Assignments in Vula use Turnitin. Configure this setting again In Amathuba.",
+      "not_found": "Good to go! Your assignments in Vula were not using Turnitin.",
+      "args": [
+        "assignment_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.78n7crt2ayya",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b4",
+      "active": true,
+      "tool": "sakai.assignment.grades",
+      "icon-class": "icon-edit",
+      "description": "Assignment submission options",
+      "found": "Assignments in Amathuba can have one or unlimited submissions. Update assignment settings as needed.",
+      "not_found": "Good to go! Your assignments do not have resubmissions enabled.",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.abwbqdporlpl",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b5",
+      "active": true,
+      "tool": "sakai.assignment.grades",
+      "description": "Assignment Anonymous grading",
+      "found": "One or more assignments use anonymous grading. This setting is not carried across in the conversion. ",
+      "not_found": "Good to go! Assignments do not use anonymous grading",
+      "args": [
+        "assignment_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.n8xgu0dpn7gd",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b6",
+      "active": true,
+      "tool": "sakai.assignment.grades",
+      "description": "Peer review assignments",
+      "found": "Assignments in Vula use peer review. As this is not available in Vula, consider alternatives such as Turnitin Peermark.",
+      "not_found": "Good to go! Your assignments do not have peer review enabled.",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.jabtbg90c9am",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b7",
+      "active": true,
+      "tool": "sakai.assignment.grades",
+      "description": "Assignment honour pledge",
+      "found": "An honour pledge setting is not an option for Assignments in Amathuba. Consider alternatives.",
+      "not_found": "Good to go! Your assignments do not have honour pledge enabled.",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.oueinhrmxjyg",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b8",
+      "active": true,
+      "tool": "sakai.assignment.grades",
+      "description": "Supplementary items in assignments",
+      "found": "Assignments use supplementary items (model answer, private note or all purpose item). Copy this content across manually as needed.",
+      "not_found": "Good to go! No supplementary items (e.g. Assignment model answers) are used.",
+      "args": [
+        "assignment_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.cvllryuxo2sx",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b9",
+      "active": false,
+      "tool": "sakai.assignment.grades",
+      "description": "Assignments in Gradebook",
+      "found": "One or more assignments are linked to Gradebook. Update this as needed in Amathuba.",
+      "not_found": "Good to go! Assignments are not linked to Gradebook.",
+      "args": [
+        "assignment_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.bm0pic4a8zvo",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b10",
+      "active": true,
+      "tool": "sakai.assignment.grades",
+      "description": "Assignment released to groups",
+      "found": "One or more assignments are only visible to certain groups on your site. Update assignments in Amathuba for groups as needed..",
+      "not_found": "Good to go! Assignments are not group-scoped",
+      "args": [
+        "assignment_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.7lmlbxbq8ktc",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b11",
+      "active": true,
+      "tool": "sakai.assignment.grades",
+      "description": "Assignment with group submission",
+      "found": "One or more assignments require group submissions. This setting is not carried across in the conversion.",
+      "not_found": "Good to go! Assignments do not require a group submission",
+      "args": [
+        "assignment_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.pklmb77qduf9",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b12",
+      "active": true,
+      "tool": "sakai.resources",
+      "icon-class": "icon-calendar",
+      "description": "Resources with release dates",
+      "found": "Some folders and/or files in Resources use release or retract dates. Set these dates again in Amathuba as needed.",
+      "not_found": "Good to go! Your site does not contain folders and/or files that only become available or get retracted on certain dates.",
+      "args": [
+        "content_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.k8stxx9oo5zq",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "b13",
+      "active": true,
+      "tool": "sakai.resources",
+      "description": "Resources visible only to groups",
+      "found": "Some folders and/or files in Resources are set to only be released to specific groups. Configure release conditions for this in Amathuba",
+      "not_found": "Good to go! Your site does not contain folders and/or files that only gets released to specific groups.",
+      "args": [
+        "content_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ncixuvcmwz69",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c1",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes assessment duration",
+      "found": "There is one or more timed tests or quizzes. Update assessments in Amathuba with these settings as needed..",
+      "not_found": "Good to go! T&Q assessments are not timed.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.uebokqb6dw9y",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c2",
+      "active": false,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes descriptions",
+      "found": "Quiz descriptions are not shown by default in Amathuba. Update the settings for each quiz with a description",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ded0mwxcxak1",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c3",
+      "active": false,
+      "tool": "sakai.samigo",
+      "description": "Tests & Quizzes description attachments",
+      "icon-class": "icon-settings",
+      "found": "Attachments to descriptions are not converted. Update the quiz in Amathuba to include the attachment.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ded0mwxcxak1",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c7a",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes parts descriptions",
+      "found": "Quiz part descriptions are converted but are not shown by default. Update the quiz settings for each part in Amathuba.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ded0mwxcxak1",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c7b",
+      "active": false,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes parts attachments",
+      "found": "Quiz part attachments are not converted. Update the quiz parts in Amathuba to include the attachment.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ded0mwxcxak1",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c8",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes inline images",
+      "found": "Update Quiz or Question Library items that contain inline images with Vula URLs.",
+      "args": [
+        "site_folder",
+        "samigo_soup",
+        "sakai_url"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1kmp8j74oikj",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c9",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes Question Pools",
+      "found": "Question Pools used in this site are copied to the Question Library. Assessments that use them need updating.",
+      "not_found": "Good to go! The site does not include any T&Q Question Pools",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.j63x8it0gcph",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c10",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes Hotspot question",
+      "found": "Hotspot questions are not supported in Amathuba. Change these to another question type.",
+      "not_found": "Good to go! You have not used a hotspot question.",
+      "args": [
+        "site_folder",
+        "samigo_question_pools_soup",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.buoxiugc2kth",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c11",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes Student Audio Response question",
+      "found": "Audio response questions are not a question type in Amathuba. Use a short answer question in which students leave a voice recording in response.",
+      "not_found": "Good to go! You have not used an audio response question in Vula.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.xjao3gyh8anu",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c12",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes Extended Matching Items question",
+      "found": "Extended Matching Items are not supported. Reformat these into another question type, such as a fill-in-the-blank question.",
+      "not_found": "Good to go! You have not used an extended matching items question in Vula.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ykymotukurtn",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c13",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes multiple choice negative marking",
+      "found": "Negative markin is not supported for MCQs in Amathuba. Update these assessments as needed.",
+      "not_found": "Good to go! You have not used negative marking in any of your MCQs in Vula.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.l2b7z3om2sn0",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c14",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes Calculated question",
+      "found": "If you used \u201ce\u201d scientific notation for powers (e.g., \u201c3.456e11\u201d as \u201c3.456 x 1011 \u201d), you may need to review your question, as Amathuba's \u201cSignificant Figures\u201d question type supports powers as separate fields, but does not support scientific notation within a single field.",
+      "not_found": "Good to go! You have not used a calculated question in Vula.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.sb000jyqft5",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c15",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes Numeric Response question",
+      "found": "These are translated into Amathuba Fill in the Blank questions, which don't support numeric ranges. Recreate these as Significant Figures questions if needed.",
+      "not_found": "Good to go! You have not used a numeric response question in Vula.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.b9yfxygei5d2",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c16",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes Fill in the Blank question",
+      "found": "You have used a Fill in the Blank question. Currently, there may be issues if there are multiple responses/answers in the question. Please review your question.",
+      "not_found": "Good to go! You have not used a Fill-in-the-Blank question in Vula.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.jknh8nx0khw1",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c17",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes feedback",
+      "found": "You have used question-level feedback. In Amathuba, you can provide overall feedback on a question but not specific in/correct answer.",
+      "not_found": "Good to go! You have not used question-level feedback in Vula.",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.cde3f6q3zowi",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c18",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes with anonymous grading",
+      "found": "Anonymous grading was used in your quizzes. This setting is not transferred.",
+      "not_found": "Good to go! T&Q does not use anonymous grading",
+      "args": [
+        "site_folder",
+        "samigo_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.mmdp4eiq09q8",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "c19",
+      "active": false,
+      "tool": "sakai.gradebookng",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes linked to Gradebook",
+      "found": "One or more assessments are linked to the Gradebook. This setting is not transferred.",
+      "not_found": "Good to go! T&Q not linked to gradebook",
+      "args": [
+        "gradebook_soup"
+      ]
+    },
+    {
+      "key": "d1",
+      "active": true,
+      "tool": "sakai.forums",
+      "icon-class": "icon-settings",
+      "description": "Forums attachments to descriptions",
+      "found": "Discussion Forums and/or Topic descriptions have attachments.",
+      "not_found": "Good to go! Forums and Topics do not have attachments",
+      "args": [
+        "discussions_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ptlpnfucxajx",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "d3",
+      "active": true,
+      "tool": "sakai.forums",
+      "icon-class": "icon-calendar",
+      "description": "Forums availability dates",
+      "found": "Discussion Forums and/or Topics have availability dates set. This needs to be re-setup in Amathuba.",
+      "not_found": "Good to go! Forums and Topics do not use availability dates",
+      "args": [
+        "discussions_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.dw1zybr0xikv",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "d5",
+      "active": true,
+      "tool": "sakai.forums",
+      "icon-class": "icon-settings",
+      "description": "Forums grading",
+      "found": "Discussion Forums and/or Topics have default Gradebook items, and this needs to be re-setup.",
+      "not_found": "Good to go! Forums and Topics are not linked to Gradebook",
+      "args": [
+        "discussions_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.zgu1f89g2zd3",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "e1",
+      "active": true,
+      "tool": "sakai.gradebookng",
+      "icon-class": "icon-settings",
+      "description": "Gradebook weighted categories",
+      "found": "Weightedr categories are used in this site's Gradebook. Set these up again in Amathuba.",
+      "not_found": "Good to go! Gradebook does not use weighted categories",
+      "args": [
+        "gradebook_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.cmznshivmelb",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "lessons_use_checklists",
+      "active": false,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons use checklists",
+      "found": "Links to converted checklists do not work for instructors. Update these links in Content Builder.",
+      "not_found": "Good to go! No Lessons checklists for instructors found.",
+      "args": [
+        "lessons_soup"
+      ]
+    },
+    {
+      "key": "detect_custom_css",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-css",
+      "description": "Lessons custom CSS",
+      "found": "Lessons pages contain custom CSS. Check that the Content pages in Amathuba display correctly.",
+      "not_found": "Good to go! Your Lessons pages do not contain custom CSS.",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.pwkqfea0cdoo",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "use_of_sections",
+      "active": true,
+      "tool": "sakai.sections",
+      "icon-class": "icon-settings",
+      "description": "Sections",
+      "found": "Recreate sections as groups in Amathuba. For student signup, use self-enrollment groups.",
+      "not_found": "Good to go! Your site does not contain sections.",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.idqtedtdisne",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "use_of_groups",
+      "active": true,
+      "tool": "sakai.site.setup",
+      "icon-class": "icon-settings",
+      "description": "Groups",
+      "found": "Your site contains ad-hoc groups. Set these up again in Amathuba.",
+      "not_found": "Good to go! Your site does not contain ad-hoc groups.",
+      "args": [
+        "site_folder"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.pd2y47czt4nl",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "content_displayname_files",
+      "active": false,
+      "tool": "sakai.resources",
+      "description": "Files with different display names",
+      "found": "Some files in Resources have different names to the original filename. Rename these in Amathuba as needed",
+      "not_found": "Good to go! Your site does not contain files with different display names.",
+      "info": {
+        "a": "more info",
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.a1x7v5d350zi"
+      },
+      "args": [
+        "content_soup"
+      ]
+    },
+    {
+      "key": "content_displayname_folders",
+      "active": false,
+      "tool": "sakai.resources",
+      "description": "Folders with different display names",
+      "found": "Your site contains folders that have different display names to what you see in Vula",
+      "not_found": "Good to go! Your site does not contain folders with different display names.",
+      "args": [
+        "content_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.a1x7v5d350zi",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "disallowed_extensions",
+      "active": false,
+      "tool": "sakai.resources",
+      "description": "Files with restricted extensions",
+      "found": "Some files in Resources have file extensions that are not allowed in Amathuba. These have been zipped in the import process.",
+      "not_found": "Good to go! Your site does not contain any filenames with disallowed extensions.",
+      "args": [
+        "content_soup",
+        "attachment_soup",
+        "restricted_ext"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.7gb8out1jns9",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "supported_media_types",
+      "active": true,
+      "tool": "sakai.resources",
+      "description": "Files with restricted extensions",
+      "found": "Some audio or video files in Resources are in formats not supported by Amathuba and have been converted for import",
+      "not_found": "Good to go!",
+      "args": [
+        "content_soup",
+        "attachment_soup",
+        "restricted_ext"
+      ],
+      "info": {
+        "url": "https://community.d2l.com/brightspace/kb/articles/3442-audio-video-file-types-supported-in-brightspace",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "external_tools",
+      "active": true,
+      "tool": "sakai.basiclti",
+      "icon-class": "icon-settings",
+      "description": "External Tools",
+      "found": "This site uses one or more External Tools (LTI). These need to be re-setup.",
+      "not_found": "Good to go! Your site does not use LTI tools.",
+      "args": [
+        "site_soup",
+        "lti_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1cbrwibz9btg",
+        "a": "more info"
+      }
+    }
+  ],
+  "tools": [
+    {
+      "key": "sakai.announcements",
+      "name": "Announcements",
+      "class": "equivalent",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1fpbeqzgruu7",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.assignment.grades",
+      "name": "Assignments",
+      "class": "equivalent",
+      "icon-class": "icon-edit",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.g0ye9642jv3g",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.blogwow",
+      "name": "Blogs",
+      "class": "equivalent",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.7rs5c4gcom1u",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.schedule",
+      "name": "Calendar",
+      "class": "equivalent"
+    },
+    {
+      "key": "sakai.chat",
+      "name": "Chat Room",
+      "found": "Choose one of these suggested alternatives such as MS Teams or Padlet.",
+      "info": {
+        "a": "more info",
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.7ozxmrvhdlo2"
+      }
+    },
+    {
+      "key": "sakai.commons",
+      "name": "Commons",
+      "found": "Use a Course homepage with the Activity Feed",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.uw75vb65y6hy",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.rsf.evaluation",
+      "name": "Course Evaluation",
+      "found": "A new Course Evaluation system is coming. For now, choose an alternative.",
+      "info": {
+        "a": "more info",
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.3zbew6k01lgo"
+      }
+    },
+    {
+      "key": "sakai.syllabus",
+      "name": "Course Outline",
+      "found": "Content page in Amathuba",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.w6pyw7w9wbe8",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.dashboard",
+      "name": "Dashboard",
+      "found": "Course homepage in Amathuba"
+    },
+    {
+      "key": "sakai.forums",
+      "name": "Discussions",
+      "archive" : "messageforum.xml",
+      "drop-if-unused": true,
+      "class": "equivalent"
+    },
+    {
+      "key": "sakai.dropbox",
+      "name": "Dropbox",
+      "found": "Choose an alternative such as OneDrive",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.2eykbehgacd9",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.mailbox",
+      "name": "Email Archive",
+      "found": "Use Announcements in Amathuba or an alternative",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ieg2f2vstu3z",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.basiclti",
+      "name": "External Tool (LTI)",
+      "class": "equivalent",
+      "found": "Supported in most cases but needs to be set up",
+      "info": {
+        "url": "http://www.cilt.uct.ac.za/cilt/amathuba/staff-resources",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.rutgers.linktool",
+      "name": "External Tool (Linktool)",
+      "found": "Not supported in Amathuba. Use an LTI tool instead."
+    },
+    {
+      "key": "sakai.gradebookng",
+      "name": "Gradebook",
+      "class": "equivalent"
+    },
+    {
+      "key": "sakai.groupmanager",
+      "name": "Group manager",
+      "found": "Use Course Info / Groups in Amathuba",
+       "info": {
+        "a": "more info",
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.pd2y47czt4nl"
+      }
+    },
+    {
+      "key": "sakai.opencast.series",
+      "name": "Lecture Videos (Series)",
+      "class": "equivalent",
+      "found": "Contact the CILT Helpdesk for setup assistance.",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.n6oaiv1xs7yt",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.lessonbuildertool",
+      "name": "Lessons",
+      "found": "Content in Amathuba",
+      "class": "equivalent"
+     },
+    {
+      "key": "sakai.messages",
+      "name": "Messages",
+      "found": "Use Classlist / Email or an alternative",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.becevp9o5p5d",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.site.roster",
+      "name": "Participants",
+      "class": "equivalent",
+      "found": "Course Info / Classlist in Amathuba"
+    },
+    {
+      "key": "sakai.podcasts",
+      "name": "Podcasts"
+    },
+    {
+      "key": "sakai.poll",
+      "name": "Polls",
+      "found": "Surveys in Amathuba",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.7dzdxgnz9knb",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.postem",
+      "name": "Postem",
+      "found": "Use Gradebook or choose a recommended alternative.",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.wj2p4sq4o6n8",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.qna",
+      "name": "Q&A",
+      "found": "Use Forums, Content pages or a recommended alternative.",
+      "info": {
+        "a": "more info",
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ss3bpy1m7pdj"
+      }
+    },
+    {
+      "key": "sakai.resources",
+      "name": "Resources",
+      "icon-class": "icon-folder",
+      "found": "Manage Files in Amathuba presented through Content",
+       "info": {
+        "a": "more info",
+        "url": "https://bit.ly/amathuba-manage-files"
+       }
+    },
+    {
+      "key": "sakai.simple.rss",
+      "name": "RSS Feed"
+    },
+    {
+      "key": "sakai.rubrics",
+      "name": "Rubrics",
+      "found": "Contact the helpdesk for assistance with migrating Rubrics",
+      "class": "equivalent",
+      "info": {
+        "a": "more info",
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.4ordmwpxeyqu"
+      }
+    },
+    {
+      "key": "sakai.sections",
+      "name": "Section Info",
+      "found": "Use Course Info / Groups in Amathuba",
+       "info": {
+        "a": "more info",
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.pd2y47czt4nl"
+      }
+      
+    },
+    {
+      "key": "sakai.signup",
+      "name": "Sign-Up",
+      "found": "Choose a recommended alternative",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.g8ixw9vnw1j1",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.iframe.site",
+      "name": "Overview",
+      "found": "Content page in Amathuba"
+    },
+    {
+      "key": "sakai.sitestats",
+      "name": "Statistics",
+      "class": "equivalent",
+      "found": "Course Info / Class Progress in Amathuba",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1cc81xtoej76",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.sms.user",
+      "name": "SMS",
+      "found": "Amathuba does not support SMS messaging. Consider using the ICTS Bulk SMS Service.",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.x7i4az8cmta1",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.samigo",
+      "name": "Test and Quizzes",
+      "class": "equivalent",
+      "found": "Quizzes in Amathuba",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1rivsnj9c8lv",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.useralias",
+      "name": "User Alias",
+      "found": "Contact CILT to discuss alternative ways to meet this need"
+    },
+    {
+      "key": "sakai.web.168",
+      "name": "External Tool (LTI) or Web Content",
+      "class": "equivalent",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ki0a3c3b1zy",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.iframe",
+      "name": "Web Content",
+      "found": "Weblinks in the Content tool",
+       "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.fhhwasuwgxc4",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "sakai.rwiki",
+      "name": "Wiki",
+      "found": "Choose a recommended alternative",
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.fhhwasuwgxc4",
+        "a": "more info"
+      }
+    }
+  ]
+}

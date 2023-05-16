@@ -1,0 +1,11 @@
+STEPS:
+  # Upload to SFTP
+  - action: transfer_zip
+    use_date: 1
+    use_link_id: 1
+    use_file: 1
+
+  # Transition to next workflow operation
+  - action: get_files
+    state: 'importing'
+

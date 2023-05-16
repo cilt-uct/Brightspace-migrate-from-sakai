@@ -1,0 +1,94 @@
+STEPS:
+  - action: mail
+    template: 'start'
+    subject: 'Vula to Amathuba: Started [{{ title }}]'
+    state: 'running'
+
+  # Initial cleanup
+  - action: test_and_quiz_fix_xml
+
+  # Possibly failure cases that raise exceptions
+  - action: xml_valid
+  - action: content_collisions
+  - action: attachment_missing_ext
+
+  # Rewrites before we change site id (some can also raise an exception)
+  - action: lessonbuilder_merge_items
+  - action: lessonbuilder_fix_audio
+  - action: lessonbuilder_embed_xsite
+  - action: syllabus_process
+
+  # Drop content from unused tools
+  - action: drop_unused_tool_content
+
+  # Assignments
+  - action: assignment_fix_titles
+
+  # Attachments and Resources
+  - action: content_force_mime_types
+  - action: fix_zero_byte_files
+  - action: fix_restricted_ext
+  - action: fix_restricted_names
+
+  # Audio and video
+  - action: check_media_metadata
+  - action: transcode_media
+
+  # Site
+  - action: site_change_title
+    use_date: 1
+  - action: site_replace_emoji
+  - action: site_set_provider
+    use_link_id: 1
+
+  # Lessons
+  - action: lessonbuilder_strip_formatting
+  - action: lessonbuilder_add_banner
+  - action: lessonbuilder_add_css
+  - action: lessonbuilder_fix_headings
+  - action: lessonbuilder_fix_ol
+  - action: lessonbuilder_personalize
+  - action: lessonbuilder_fix_fontawesome
+  - action: lessonbuilder_remove_fa
+  - action: lessonbuilder_fix_insight_img
+  - action: lessonbuilder_replace_template_images
+  - action: lessonbuilder_replace_wiris
+  - action: lessonbuilder_remove_deleted_files
+  - action: lessonbuilder_reduce_levels
+  - action: lessonbuilder_replace_fa_with_svg
+  - action: lessonbuilder_rewrite_urls
+  - action: lessonbuilder_fix_customnames
+  - action: lessonbuilder_update_quiz_title
+
+  # Tests and Quizzes
+  - action: test_and_quiz_replace_wiris 
+  - action: test_and_quiz_QP_replace_wiris
+
+  # Resources / Content
+  - action: overview_add_css
+
+  # Site
+  - action: site_change_id
+    use_new_id: 1
+    
+  # Rubrics
+  - action: export_rubrics
+
+  # Conversion report
+  - action: generate_conversion_report
+    use_date: 1
+    use_link_id: 1
+
+  # Check that the XML is all still valid
+  - action: xml_valid
+
+  # Package
+  - action: create_zip
+    use_date: 1
+
+  - action: get_zip_stats
+    use_date: 1
+
+  # Transition to upload state
+  - action: get_files
+    state: 'queued'

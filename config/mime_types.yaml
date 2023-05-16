@@ -1,0 +1,8 @@
+FILES:
+  sci: "application/x-scilab"
+  sce: "application/x-scilab"
+  lyx: "application/x-lyx"
+  gms: "application/binary"
+  sm:  "application/binary"
+  wxmx: "application/binary"
+  pdf: "application/pdf"
