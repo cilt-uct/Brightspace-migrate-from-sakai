@@ -177,7 +177,20 @@ def run(SITE_ID, APP, link_id):
             if json_response and 'status' in json_response and json_response['status'] == 'success':
                 update_target_site(DB_AUTH, link_id, SITE_ID, json_response['data']['Identifier'], json_response['data']['created'])
                 enroll(SITE_ID, APP, json_response['data']['Identifier'], role)
+                
                 # if appropriate (not project site [OTHER]) - copy over content
+                copy_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['copy_url'])
+                copy_payload = {
+                    'org_id': json_response['data']['Identifier'],
+                    'src_org_id': APP['middleware']['course_content_src']
+                }
+                copy_response = middleware_api(APP, copy_url, payload_data=copy_payload)
+
+                if 'status' not in copy_response:
+                    raise Exception(f'Unable to copy content for {SITE_ID}: {json_response}')
+                else:
+                    if json_response['status'] != 'success':
+                        raise Exception(f'Unable to copy content for {SITE_ID}: {json_response}')
             else:
                 raise Exception(f'Unable to create course for {SITE_ID}: {json_response}')
 
