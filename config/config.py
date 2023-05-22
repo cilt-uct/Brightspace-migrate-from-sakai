@@ -106,7 +106,9 @@ APP = {
           'create_url': '/d2l/api/course/create',
           'import_url': '/d2l/api/courses/import_package',
           'search_user_url': '/d2l/api/user',
-          'enroll_user_url': '/d2l/api/course/enroll/user'
+          'enroll_user_url': '/d2l/api/course/enroll/user',
+          'copy_url': '/d2l/api/course/copy_orientation',
+          'course_content_src': 9944
   },
 
   'course': {
