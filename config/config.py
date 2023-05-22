@@ -28,7 +28,9 @@ APP = {
     'sakai': 'Vula',
     'sakai_archive' : 'VulaArchive',
     'sakai_db': 'VulaDb',
-    'middleware': 'BrightspaceMiddleware'
+    'middleware': 'BrightspaceMiddleware',
+    'webAuth': 'BrightspaceWeb',
+    'webDAV': 'BrightspaceWebdav'
   },
 
   # In Brightspace the imported site will get this prefix added to their title

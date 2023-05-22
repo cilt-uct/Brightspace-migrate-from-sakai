@@ -23,6 +23,12 @@ from lib.local_auth import *
 
 def run(SITE_ID, APP, import_id, transfer_id, title, now_st = None):
 
+    tmp = getAuth(APP['auth']['middleware'])
+    if (tmp is not None):
+        AUTH = {'host' : tmp[0], 'user': tmp[1], 'password': tmp[2]}
+    else:
+        raise Exception("Middleware Authentication required")
+
     logging.info(f'Push content to orgunitid {import_id} coursecode {transfer_id} title "{title}"')
 
     content_folder = r'{}{}-content/'.format(APP['output'], SITE_ID)
@@ -67,7 +73,7 @@ def run(SITE_ID, APP, import_id, transfer_id, title, now_st = None):
         payload = {'org_id': import_id}
         files = [('file', (file_name, zip_file, 'application/zip'))]
         response = requests.post("{}{}".format(APP['middleware']['base_url'], APP['middleware']['import_url']),
-                                 data=payload, files=files)
+                                 data=payload, files=files, auth=(AUTH['user'], AUTH['password']))
         response.raise_for_status()
 
     return

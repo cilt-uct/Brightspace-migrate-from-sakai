@@ -13,7 +13,6 @@ import logging
 import requests
 import json
 import importlib
-import requests
 import re
 
 from requests.exceptions import HTTPError
@@ -196,23 +195,13 @@ def check_for_amathuba_id(search_site_id):
     # it's not a workflow failure, we just retry again later.
 
     try:
-        endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['search_url'])
-        json_response = '';
-
-        response = requests.post(endpoint, data={'type':'code', 'val': search_site_id})
-
-        if not response.ok:
-            logging.warning(f"Response {response.status_code} from {endpoint} searching for {search_site_id}")
+        endpoint = "{}{}?code={}".format(APP['middleware']['base_url'], APP['middleware']['search_url'], search_site_id)
+        json_response = middleware_api(APP, endpoint)
+        if 'status' in json_response:
+            if (json_response['status'] == 'success'):
+                return int(json_response['data']['Identifier'])
         else:
-            json_response = response.json()
-            if 'status' in json_response:
-                # print(json_response)
-                if (json_response['status'] == 'success'):
-                    # print(json_response['data']['Items'])
-                    if len(json_response['data']['Items']) > 0:
-                        return int(json_response['data']['Items'][0]['Identifier'])
-            else:
-                logging.warning(f"Unexpected response {json_response} checking for {search_site_id}")
+            logging.warning(f"Unexpected response {json_response} checking for {search_site_id}")
 
     except Exception as err:
         logging.warning(f"Unexpected {err} in fetch_course_info for {search_site_id}")

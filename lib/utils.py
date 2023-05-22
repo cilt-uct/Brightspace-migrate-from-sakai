@@ -26,6 +26,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from lib.jira_rest import MyJira
+from lib.local_auth import getAuth
 
 class myFile(object):
     def __init__(self, filename):
@@ -366,6 +367,12 @@ def stripspace(orig):
 # Call middleware API and return JSON response with optional retries
 def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None):
 
+    tmp = getAuth(APP['auth']['middleware'])
+    if (tmp is not None):
+        AUTH = {'host' : tmp[0], 'user': tmp[1], 'password': tmp[2]}
+    else:
+        raise Exception("Middleware Authentication required")
+
     if retries is None:
         retries = APP['middleware']['retries']
 
@@ -382,11 +389,15 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
 
         try:
             if payload_data is not None:
-                response = requests.post(url, data=payload_data)
+                response = requests.post(url, data=payload_data, auth=(AUTH['user'], AUTH['password']))
             else:
-                response = requests.get(url)
+                response = requests.get(url, auth=(AUTH['user'], AUTH['password']))
 
             last_status = response.status_code
+
+            if last_status == 401:
+                logging.error(f"API call {url} is Unauthorized")
+                return {'status': 'ERR', 'data': 'Unauthorized'}
 
             if (last_status < 500) and '{' in response.text and '}' in response.text:
                 # Succeeded
