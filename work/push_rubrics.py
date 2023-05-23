@@ -93,7 +93,7 @@ def run(SITE_ID, APP, import_id, transfer_id, title, now_st = None):
         payload = {'org_id': import_id}
         files = [('file', (file_name, zip_file, 'application/zip'))]
         response = requests.post("{}{}".format(APP['middleware']['base_url'], APP['middleware']['import_url']),
-                                 data=payload, files=files, auth=(AUTH['user'], AUTH['password'])
+                                 data=payload, files=files, auth=(AUTH['user'], AUTH['password']))
         response.raise_for_status()
     else:
         logging.warning("No rubrics zip file created, nothing to do")
