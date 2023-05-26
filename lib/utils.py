@@ -440,7 +440,16 @@ def enroll_in_site(APP, eid, import_id, role):
         return True
 
     # {'data': 'User NNN (###) is Inactive', 'status': 'ERR'}
-    if json_response is not None and 'status' in json_response and json_response['status'] == 'ERR' and 'data' in json_response and 'is Inactive' in json_response['data']:
+    valid_return = json_response is not None
+    status_error = valid_return and 'status' in json_response and json_response['status'] == 'ERR' and 'data' in json_response
+    user_inactive = status_error and 'is Inactive' in json_response['data']
+    user_not_found = status_error and 'User not found' in json_response['data']
+
+    if user_not_found:
+        logging.warning(f"Ignoring enrolment for {eid}, user not found in Amathuba")
+        return True
+
+    if user_inactive:
         logging.warning(f"Ignoring enrolment for {eid}, user is inactive in Amathuba")
         return True
 

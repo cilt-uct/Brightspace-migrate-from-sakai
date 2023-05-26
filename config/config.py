@@ -103,7 +103,7 @@ APP = {
           'retries': 5,
           'retry_delay': 30,
           'search_url': '/d2l/api/course',
-          'create_url': '/d2l/api/course/create',
+          'create_url': '/d2l/api/course/new',
           'import_url': '/d2l/api/courses/import_package',
           'search_user_url': '/d2l/api/user',
           'enroll_user_url': '/d2l/api/course/enroll/user',

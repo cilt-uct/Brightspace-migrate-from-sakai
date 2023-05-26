@@ -25,21 +25,7 @@ from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
 
-# Departments options if term is "other"
-other_departments = {
-    'other' : 'other',     # University - wide Community or Activity
-    'COM' : 'COM-other',   # Faculty of Commerce
-    'EBE' : 'EBE-other',   # Faculty of Engineering & Built Environment
-    'FHS' : 'FHS-other',   # Faculty of Health Sciences
-    'HUM' : 'HUM-other',   # Faculty of Humanities
-    'LAW' : 'LAW-other',   # Faculty of Law
-    'SCI' : 'SCI-other',   # Faculty of Science
-    'GSB' : 'GSB',         # Graduate School of Business (GSB)
-    'CHED' : 'CHED-other', # Centre for Higher Education Development
-}
-
 cheap_hash = lambda input: hashlib.md5(input.encode('utf-8')).hexdigest()[:8]
-
 
 def enroll(SITE_ID, APP, import_id, role):
     logging.info(f'Enroll users for {SITE_ID}')
@@ -146,38 +132,44 @@ def run(SITE_ID, APP, link_id):
             dept = record['dept']
             term = record['term']
             role = 'Lecturer'
-            provider = record['provider']
+            site_type = 'course'
+            provider = json.loads(record['provider'])
 
             if term == 'other':
                 # so we are processing a project or community site
                 name = re.sub("(20\d{2})", "", record['name'])
+                site_type = 'community'
                 course = f'{dept}_{cheap_hash(name)}'
-                dept = other_departments[dept]
                 role = 'Owner'
 
             if course == 'other':
                 name = re.sub("(20\d{2})", term, record['name'])
                 course = f'{dept}_{cheap_hash(name)}'
 
-            # 4 required fields for course creation,
+
             # optional are:
-            #     'provider': Add enrollment information for the provided courses per term
+            #  'course_code': Generated name to re-use in migration checks
             #       'create': True will create the course even if it already exists
             #   'check_name': True will also check the name of the course with course code for uniqueness
-            payload = {'name': name,
-                        'course': course,
-                        'dept': dept,
-                        'term': term,
-                        'provider': provider}
+
+            payload = {
+                'user': 'migration',
+                'faculty': dept,
+                'type': site_type,
+                'codes': ','.join(provider),
+                'name': name,
+                'course_code': course,
+                'year': term,
+                'role': role
+            }
 
             create_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['create_url'])
-
             json_response = middleware_api(APP, create_url, payload_data=payload)
 
             if json_response and 'status' in json_response and json_response['status'] == 'success':
                 update_target_site(DB_AUTH, link_id, SITE_ID, json_response['data']['Identifier'], json_response['data']['created'])
                 enroll(SITE_ID, APP, json_response['data']['Identifier'], role)
-                
+
                 # if appropriate (not project site [OTHER]) - copy over content
                 copy_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['copy_url'])
                 copy_payload = {
