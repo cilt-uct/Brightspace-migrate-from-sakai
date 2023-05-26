@@ -113,6 +113,10 @@ https://sakaiproject.atlassian.net/browse/SAK-48756
 https://github.com/sakaiproject/sakai/pull/11441
 https://github.com/sakaiproject/sakai/pull/11441/commits/18de2e623b2ad7f4a68cf90c3381ada52a10aaf1
 
+### SAK-47948 Archive support for GradebookNG
+https://sakaiproject.atlassian.net/browse/SAK-47948
+https://github.com/sakaiproject/sakai/pull/11506
+
 ## Cron Jobs (How to Run it)
 Add these cron jobs on the server running the scripts:
 ```
