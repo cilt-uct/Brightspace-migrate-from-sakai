@@ -34,12 +34,16 @@ def run(SITE_ID, APP):
               # replace all occurences of the emails, pass as vars
               oldmail = 'help@vula.uct.ac.za'
               newmail = 'cilt-helpdesk@uct.ac.za'
+              vulateam = 'The Vula Help Team'
+              vulahelp = 'Vula Help'
+              cilthelp = 'CILT Help Desk'
+              
               def update_email(node):
                   if node.parent and node.parent.name == 'a':
                       node.parent['href'] = node.parent['href'].replace(oldmail, newmail)
                       node.replace_with(newmail)
                   else:
-                      node.replace_with(str(node).replace(oldmail, newmail))
+                      node.replace_with(str(node).replace(oldmail, newmail).replace(vulahelp, cilthelp).replace(vulateam, cilthelp))
 
               text_nodes = html.find_all(string=True)
               for node in text_nodes:
