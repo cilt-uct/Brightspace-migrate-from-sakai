@@ -38,29 +38,29 @@ shutil.copyfile(xml_src, xml_old)
 
 tree = ET.parse(xml_src)
 root = tree.getroot()
-def run():
-  if root.tag == 'archive':
-    for item in root.findall(".//item[@type='5']"):
-              # pass the html here
-              html = BeautifulSoup(item.attrib['html'], 'html.parser')
-              replace_with_text(html, chars_to_replace)
-              
-              item.set('html', str(html))
 
-              tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+if root.tag == 'archive':
+  for item in root.findall(".//item[@type='5']"):
+            # pass the html here
+            html = BeautifulSoup(item.attrib['html'], 'html.parser')
+            replace_with_text(html, chars_to_replace)
+            
+            item.set('html', str(html))
 
-  def main():
-      global APP
-      parser = argparse.ArgumentParser(description="Replace vula email and team with cilt helpdesk name and team",
-                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-      parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
-      parser.add_argument('-d', '--debug', action='store_true')
-      args = vars(parser.parse_args())
+            tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
-      APP['debug'] = APP['debug'] or args['debug']
+def main():
+    global APP
+    parser = argparse.ArgumentParser(description="Replace vula email and team with cilt helpdesk name and team",
+                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
+    parser.add_argument('-d', '--debug', action='store_true')
+    args = vars(parser.parse_args())
 
-      run(args['SITE_ID'], APP)
+    APP['debug'] = APP['debug'] or args['debug']
 
-  if __name__ == '__main__':
-      main()
+    run(args['SITE_ID'], APP)
+
+if __name__ == '__main__':
+    main()
 
