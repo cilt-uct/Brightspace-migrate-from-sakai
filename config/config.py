@@ -90,8 +90,9 @@ APP = {
   },
 
   'content': {
-    'mime-types': Path(SCRIPT_FOLDER) / 'config' / 'mime_types.yaml',
-    'restricted-ext': Path(SCRIPT_FOLDER) / 'config' / 'restricted_ext.yaml',
+    # 'mime-types': Path(SCRIPT_FOLDER) / 'config' / 'mime_types.yaml',
+    # 'restricted-ext': Path(SCRIPT_FOLDER) / 'config' / 'restricted_ext.yaml',
+    'lesson_replace': {'help@vula.uct.ac.za': 'cilt-helpdesk.uct.ac.za', 'The Vula Help Team': 'CILT Help Desk', 'Vula Help': 'CILT Help Desk'}
   },
 
   'email': {
