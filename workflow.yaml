@@ -59,7 +59,7 @@ STEPS:
   - action: lessonbuilder_rewrite_urls
   - action: lessonbuilder_fix_customnames
   - action: lessonbuilder_update_quiz_title
-  - action: lessonbuilder_replace_vula_email
+  - action: lessonbuilder_replace_content_strings
 
   # Tests and Quizzes
   - action: test_and_quiz_replace_wiris
