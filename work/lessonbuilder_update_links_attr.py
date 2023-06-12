@@ -15,9 +15,6 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-def update_content_links(link):
-    link['target'] = '_blank'
-
 def run(SITE_ID, APP):
     logging.info('Lessons: Update links add target = _blank for links without target attribute : {}'.format(SITE_ID))
 
@@ -35,11 +32,11 @@ def run(SITE_ID, APP):
             html = BeautifulSoup(item.attrib['html'], 'html.parser')
             
             for link in html.find_all('a', target=False):
-                update_content_links(link)
+                link['target'] = '_blank'
                 
             item.set('html', str(html))
             
-            tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+        tree.write(xml_src, encoding='utf-8', xml_declaration=True)
     
 def main():
     global APP
