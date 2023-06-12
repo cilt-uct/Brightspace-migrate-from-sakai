@@ -39,6 +39,9 @@ def do_work(site_info_file):
     for tag in tmpl.head.find_all(['meta','link']):
         html.head.append(tag)
 
+    for rep in html.find_all(text=re.compile('Site Information.html')):
+        rep.replace_with('Site Information')
+
     # print(html.head.prettify())
 
     with open(f"{site_info_file}", "w", encoding = 'utf-8') as file:
