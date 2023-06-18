@@ -601,7 +601,7 @@
     },
     {
       "key": "c19",
-      "active": true,
+      "active": false,
       "tool": "sakai.gradebookng",
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes linked to Gradebook",
