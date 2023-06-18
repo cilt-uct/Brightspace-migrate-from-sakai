@@ -567,7 +567,7 @@
     },
     {
       "key": "c17",
-      "active": true,
+      "active": false,
       "tool": "sakai.samigo",
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes feedback",
@@ -601,7 +601,7 @@
     },
     {
       "key": "c19",
-      "active": false,
+      "active": true,
       "tool": "sakai.gradebookng",
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes linked to Gradebook",
@@ -613,7 +613,7 @@
     },
     {
       "key": "d1",
-      "active": true,
+      "active": false,
       "tool": "sakai.forums",
       "icon-class": "icon-settings",
       "description": "Forums attachments to descriptions",
