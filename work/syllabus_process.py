@@ -43,7 +43,7 @@ def run(SITE_ID, APP):
             new_path = f"/attachment/Course Outline/{filename}"
 
             if filename in attachment_names:
-                raise Exception("Name collision flattening Course Outline attachment paths: {filename}")
+                raise Exception(f"Name collision flattening Course Outline attachment paths: {filename}")
             else:
                 attachment_names[filename] = 'used'
 
