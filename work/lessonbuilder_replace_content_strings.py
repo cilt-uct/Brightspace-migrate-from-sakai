@@ -38,7 +38,7 @@ def run(SITE_ID, APP):
             # pass the html here
             html = BeautifulSoup(replace_with_text(str(item.attrib['html'])), 'html.parser')
             
-        item.set('html', str(html))
+            item.set('html', str(html))
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
