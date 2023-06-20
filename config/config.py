@@ -109,6 +109,8 @@ APP = {
           'search_user_url': '/d2l/api/user',
           'enroll_user_url': '/d2l/api/course/enroll/user',
           'copy_url': '/d2l/api/course/copy_orientation',
+          'course_info_order_url': '/d2l/api/content/order/course_info',
+          'course_outline_order_url': '/d2l/api/content/order/course_outline',
           'course_content_src': 9944
   },
 

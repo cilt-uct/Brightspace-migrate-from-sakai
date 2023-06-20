@@ -69,6 +69,9 @@ STEPS:
   # Resources / Content
   - action: overview_add_css
 
+  # Content
+  - action: content_sort_units
+
   # Site
   - action: site_change_id
     use_new_id: 1
