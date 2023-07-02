@@ -44,7 +44,7 @@ def run(SITE_ID, APP):
             html = make_well_formed(html, title)
 
             for tool in APP['vula_tools']:
-                for rep in html.find_all(text=re.compile(tool, re.IGNORECASE)):
+                for rep in html.find_all(string=re.compile(r'\b{}\b'.format(tool), re.IGNORECASE)):
                     replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;">{}</span>'.format(rep))
                     rep.replace_with(replacement.span)
                     item.set('html', str(html))
