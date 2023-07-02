@@ -45,7 +45,8 @@ def run(SITE_ID, APP):
 
             for tool in APP['vula_tools']:
                 for rep in html.find_all(text=re.compile(tool, re.IGNORECASE)):
-                    rep.replace_with(f'<span style="color: red; font-weight: bold;">{rep}</span>')
+                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;">{}</span>'.format(rep))
+                    rep.replace_with(replacement.span)
                     item.set('html', str(html))
 
             tree.write(xml_src, encoding='utf-8', xml_declaration=True)
