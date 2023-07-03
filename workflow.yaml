@@ -73,6 +73,7 @@ STEPS:
 
   # Content
   - action: content_sort_units
+    use_link_id: 1
 
   # Site
   - action: site_change_id
