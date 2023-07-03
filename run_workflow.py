@@ -237,7 +237,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             if 'use_new_id' in step:
                 new_kwargs['new_id'] = kwargs['new_id']
 
-            logging.info(str(step))
+            logging.info(str(kwargs))
             if 'use_link_id' in step:
                 new_kwargs['link_id'] = kwargs['link_id']
 
