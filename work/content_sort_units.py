@@ -44,8 +44,8 @@ def main():
     global APP
     parser = argparse.ArgumentParser(description="This script sorts the order of units on the content page",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument("LINK_ID", help="The Link ID to run the workflow for")
+    parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
 
