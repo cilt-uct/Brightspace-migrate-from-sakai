@@ -42,7 +42,8 @@ def cleanup_sftp(sftp_folder, site_id):
         sftp = ssh_client.open_sftp()
 
         for entry in sftp.listdir_attr(sftp_folder):
-            if S_ISREG(entry.st_mode) and entry.filename.startswith("{}_{}".format(APP['zip']['site'], site_id)) and entry.filename.endswith('.zip'):
+            prefix = "{}{}".format(APP['zip']['site'], site_id)
+            if S_ISREG(entry.st_mode) and entry.filename.startswith(prefix) and entry.filename.endswith('.zip'):
                 sftp.remove(f"{sftp_folder}/{entry.filename}")
                 logging.info(f" - removed {entry.filename} from sftp {sftp_folder}")
                 removed = True
