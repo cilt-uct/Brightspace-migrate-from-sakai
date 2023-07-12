@@ -51,7 +51,7 @@ def run(SITE_ID, APP):
                     new_path = f"/attachment/Course Outline/{filename}"
                     attachment_names[filename] = 'used'
                 else:
-                    raise Exception(f"Could not rename file {filename} in other to mitigate file name collision.")
+                    raise Exception(f"Could not rename file {filename} to resolve file name collision.")
             else:
                 attachment_names[filename] = 'used'
 
