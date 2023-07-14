@@ -36,21 +36,20 @@ def run(SITE_ID, APP):
     url_prefix = f"{sakai_url}/access/content/group/{SITE_ID}"
     
     for item in root.findall(".//item[@type='5']"):
-        html = BeautifulSoup(item.attrib['html'], 'html.parser')
-        
-        # get all image tags
-        imglist = [img['src'] for img in html.find_all('img')]
-        
-        # get all ahref links
-        linklist = [a['href'] for a in html.find_all('a')]
 
-        # combine img and link lists and loop through
-        for element in imglist + linklist:
-            if url_prefix in element:
-                html_src = element.replace(url_prefix, "..").replace("%3A", "")
-                item.set('html', html_src)
-                rewrite = True
+        html = BeautifulSoup(item.attrib['html'], 'html.parser')
+        attr_list = ['src', 'href']
+        for attr in attr_list:
+            elements = html.find_all(attrs={attr: True})
+            for element in elements:
+                currenturl = element.get(attr)
+                if url_prefix in currenturl:
+                    updatedurl = currenturl.replace(sakai_url, "..").replace("%3A", '')
+                    element[attr] = updatedurl
         
+                    item.set('html', str(html))
+                    rewrite = True
+
     # Update the lessonbuilder XML
     if rewrite:
         logging.info(f"Updating {xml_src}")
