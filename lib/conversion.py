@@ -158,7 +158,17 @@ def lessons_question_correct(lessons_soup):
         if 'answers' in qAttr:
             for answer in qAttr['answers']:
                 if answer['correct']:
-                    return True;
+                    return True
+
+
+def lessons_hyperlinks(lessons_soup):
+    for _ in lessons_soup.find_all("span", attrs={"type": "link"}):
+        return True
+
+
+def lessons_tools(lessons_soup):
+    for _ in lessons_soup.find_all("span", attrs={"type": "tool"}):
+        return True
 
 
 # B1 Resources - Hidden folders and files
