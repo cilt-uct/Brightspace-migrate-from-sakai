@@ -47,8 +47,8 @@ def run(SITE_ID, APP):
                     updatedurl = currenturl.replace(sakai_url, "..").replace("%3A", '')
                     element[attr] = updatedurl
         
-            item.set('html', str(html))
-            rewrite = True
+        item.set('html', str(html))
+        rewrite = True
 
     # Update the lessonbuilder XML
     if rewrite:
