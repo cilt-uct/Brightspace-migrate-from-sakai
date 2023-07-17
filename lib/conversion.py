@@ -162,12 +162,14 @@ def lessons_question_correct(lessons_soup):
 
 
 def lessons_hyperlinks(lessons_soup):
-    for _ in lessons_soup.find_all("span", attrs={"type": "link"}):
+    highlight = lessons_soup.find("span", attrs={"type": "link"})
+    if highlight:
         return True
 
 
 def lessons_tools(lessons_soup):
-    for _ in lessons_soup.find_all("span", attrs={"type": "tool"}):
+    highlight = lessons_soup.find("span", attrs={"type": "tool"})
+    if highlight:
         return True
 
 
