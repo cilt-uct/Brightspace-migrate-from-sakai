@@ -41,7 +41,7 @@ def run(SITE_ID, APP):
             for element in html.find_all(attrs={attr: True}):
                 currenturl = element.get(attr)
                 if url_prefix in currenturl:
-                    element[attr] = currenturl.replace(sakai_url, "..").replace("%3A", '')
+                    element[attr] = currenturl.replace(url_prefix, "..").replace("%3A", '')
                     rewrite = True
 
         item.set('html', str(html))
