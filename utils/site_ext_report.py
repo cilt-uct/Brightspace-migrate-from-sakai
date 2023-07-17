@@ -36,19 +36,22 @@ def extensions(xml_src):
     for item in content_tree.xpath(f".//resource"):
         file_path = item.get('id')
 
+        if len(file_path) > 230:
+            print(f" Warning ID {file_path} length {len(file_path)}")
+
         file_name, file_extension = os.path.splitext(file_path)
         mime_type = item.get('content-type')
 
-        print(f"{file_path} {mime_type} ASCII: {file_path.isascii()}")
+        # print(f"{file_path} {mime_type} ASCII: {file_path.isascii()}")
         display_names = item.xpath('./properties/property[@name="DAV:displayname"]')
 
         if display_names:
             display_name_el = display_names[0]
             display_name_value = base64.b64decode(display_name_el.get('value')).decode('utf-8')
-            print(f" display_name1: {display_name_value} ASCII: {display_name_value.isascii()}")
+            # print(f" display_name1: {display_name_value} ASCII: {display_name_value.isascii()}")
 
             display_name_value = display_name_value.replace(u"\u000B", "")
-            print(f" display_name2: {display_name_value} ASCII: {display_name_value.isascii()}")
+            # print(f" display_name2: {display_name_value} ASCII: {display_name_value.isascii()}")
 
         mimes[mime_type] = 'used'
 
