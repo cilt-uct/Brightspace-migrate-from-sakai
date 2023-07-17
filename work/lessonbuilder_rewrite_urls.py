@@ -31,24 +31,20 @@ def run(SITE_ID, APP):
     root = tree.getroot()
 
     rewrite = False
-
     sakai_url = APP['sakai_url']
     url_prefix = f"{sakai_url}/access/content/group/{SITE_ID}"
 
     for item in root.findall(".//item[@type='5']"):
 
         html = BeautifulSoup(item.attrib['html'], 'html.parser')
-        attr_list = ['src', 'href']
-        for attr in attr_list:
-            elements = html.find_all(attrs={attr: True})
-            for element in elements:
+        for attr in ['src', 'href']:
+            for element in html.find_all(attrs={attr: True}):
                 currenturl = element.get(attr)
                 if url_prefix in currenturl:
-                    updatedurl = currenturl.replace(sakai_url, "..").replace("%3A", '')
-                    element[attr] = updatedurl
-        
+                    element[attr] = currenturl.replace(sakai_url, "..").replace("%3A", '')
+                    rewrite = True
+
         item.set('html', str(html))
-        rewrite = True
 
     # Update the lessonbuilder XML
     if rewrite:
