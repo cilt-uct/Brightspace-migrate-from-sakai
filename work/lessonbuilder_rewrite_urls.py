@@ -24,22 +24,27 @@ def run(SITE_ID, APP):
     logging.info(f'Lessons: Rewriting embedded URLs to relative paths : {SITE_ID}')
 
     xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
+
     remove_unwanted_characters(xml_src)
 
     tree = ET.parse(xml_src)
     root = tree.getroot()
 
     rewrite = False
-
     sakai_url = APP['sakai_url']
     url_prefix = f"{sakai_url}/access/content/group/{SITE_ID}"
 
     for item in root.findall(".//item[@type='5']"):
-        html_src = item.attrib['html']
-        if url_prefix in html_src:
-            html_src = html_src.replace(url_prefix, "..")
-            item.set('html', html_src)
-            rewrite = True
+
+        html = BeautifulSoup(item.attrib['html'], 'html.parser')
+        for attr in ['src', 'href']:
+            for element in html.find_all(attrs={attr: True}):
+                currenturl = element.get(attr)
+                if url_prefix in currenturl:
+                    element[attr] = currenturl.replace(sakai_url, "..").replace("%3A", '')
+                    rewrite = True
+
+        item.set('html', str(html))
 
     # Update the lessonbuilder XML
     if rewrite:
