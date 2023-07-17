@@ -355,7 +355,7 @@
     },
     {
       "key": "c1",
-      "active": true,
+      "active": false,
       "tool": "sakai.samigo",
       "actor": ["LD"],
       "icon-class": "icon-settings",
