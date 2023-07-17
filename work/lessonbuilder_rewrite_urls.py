@@ -34,7 +34,7 @@ def run(SITE_ID, APP):
 
     sakai_url = APP['sakai_url']
     url_prefix = f"{sakai_url}/access/content/group/{SITE_ID}"
-    
+
     for item in root.findall(".//item[@type='5']"):
 
         html = BeautifulSoup(item.attrib['html'], 'html.parser')
@@ -47,8 +47,8 @@ def run(SITE_ID, APP):
                     updatedurl = currenturl.replace(sakai_url, "..").replace("%3A", '')
                     element[attr] = updatedurl
         
-                    item.set('html', str(html))
-                    rewrite = True
+            item.set('html', str(html))
+            rewrite = True
 
     # Update the lessonbuilder XML
     if rewrite:
