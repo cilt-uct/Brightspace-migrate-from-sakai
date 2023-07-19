@@ -28,7 +28,7 @@ def fix_unwanted_url_chars(currenturl, url_prefix):
     urlparts = [s.strip(".") for s in unquote(currenturl).split("/") if s != 'https:']
     joined_link = "/".join(urlparts)
     # replace the url %3A and first instance of /
-    return unquote(joined_link).replace(parsed_url.netloc + parsed_url.path, "..").replace("%3A", '').replace("/", "", 1)
+    return unquote(joined_link).replace(parsed_url.netloc + parsed_url.path, "..").replace(":", '').replace("/", "", 1)
 
 
 def run(SITE_ID, APP):
