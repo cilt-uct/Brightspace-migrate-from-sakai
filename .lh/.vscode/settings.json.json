@@ -1,0 +1,22 @@
+{
+    "sourceFile": ".vscode/settings.json",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1689767662999,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1689767663077,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n {\r\n     \"python.testing.pytestArgs\": [\r\n         \"tests\"\r\n     ],\r\n-    \"python.testing.unittestEnabled\": false\r\n+    \"python.testing.unittestEnabled\": false,\r\n+    \"python.testing.pytestEnabled\": true\r\n }\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1689767662999,
+            "name": "Commit-0",
+            "content": "{\r\n    \"python.testing.pytestArgs\": [\r\n        \"tests\"\r\n    ],\r\n    \"python.testing.unittestEnabled\": false\r\n}"
+        }
+    ]
+}
