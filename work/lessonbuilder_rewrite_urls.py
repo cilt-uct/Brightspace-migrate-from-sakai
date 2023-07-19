@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 import cssutils
 from pathlib import Path
+from urllib.parse import urlparse, unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -19,6 +20,16 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.utils import *
+
+def fix_unwanted_url_chars(currenturl, url_prefix):
+    # parse url prefix, get path with https and path parsed_url.netloc + parsed_url.path
+    parsed_url = urlparse(url_prefix)
+    # remove the . but not replace the sakaiurl yet
+    urlparts = [s.strip(".") for s in unquote(currenturl).split("/") if s != 'https:']
+    joined_link = "/".join(urlparts)
+    # replace the url %3A and first instance of /
+    return unquote(joined_link).replace(parsed_url.netloc + parsed_url.path, "..").replace(":", '').replace("/", "", 1)
+
 
 def run(SITE_ID, APP):
     logging.info(f'Lessons: Rewriting embedded URLs to relative paths : {SITE_ID}')
@@ -31,6 +42,7 @@ def run(SITE_ID, APP):
     root = tree.getroot()
 
     rewrite = False
+
     sakai_url = APP['sakai_url']
     url_prefix = f"{sakai_url}/access/content/group/{SITE_ID}"
 
@@ -41,7 +53,7 @@ def run(SITE_ID, APP):
             for element in html.find_all(attrs={attr: True}):
                 currenturl = element.get(attr)
                 if url_prefix in currenturl:
-                    element[attr] = currenturl.replace(url_prefix, "..").replace("%3A", '')
+                    element[attr] = fix_unwanted_url_chars(currenturl, url_prefix)
                     rewrite = True
 
         item.set('html', str(html))
