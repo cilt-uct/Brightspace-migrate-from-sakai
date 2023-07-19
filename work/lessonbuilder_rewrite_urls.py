@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 import cssutils
 from pathlib import Path
+from urllib.parse import urlparse, unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -40,9 +41,17 @@ def run(SITE_ID, APP):
         for attr in ['src', 'href']:
             for element in html.find_all(attrs={attr: True}):
                 currenturl = element.get(attr)
+
                 if url_prefix in currenturl:
-                    element[attr] = currenturl.replace(sakai_url, "..").replace("%3A", '')
-                    rewrite = True
+                    # grab the sakai url, without the https
+                    sakai_url_without_scheme = re.sub(r'^https?://', '', sakai_url)
+                    # remove the . but not replace the sakaiurl yet
+                    urlparts = [s.strip(".") for s in unquote(currenturl).split("/") if s != 'https:']
+                    joined_link = "/".join(urlparts)
+                    # replace the url %3A and first instance of /
+                    element[attr] = unquote(joined_link).replace(sakai_url_without_scheme, "..").replace("%3A", '').replace("/", "", 1)
+
+                rewrite = True
 
         item.set('html', str(html))
 
