@@ -11,6 +11,7 @@ STEPS:
   - action: xml_valid
   - action: content_path_length
   - action: content_collisions
+  - action: content_folder_valid
   - action: attachment_missing_ext
 
   # Rewrites before we change site id (some can also raise an exception)

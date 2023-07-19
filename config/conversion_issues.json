@@ -355,7 +355,7 @@
     },
     {
       "key": "c1",
-      "active": true,
+      "active": false,
       "tool": "sakai.samigo",
       "actor": ["LD"],
       "icon-class": "icon-settings",
@@ -846,7 +846,7 @@
         "restricted_ext"
       ],
       "info": {
-        "url": "https://community.d2l.com/brightspace/kb/articles/3442-audio-video-file-types-supported-in-brightspace",
+        "url": "https://community.d2l.com/brightspace/kb/articles/6107-upload-edit-and-play-audio-video-content-with-media-player",
         "a": "more info"
       }
     },
