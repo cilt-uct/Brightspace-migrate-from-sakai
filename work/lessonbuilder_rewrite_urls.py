@@ -24,11 +24,12 @@ from lib.utils import *
 def fix_unwanted_url_chars(currenturl, url_prefix):
     # parse url prefix, get path with https and path parsed_url.netloc + parsed_url.path
     parsed_url = urlparse(url_prefix)
-    # remove the . but not replace the sakaiurl yet
-    urlparts = [s.strip(".") for s in unquote(currenturl).split("/") if s != 'https:']
-    joined_link = "/".join(urlparts)
-    # replace the url %3A and first instance of /
-    return unquote(joined_link).replace(parsed_url.netloc + parsed_url.path, "..").replace("%3A", '').replace("/", "", 1)
+    if url_prefix in currenturl:
+        # remove the . but not replace the sakaiurl yet
+        urlparts = [s.strip(".") for s in unquote(currenturl).split("/") if s != 'https:']
+        joined_link = "/".join(urlparts)
+        # replace the url %3A and first instance of /
+        return unquote(joined_link).replace(parsed_url.netloc + parsed_url.path, "..").replace("%3A", '').replace("/", "", 1)
 
 
 def run(SITE_ID, APP):
@@ -52,9 +53,9 @@ def run(SITE_ID, APP):
         for attr in ['src', 'href']:
             for element in html.find_all(attrs={attr: True}):
                 currenturl = element.get(attr)
-                if url_prefix in currenturl:
-                    element[attr] = fix_unwanted_url_chars(currenturl, url_prefix)
-                    rewrite = True
+
+                element[attr] = fix_unwanted_url_chars(currenturl, url_prefix)
+                rewrite = True
 
         item.set('html', str(html))
 
