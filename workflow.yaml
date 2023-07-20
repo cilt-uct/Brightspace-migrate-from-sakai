@@ -29,6 +29,7 @@ STEPS:
   # Attachments and Resources
   - action: content_force_mime_types
   - action: fix_zero_byte_files
+  - action: content_remove_zerobytes
   - action: fix_restricted_ext
   - action: fix_restricted_names
 
