@@ -39,11 +39,19 @@ def run(SITE_ID, APP):
 
         # find each resource with an id that contains that extension
         for item in attachment_tree.xpath(f".//resource[contains(@id,'/Course Outline/')]"):
-            filename = Path(item.get('id')).name
+            path = Path(item.get('id'))
+            filename = path.name
             new_path = f"/attachment/Course Outline/{filename}"
 
             if filename in attachment_names:
-                raise Exception(f"Name collision flattening Course Outline attachment paths: {filename}")
+                path_parts = os.path.normpath(str(path)).split(os.sep)
+                if len(path_parts) >= 2:
+                    id = path_parts[-2]
+                    filename = f'{id}_{filename}'
+                    new_path = f"/attachment/Course Outline/{filename}"
+                    attachment_names[filename] = 'used'
+                else:
+                    raise Exception(f"Could not rename file {filename} to resolve file name collision.")
             else:
                 attachment_names[filename] = 'used'
 
