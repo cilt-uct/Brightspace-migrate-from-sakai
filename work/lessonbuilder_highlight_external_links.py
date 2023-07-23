@@ -45,7 +45,7 @@ def run(SITE_ID, APP):
 
             for link in APP['external_links']:
                 for rep in html.find_all(string=re.compile(f'{link}(/\S+)?', re.IGNORECASE)):
-                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;" type="link">{}</span>'.format(rep))
+                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;" data-type="link" data-page="{}">{}</span>'.format(title, rep))
                     rep.replace_with(replacement.span)
                     item.set('html', str(html))
 

@@ -162,15 +162,21 @@ def lessons_question_correct(lessons_soup):
 
 
 def lessons_hyperlinks(lessons_soup):
-    highlight = lessons_soup.find("span", attrs={"type": "link"})
-    if highlight:
-        return True
+    items = lessons_soup.find_all("item", attrs={"type": "5"})
+    for item in items:
+        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
+        link = parsed_html.find("span", attrs={"data-type": "link"})
+        if link:
+            return True
 
 
 def lessons_tools(lessons_soup):
-    highlight = lessons_soup.find("span", attrs={"type": "tool"})
-    if highlight:
-        return True
+    items = lessons_soup.find_all("item", attrs={"type": "5"})
+    for item in items:
+        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
+        tool = parsed_html.find("span", attrs={"data-type": "tool"})
+        if tool:
+            return True
 
 
 # B1 Resources - Hidden folders and files

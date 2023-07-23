@@ -45,7 +45,7 @@ def run(SITE_ID, APP):
 
             for tool in APP['vula_tools']:
                 for rep in html.find_all(string=re.compile(r'\b{}\b'.format(tool), re.IGNORECASE)):
-                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;" type="tool">{}</span>'.format(rep))
+                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;" data-type="tool" data-page="{}">{}</span>'.format(title, rep))
                     rep.replace_with(replacement.span)
                     item.set('html', str(html))
 

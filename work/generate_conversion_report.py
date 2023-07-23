@@ -218,6 +218,30 @@ def do_check(step, **soups):
 
     return func(**args) is not None
 
+def getLessonsDetails(lessons_soup):
+    details = {
+        'links': [],
+        'tools': [],
+    }
+
+    items = lessons_soup.find_all("item", attrs={"type": "5"})
+    for item in items:
+        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
+        links = parsed_html.find_all("span", attrs={"data-type": "link"})
+        for link in links:
+            details['links'].append({
+                'page': link.attrs['data-page'],
+                'link': link.string
+            })
+        tools = parsed_html.find_all("span", attrs={"data-type": "tool"})
+        for tool in tools:
+            details['tools'].append({
+                'page': tool.attrs['data-page'],
+                'link': tool.string
+            })
+
+    return details
+
 def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     site_folder = os.path.join(APP['archive_folder'], f"{SITE_ID}-archive/")
     output_file = os.path.join(APP['report']['output'], f"{SITE_ID}_report{now_st}.html")
@@ -273,6 +297,10 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
                                         gradebook_soup = gradebook_soup,
                                         restricted_ext = restricted_ext,
                                         sakai_url = sakai_url)
+
+            if k.get('hasLessonsDetails'):
+                k['details'] = getLessonsDetails(lessons_soup=lessons_soup)
+
             result = k['is_found']
 
             if issue_key:
