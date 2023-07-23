@@ -143,8 +143,8 @@
       "tool": "sakai.lessonbuildertool",
       "icon-class": "icon-edit",
       "description": "Lessons invalid hyperlinks",
-      "found": "There are Vula related hyperlinks in the lessons page",
-      "not_found": "Good to go! No Lessons incorrect hyperlinks.",
+      "found": "Some Vula related hyperlinks were found in some lessons pages. Please see the table below for more details.",
+      "not_found": "Good to go! No Vula lessons hyperlinks found.",
       "args": [
         "lessons_soup"
       ],
@@ -160,8 +160,8 @@
       "tool": "sakai.lessonbuildertool",
       "icon-class": "icon-edit",
       "description": "Lessons vula links",
-      "found": "There are Vula related tools in the lessons page",
-      "not_found": "Good to go! No Lessons incorrect hyperlinks.",
+      "found": "Some Vula related tools were found in the lessons page. Please see the table below for more details.",
+      "not_found": "Good to go! No Vula lessons tools found.",
       "args": [
         "lessons_soup"
       ],
