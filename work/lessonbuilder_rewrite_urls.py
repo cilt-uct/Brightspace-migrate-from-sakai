@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 import cssutils
 from pathlib import Path
-from urllib.parse import urlparse, unquote, quote
+from urllib.parse import urlparse
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
