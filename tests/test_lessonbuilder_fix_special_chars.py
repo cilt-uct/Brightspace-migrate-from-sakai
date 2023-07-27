@@ -4,7 +4,7 @@ import unittest
 import argparse
 
 import config.config
-from work.lessonbuilder_rewrite_urls import main
+from work.lessonbuilder_rewrite_urls import *
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
@@ -15,7 +15,7 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
         config.config.APP['archive_folder'] = self.ROOT_DIR + '/test_files/'
 
     @patch('os.rename')
-    @patch('argparse.ArgumentParser.parse_args', return_value=argparse.Namespace(SITE_ID='123456', debug=True))
+    @patch('argparse.ArgumentParser.parse_args', return_value=argparse.Namespace(SITE_ID='site_123456', debug=True))
 
     def test_url_rewrite_chars_fix(self, *_):
         main()
@@ -29,15 +29,26 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
         root = tree.getroot()
         pages = root.findall(".//page")
 
-        # check xml_src is updated here
-        with open(xml_src, 'r') as f:
-            data = f.read()
-        print(data)
-
         for page in pages:
             items = page.findall(".//item[@type='5']")
             for item in items:
-                print(item)
+                html = BeautifulSoup(item.attrib['html'], 'html.parser')
+                for attr in ['src', 'href']:
+                    for element in html.find_all(attrs={attr: True}):
+                        self.assertEqual(element.get(attr), '../Lesson%201%20with%20in%20title/Jpeg_thumb_artifacts_test.jpg')
+
+    # with . inbetween names
+    def test_unwanted_chars(self):
+        currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/Lesson%201%20with%20in%20title%3A/Jpeg_.thumb_artifacts%3A_dots_in_name.jpg'
+        prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
+        expected1 = '../Lesson%201%20with%20in%20title/Jpeg_.thumb_artifacts_dots_in_name.jpg'
+        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected1)
+
+    def test_unwanted_chars_2(self):
+        currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/..Lesson%201%20..with%20in..%20title%3A../Jpeg_.thumb_artifacts%3A_dots_in_folder.jpg'
+        prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
+        expected1 = '../Lesson%201%20..with%20in..%20title/Jpeg_.thumb_artifacts_dots_in_folder.jpg'
+        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected1)
 
 if __name__ == '__main__':
     unittest.main(failfast=True)
