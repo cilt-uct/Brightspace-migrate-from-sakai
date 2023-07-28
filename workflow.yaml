@@ -9,7 +9,6 @@ STEPS:
 
   # Possibly failure cases that raise exceptions
   - action: xml_valid
-  - action: content_path_length
   - action: content_collisions
   - action: content_folder_valid
   - action: attachment_missing_ext
