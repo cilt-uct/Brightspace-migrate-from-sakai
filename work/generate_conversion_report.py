@@ -193,7 +193,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             found_items = list(filter(lambda i: i['is_found'], config['issues']))
             sorted_items = sorted(found_items, key=lambda i: i['tool'] + i['description'])
 
-            found_details = list(filter(lambda i: i['hasLessonsDetails'], sorted_items))
+            found_details = list(filter(lambda i: i.get('hasLessonsDetails', False), sorted_items))
             all_pages = set()
             for detail in found_details:
                 for set_items in detail['details'].values():
