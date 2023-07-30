@@ -37,6 +37,28 @@ def site(site_folder):
         site = items[1]
         return site
 
+
+def populate_issue_details(found_div, items):
+    table_template = found_div.find('div', {'id': 'issue_details_table_template'})
+    for issue_item in items:
+        for name, issues in issue_item['details'].items():
+            if issues:
+                table = copy.copy(table_template)
+                table['id'] = name
+                table_head = table.find('th', {'id': 'head'})
+                table_head['id'] = f'head_{name}'
+                table_head.string = name
+                for issue in issues:
+                    table_data = table.find('td', {'id': 'data'})
+                    data = copy.copy(table_data)
+                    data['id'] = f'data_{issue}'
+                    data.string = issue
+
+                found_div.append(table)
+
+    table_template.decompose()
+
+
 # populate lists
 # in: dict (dictionary)
 def populate_issues(dom, found_div, items, config):
@@ -171,9 +193,18 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             found_items = list(filter(lambda i: i['is_found'], config['issues']))
             sorted_items = sorted(found_items, key=lambda i: i['tool'] + i['description'])
 
+            found_details = list(filter(lambda i: i['hasLessonsDetails'], sorted_items))
+            all_pages = set()
+            for detail in found_details:
+                for set_items in detail['details'].values():
+                    all_pages.update(set_items)
+
             # Have issues
             issues_container = dom.find("div", {"id": "issues-container"})
             issues_banner = dom.find("div", {"id": "issues-banner"})
+
+            if found_details:
+                issues_detail_banner = dom.find("div", {"id": "issues-details-banner"})
 
             # No issues
             no_issues_banner = dom.find("div", {"id": "no-issues-banner"})
@@ -189,10 +220,18 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
                 issues_list = dom.find("div", {"id": "issues_list"})
                 if issues_list:
                     populate_issues(dom, issues_list, sorted_items, config)
+
+                if found_details:
+                    issues_details_desc = dom.find("span", {"id": "issues_details_desc"})
+                    issues_details_desc.string = f"{len(all_pages)} page(s) flagged in this site may need further attention"
+                    issues_detail_list = dom.find("div", {"id": "issues_details_list"})
+                    if issues_detail_list:
+                        populate_issue_details(issues_detail_list, found_details)
             else:
                 # Remove the issues banner
                 issues_banner.decompose()
                 issues_container.decompose()
+                issues_detail_banner.decompose()
 
                 # Use the no issues banner
                 #issues_desc.string = "Good news! No issues were flagged for attention while converting this site."
@@ -220,8 +259,8 @@ def do_check(step, **soups):
 
 def getLessonsDetails(lessons_soup):
     details = {
-        'links': [],
-        'tools': [],
+        'links': set(),
+        'tools': set(),
     }
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})
@@ -229,16 +268,10 @@ def getLessonsDetails(lessons_soup):
         parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
         links = parsed_html.find_all("span", attrs={"data-type": "link"})
         for link in links:
-            details['links'].append({
-                'page': link.attrs['data-page'],
-                'link': link.string
-            })
+            details['links'].add(link.attrs['data-page'])
         tools = parsed_html.find_all("span", attrs={"data-type": "tool"})
         for tool in tools:
-            details['tools'].append({
-                'page': tool.attrs['data-page'],
-                'link': tool.string
-            })
+            details['tools'].add(tool.attrs['data-page'])
 
     return details
 
