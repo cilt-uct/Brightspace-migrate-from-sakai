@@ -39,7 +39,7 @@ def site(site_folder):
 
 
 def populate_issue_details(found_div, items):
-    table_template = found_div.find('div', {'id': 'issue_details_table_template'})
+    table_template = found_div.find('table', {'id': 'issue_details_table_template'})
     for issue_item in items:
         for name, issues in issue_item['details'].items():
             if issues:
@@ -48,12 +48,18 @@ def populate_issue_details(found_div, items):
                 table_head = table.find('th', {'id': 'head'})
                 table_head['id'] = f'head_{name}'
                 table_head.string = name
+                table_row = table.find('tr', {'id': 'data-row'})
+                table_data = table.find('td', {'id': 'data'})
                 for issue in issues:
-                    table_data = table.find('td', {'id': 'data'})
+                    row = copy.copy(table_row)
                     data = copy.copy(table_data)
                     data['id'] = f'data_{issue}'
                     data.string = issue
+                    row.clear()
+                    row.append(data)
+                    table.append(row)
 
+                table_data.decompose()
                 found_div.append(table)
 
     table_template.decompose()
