@@ -47,7 +47,7 @@ def populate_issue_details(found_div, items):
                 table['id'] = name
                 table_head = table.find('th', {'id': 'head'})
                 table_head['id'] = f'head_{name}'
-                table_head.string = name
+                table_head.string = issue_item['description']
                 table_row = table.find('tr', {'id': 'data-row'})
                 table_data = table.find('td', {'id': 'data'})
                 for issue in issues:
