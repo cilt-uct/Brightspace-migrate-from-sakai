@@ -49,5 +49,12 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
         expected1 = '../Lesson%201%20..with%20in..%20title/Jpeg_.thumb_artifacts_dots_in_folder.jpg'
         self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected1)
 
+    # testing ! in name
+    def test_unwanted_chars_3(self):
+        currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/SCT%20with%20!%20in%20filename/VIELEN%20DANK%20!!!.gif'
+        prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
+        expected2 = '../SCT%20with%20%20in%20filename/VIELEN%20DANK%20.gif'
+        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected2)
+
 if __name__ == '__main__':
     unittest.main(failfast=True)
