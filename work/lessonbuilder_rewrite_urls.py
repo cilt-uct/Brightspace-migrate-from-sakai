@@ -22,20 +22,15 @@ from config.logging_config import *
 from lib.utils import *
 
 def fix_unwanted_url_chars(currenturl, url_prefix):
-    # parse url prefix, get path with https and path parsed_url.netloc + parsed_url.path
     parsed_url = urlparse(url_prefix)
-    # remove the . but not replace the sakaiurl yet
-    urlparts = [s.strip(".") for s in currenturl.split("/") if s != 'https:']
-    joined_link = "/".join(urlparts).replace("/", "", 1)
-    # replacements list below array(k,v)
-    replacements = [
-        (re.escape(parsed_url.netloc) + re.escape(parsed_url.path), ".."),
-        ("%3A", ""),
-        ("!", "")
-    ]
+    currenturl = currenturl.replace("%3A", '').replace("!", "")
+    if not url_prefix in currenturl:
+        joined_link = currenturl
+    else:
+        urlparts = [s.strip(".") for s in currenturl.split("/") if s != 'https:']
+        joined_link = "/".join(urlparts).replace("/", "", 1)
+        joined_link = joined_link.replace(parsed_url.netloc + parsed_url.path, "..")
 
-    for key, value in replacements:
-        joined_link = re.sub(key, value, joined_link)
 
     return joined_link
 
@@ -43,7 +38,6 @@ def run(SITE_ID, APP):
     logging.info(f'Lessons: Rewriting embedded URLs to relative paths : {SITE_ID}')
 
     xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
-
     remove_unwanted_characters(xml_src)
 
     tree = ET.parse(xml_src)
@@ -59,10 +53,8 @@ def run(SITE_ID, APP):
         html = BeautifulSoup(item.attrib['html'], 'html.parser')
         for attr in ['src', 'href']:
             for element in html.find_all(attrs={attr: True}):
-                currenturl = element.get(attr)
-                if url_prefix in currenturl:
-                    element[attr] = fix_unwanted_url_chars(currenturl, url_prefix)
-                    rewrite = True
+                 element[attr] = fix_unwanted_url_chars(element.get(attr), url_prefix)
+                 rewrite = True
 
         item.set('html', str(html))
 
