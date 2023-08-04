@@ -118,7 +118,7 @@
            </div>
         </div>
 
-        <div class="container issues content" id="issues-details-container">
+        <div class="container issues issue-detail-content" id="issues-details-container">
             <div class="container issues-div">
                 <div class="row issues-row" id="issues_details_list">
                     <table class="column" id="issue_details_table_template">
@@ -192,7 +192,7 @@
         for (i = 0; i < coll.length; i++) {
           coll[i].addEventListener("click", function() {
             this.classList.toggle("active");
-            const content = this.nextElementSibling;
+            const content = document.getElementsByClassName("issue-detail-content")[0];
             if (content.style.display === "block") {
               content.style.display = "none";
             } else {
