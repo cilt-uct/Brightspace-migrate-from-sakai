@@ -37,7 +37,7 @@ thead:first-child tr:first-child th:first-child, tbody:first-child tr:first-chil
 thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td:first-child {
     border-radius: 0 0 0 4px;
 }
-.content {
+.issue-detail-content {
   display: none;
   overflow: hidden;
 }
