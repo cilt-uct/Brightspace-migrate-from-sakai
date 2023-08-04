@@ -1,6 +1,51 @@
 body {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
+
+table {
+    border: 2px solid #ddd;
+    border-collapse: separate;
+    border-radius: 1em;
+    border-spacing: 0px;
+}
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+    border-collapse: separate;
+}
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+th, td {
+    padding: 5px 4px 6px 4px;
+    text-align: left;
+    vertical-align: top;
+}
+th {
+    padding-left: 5%;
+}
+td {
+    border-top: 1px solid #ddd;
+    padding-left: 10%;
+}
+thead:first-child tr:first-child th:first-child, tbody:first-child tr:first-child td:first-child {
+    border-radius: 4px 0 0 0;
+}
+thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td:first-child {
+    border-radius: 0 0 0 4px;
+}
+.content {
+  display: none;
+  overflow: hidden;
+}
+.collapsible {
+  cursor: pointer;
+}
+
+
 #site {
  background-color: honeydew;
  padding: 1.5em;

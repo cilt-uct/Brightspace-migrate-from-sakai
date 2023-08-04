@@ -67,7 +67,7 @@ def populate_issue_details(found_div, items):
 
 # populate lists
 # in: dict (dictionary)
-def populate_issues(dom, found_div, items, config):
+def populate_issues(dom, found_div, items, config, found_details):
 
     tool_icon = {}
 
@@ -116,6 +116,11 @@ def populate_issues(dom, found_div, items, config):
             moreinfo = dom.new_tag('a', **{"href": line['info']['url'], "target":"_blank"})
             moreinfo.string = line['info']['a']
             card_item.find("p", {"id": "issue_desc"}).append(moreinfo)
+
+        if found_details:
+            details = dom.new_tag('a', **{"href": "#", "class": "collapsible"})
+            details.string = "issue details"
+            card_item.find("p", {"id": "issue_desc"}).append(details)
 
         # Make the id elements unique
         card_item['id'] = f"issue_{key}"
@@ -225,7 +230,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
 
                 issues_list = dom.find("div", {"id": "issues_list"})
                 if issues_list:
-                    populate_issues(dom, issues_list, sorted_items, config)
+                    populate_issues(dom, issues_list, sorted_items, config, found_details)
 
                 if found_details:
                     issues_details_desc = dom.find("span", {"id": "issues_details_desc"})
