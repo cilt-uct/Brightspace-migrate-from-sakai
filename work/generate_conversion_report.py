@@ -118,7 +118,7 @@ def populate_issues(dom, found_div, items, config, found_details):
             card_item.find("p", {"id": "issue_desc"}).append(moreinfo)
 
         if found_details:
-            details = dom.new_tag('a', **{"href": "#", "class": "collapsible"})
+            details = dom.new_tag('button', **{"type": "button", "class": "collapsible"})
             details.string = "issue details"
             card_item.find("p", {"id": "issue_desc"}).append(details)
 
