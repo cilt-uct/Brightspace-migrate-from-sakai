@@ -44,6 +44,18 @@ thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td
 .collapsible {
   cursor: pointer;
 }
+detail-button {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+detail-button:hover {
+    text-decoration: none; /* Remove underline on hover if desired */
+    color: darkblue;
+}
 
 
 #site {
