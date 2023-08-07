@@ -141,6 +141,20 @@ cp users.cfg.sample users.cfg
 
 Helps with commiting code on the server for the logged in user.
 
+## Running tests
+In order to run the full test suite you can use the `run_test.py` script:
+```
+python run_test.py
+```
+In order to run a specific file of tests, use the `run_test.py` script and the `--tf` flag:
+```
+python run_test.py --tf test_db.py
+```
+In order to run a specific test case, use the `run_test.py` script and the `--tc` flag:
+```
+python run_test.py --tc test_query_get_records
+```
+
 ## Misc
 Size limitations for Archive sites:
 - Production : 20,971,520.0 Bytes (B) = 20.0 Megabytes (MB) (20971520)
