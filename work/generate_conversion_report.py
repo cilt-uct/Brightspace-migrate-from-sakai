@@ -41,7 +41,7 @@ def site(site_folder):
 def populate_issue_details(found_div, items):
     table_template = found_div.find('table', {'id': 'issue_details_table_template'})
     for issue_item in items:
-        for name, issues in issue_item['details'].items():
+        for name, issues in issue_item['is_found'].items():
             if issues:
                 table = copy.copy(table_template)
                 table['id'] = name
