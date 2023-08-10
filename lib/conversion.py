@@ -162,21 +162,39 @@ def lessons_question_correct(lessons_soup):
 
 
 def lessons_hyperlinks(lessons_soup):
+    data = {
+        'link': set(),
+    }
+
     items = lessons_soup.find_all("item", attrs={"type": "5"})
     for item in items:
         parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
-        link = parsed_html.find("span", attrs={"data-type": "link"})
-        if link:
-            return True
+        links = parsed_html.find_all('span', attrs={'data-type': 'link'})
+        for link in links:
+            data['link'].add(link.attrs['data-page'])
+
+    if len(data['link']) > 0:
+        return data
+    else:
+        return False
 
 
 def lessons_tools(lessons_soup):
+    data = {
+        'tool': set(),
+    }
+
     items = lessons_soup.find_all("item", attrs={"type": "5"})
     for item in items:
         parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
-        tool = parsed_html.find("span", attrs={"data-type": "tool"})
-        if tool:
-            return True
+        tools = parsed_html.find_all('span', attrs={'data-type': 'tool'})
+        for tool in tools:
+            data['tool'].add(tool.attrs['data-page'])
+
+    if len(data['tool']) > 0:
+        return data
+    else:
+        return False
 
 
 # B1 Resources - Hidden folders and files

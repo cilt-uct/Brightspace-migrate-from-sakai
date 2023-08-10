@@ -201,10 +201,10 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             site_title_tag.append(sitelink)
 
             # Sort the issues list
-            found_items = list(filter(lambda i: i['is_found'], config['issues']))
+            found_items = list(filter(lambda i: i['is_found'] or isinstance(i['is_found'], dict), config['issues']))
             sorted_items = sorted(found_items, key=lambda i: i['tool'] + i['description'])
 
-            found_details = list(filter(lambda i: i.get('hasLessonsDetails', False), sorted_items))
+            found_details = list(filter(lambda i: isinstance(i['is_found'], dict), sorted_items))
             all_pages = set()
             for detail in found_details:
                 for set_items in detail['details'].values():
@@ -268,26 +268,6 @@ def do_check(step, **soups):
 
     return func(**args) is not None
 
-def getLessonsDetails(lessons_soup, key):
-
-    html_key = ''
-    if key == 'lessons_hyperlinks':
-        html_key = 'link'
-    elif key == 'lessons_tools':
-        html_key = 'tool'
-
-    data = {
-        html_key: set(),
-    }
-
-    items = lessons_soup.find_all("item", attrs={"type": "5"})
-    for item in items:
-        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
-        links = parsed_html.find_all("span", attrs={"data-type": html_key})
-        for link in links:
-            data[html_key].add(link.attrs['data-page'])
-
-    return data
 
 def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     site_folder = os.path.join(APP['archive_folder'], f"{SITE_ID}-archive/")
@@ -344,9 +324,6 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
                                         gradebook_soup = gradebook_soup,
                                         restricted_ext = restricted_ext,
                                         sakai_url = sakai_url)
-
-            if k.get('hasLessonsDetails'):
-                k['details'] = getLessonsDetails(lessons_soup=lessons_soup, key=k.get('key'))
 
             result = k['is_found']
 
