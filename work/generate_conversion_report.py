@@ -207,7 +207,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             found_details = list(filter(lambda i: isinstance(i['is_found'], dict), sorted_items))
             all_pages = set()
             for detail in found_details:
-                for set_items in detail['details'].values():
+                for set_items in detail['is_found'].values():
                     all_pages.update(set_items)
 
             # Have issues
