@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 import cssutils
 from pathlib import Path
-from urllib.parse import urlparse, unquote
+from urllib.parse import urlparse
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -25,11 +25,19 @@ def fix_unwanted_url_chars(currenturl, url_prefix):
     # parse url prefix, get path with https and path parsed_url.netloc + parsed_url.path
     parsed_url = urlparse(url_prefix)
     # remove the . but not replace the sakaiurl yet
-    urlparts = [s.strip(".") for s in unquote(currenturl).split("/") if s != 'https:']
-    joined_link = "/".join(urlparts)
-    # replace the url %3A and first instance of /
-    return unquote(joined_link).replace(parsed_url.netloc + parsed_url.path, "..").replace(":", '').replace("/", "", 1)
+    urlparts = [s.strip(".") for s in currenturl.split("/") if s != 'https:']
+    joined_link = "/".join(urlparts).replace("/", "", 1)
+    # replacements list below array(k,v)
+    replacements = [
+        (re.escape(parsed_url.netloc) + re.escape(parsed_url.path), ".."),
+        ("%3A", ""),
+        ("!", "")
+    ]
 
+    for key, value in replacements:
+        joined_link = re.sub(key, value, joined_link)
+
+    return joined_link
 
 def run(SITE_ID, APP):
     logging.info(f'Lessons: Rewriting embedded URLs to relative paths : {SITE_ID}')
