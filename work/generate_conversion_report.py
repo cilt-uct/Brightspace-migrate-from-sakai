@@ -266,7 +266,10 @@ def do_check(step, **soups):
     func = globals()[ step['key'] ]
     args = project(soups, step['args'])
 
-    return func(**args) is not None
+    returned = func(**args)
+    if isinstance(returned, dict):
+        return returned
+    return returned is not None
 
 
 def process(conf, issue_key, SITE_ID, APP, link_id, now_st):

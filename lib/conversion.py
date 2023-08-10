@@ -176,7 +176,7 @@ def lessons_hyperlinks(lessons_soup):
     if len(data['link']) > 0:
         return data
     else:
-        return False
+        return None
 
 
 def lessons_tools(lessons_soup):
@@ -194,7 +194,7 @@ def lessons_tools(lessons_soup):
     if len(data['tool']) > 0:
         return data
     else:
-        return False
+        return None
 
 
 # B1 Resources - Hidden folders and files
