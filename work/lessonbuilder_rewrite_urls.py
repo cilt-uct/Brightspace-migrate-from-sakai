@@ -23,14 +23,15 @@ from lib.utils import *
 
 def fix_unwanted_url_chars(currenturl, url_prefix):
     parsed_url = urlparse(url_prefix)
-    currenturl = currenturl.replace("%3A", '').replace("!", "")
-    if not url_prefix in currenturl:
-        joined_link = currenturl
-    else:
+
+    if url_prefix in currenturl:
         urlparts = [s.strip(".") for s in currenturl.split("/") if s != 'https:']
         joined_link = "/".join(urlparts).replace("/", "", 1)
-        joined_link = joined_link.replace(parsed_url.netloc + parsed_url.path, "..")
-
+        joined_link = joined_link.replace(parsed_url.netloc + parsed_url.path, "..").replace("%3A", '').replace("!", "")
+    elif currenturl.startswith('../'):
+        joined_link = currenturl.replace("%3A", '').replace("!", "")
+    else:
+        joined_link = currenturl
 
     return joined_link
 

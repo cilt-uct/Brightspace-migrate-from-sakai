@@ -70,5 +70,12 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
         expected4 = '../SCT%20with%20%20in%20filename/VIELEN%20DANK%20.gif'
         self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected4)
 
+    # testing non vula url with special chars
+    def test_unwanted_chars_5(self):
+        currenturl = 'https://www.google.com/?search=!:'
+        prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
+        expected4 = 'https://www.google.com/?search=!:'
+        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected4)
+
 if __name__ == '__main__':
     unittest.main(failfast=True)
