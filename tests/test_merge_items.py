@@ -14,7 +14,8 @@ class MergeTestCases(unittest.TestCase):
     @patch('argparse.ArgumentParser.parse_args', return_value=argparse.Namespace(SITE_ID='site_id', debug=True))
     def test_read_xml(self, *_):
         work.lessonbuilder_merge_items.main()
-        with open(self.ROOT_DIR + '/test_files/output.xml', 'r') as f:
+        file_path = self.ROOT_DIR + '/test_files/output.xml'
+        with open(file_path, 'r') as f:
             data = f.read()
 
         all_xml = BeautifulSoup(data, "xml")
@@ -26,6 +27,8 @@ class MergeTestCases(unittest.TestCase):
 
         self.assertEqual(2, len(pages))
         self.assertEqual(16, len(items))
+
+        os.remove(file_path)
 
     def test_remove_adj_breaks(self):
         with open(self.ROOT_DIR + '/test_files/test_breaks.xml', 'r') as f:
