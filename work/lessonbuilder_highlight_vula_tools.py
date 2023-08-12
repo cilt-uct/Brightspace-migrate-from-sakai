@@ -17,6 +17,7 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.utils import *
+from bs4 import BeautifulSoup
 
 
 def run(SITE_ID, APP):
@@ -44,9 +45,12 @@ def run(SITE_ID, APP):
             html = make_well_formed(html, title)
 
             for tool in APP['vula_tools']:
-                for rep in html.find_all(string=re.compile(r'\b{}\b'.format(tool), re.IGNORECASE)):
-                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;" data-type="tool" data-page="{}">{}</span>'.format(title, rep))
-                    rep.replace_with(replacement.span)
+                pattern = re.compile(r'\b{}\b'.format(tool), re.IGNORECASE)
+                occurrences = html.find_all(string=pattern)
+                for rep in occurrences:
+                    replacement = r'<span style="color: red; font-weight: bold;" data-type="tool">{}</span>'.format(tool)
+                    highlighted = pattern.sub(replacement, rep)
+                    rep.replace_with(highlighted)
                     item.set('html', str(html))
 
             tree.write(xml_src, encoding='utf-8', xml_declaration=True)

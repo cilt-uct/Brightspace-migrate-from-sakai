@@ -168,10 +168,10 @@ def lessons_hyperlinks(lessons_soup):
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})
     for item in items:
-        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
-        links = parsed_html.find_all('span', attrs={'data-type': 'link'})
-        for link in links:
-            data['link'].add(link.attrs['data-page'])
+        parent = lessons_soup.findall('.//item[@id="{}"]...'.format(item.attrib['id']))
+        if len(parent) > 0:
+            title = parent[0].attrib['title']
+            data['link'].add(title)
 
     if len(data['link']) > 0:
         return data
@@ -186,10 +186,10 @@ def lessons_tools(lessons_soup):
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})
     for item in items:
-        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
-        tools = parsed_html.find_all('span', attrs={'data-type': 'tool'})
-        for tool in tools:
-            data['tool'].add(tool.attrs['data-page'])
+        parent = lessons_soup.findall('.//item[@id="{}"]...'.format(item.attrib['id']))
+        if len(parent) > 0:
+            title = parent[0].attrib['title']
+            data['tool'].add(title)
 
     if len(data['tool']) > 0:
         return data
