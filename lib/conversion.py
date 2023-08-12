@@ -168,7 +168,7 @@ def lessons_hyperlinks(lessons_soup):
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})
     for item in items:
-        parent = lessons_soup.findall('.//item[@id="{}"]...'.format(item['id']))
+        parent = lessons_soup.find_all('page', attrs={'pageid': item['id']})
         if len(parent) > 0:
             title = parent[0].attrib['title']
             data['link'].add(title)
