@@ -213,9 +213,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             # Have issues
             issues_container = dom.find("div", {"id": "issues-container"})
             issues_banner = dom.find("div", {"id": "issues-banner"})
-
-            if found_details:
-                issues_detail_banner = dom.find("div", {"id": "issues-details-banner"})
+            issues_detail_banner = dom.find("div", {"id": "issues-details-banner"})
 
             # No issues
             no_issues_banner = dom.find("div", {"id": "no-issues-banner"})
@@ -242,8 +240,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
                 # Remove the issues banner
                 issues_banner.decompose()
                 issues_container.decompose()
-                if found_details:
-                    issues_detail_banner.decompose()
+                issues_detail_banner.decompose()
 
                 # Use the no issues banner
                 #issues_desc.string = "Good news! No issues were flagged for attention while converting this site."
