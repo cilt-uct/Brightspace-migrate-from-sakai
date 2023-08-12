@@ -44,9 +44,13 @@ def run(SITE_ID, APP):
             html = make_well_formed(html, title)
 
             for link in APP['external_links']:
-                for rep in html.find_all(string=re.compile(f'{link}(/\S+)?', re.IGNORECASE)):
-                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;" data-type="link" data-page="{}">{}</span>'.format(title, rep))
-                    rep.replace_with(replacement.span)
+                pattern = re.compile(f'{link}(/\S+)?', re.IGNORECASE)
+                occurrences = html.find_all(string=pattern)
+                for rep in occurrences:
+                    replacement = r'<span style="color: red; font-weight: bold;" data-type="link">{}</span>'.format(link)
+                    highlighted = pattern.sub(replacement, rep)
+                    highlighted_html = BeautifulSoup(highlighted, 'html.parser')
+                    rep.replace_with(highlighted_html)
                     item.set('html', str(html))
 
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
