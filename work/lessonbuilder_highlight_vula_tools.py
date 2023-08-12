@@ -50,7 +50,8 @@ def run(SITE_ID, APP):
                 for rep in occurrences:
                     replacement = r'<span style="color: red; font-weight: bold;" data-type="tool">{}</span>'.format(tool)
                     highlighted = pattern.sub(replacement, rep)
-                    rep.replace_with(highlighted)
+                    highlighted_html = BeautifulSoup(highlighted, 'html.parser')
+                    rep.replace_with(highlighted_html)
                     item.set('html', str(html))
 
             tree.write(xml_src, encoding='utf-8', xml_declaration=True)
