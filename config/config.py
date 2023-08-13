@@ -163,6 +163,10 @@ APP = {
 
   'lessons': {
       'styles': Path(SCRIPT_FOLDER) / 'config' / 'lesson_styles.json',
+      'lessons_highlight_names': ['Blogs', 'Calendar', 'Chat Room', 'Commons',
+                                  'Gradebook', 'Lessons', 'Polls', 'Rubrics',
+                                  'Tests & Quizzes', 'Resources', 'Q&A', 'Lecture Videos', 'Discussions'],
+      'lessons_highlight_domains': ['vula.uct.ac.za']
   },
 
   'qna': {
@@ -188,7 +192,4 @@ APP = {
   'path': Path().absolute(),
   # Here for the config unittest
   'loaded' : True,
-  'lessons_highlight_names': ['Blogs', 'Calendar', 'Chat Room', 'Commons', 'Gradebook', 'Lessons', 'Polls', 'Rubrics',
-                 'Tests & Quizzes', 'Resources', 'Q&A', 'Lecture Videos', 'Discussions'],
-  'lessons_highlight_domains': ['vula.uct.ac.za']
 }
