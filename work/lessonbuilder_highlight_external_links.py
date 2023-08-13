@@ -22,10 +22,8 @@ from lib.utils import *
 def run(SITE_ID, APP):
     logging.info('Highlight Sakai tools : {}'.format(SITE_ID))
 
-    # xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
-    # xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)
-    xml_src = 'lessonbuilder.xml'
-    xml_old = 'lessonbuilder.old'
+    xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
+    xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)
     shutil.copyfile(xml_src, xml_old)
 
     remove_unwanted_characters(xml_src)
@@ -67,17 +65,16 @@ def run(SITE_ID, APP):
 
 def main():
     global APP
-    # parser = argparse.ArgumentParser(
-    #     description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replaces adds a class to the ol and removes styling on li",
-    #     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    # parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
-    # parser.add_argument('-d', '--debug', action='store_true')
-    # args = vars(parser.parse_args())
-    #
-    # APP['debug'] = APP['debug'] or args['debug']
+    parser = argparse.ArgumentParser(
+        description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replaces adds a class to the ol and removes styling on li",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
+    parser.add_argument('-d', '--debug', action='store_true')
+    args = vars(parser.parse_args())
 
-    # run(args['SITE_ID'], APP)
-    run('1', APP)
+    APP['debug'] = APP['debug'] or args['debug']
+
+    run(args['SITE_ID'], APP)
 
 
 if __name__ == '__main__':
