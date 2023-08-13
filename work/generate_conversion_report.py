@@ -195,7 +195,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
 
             # Report info strip
             site_title_tag = dom.find("p", {"id": "report_info"})
-            site_title_tag.string = f"Report generated {dt_string} for Vula site"
+            site_title_tag.string = f"Report generated {dt_string} for Sakai site"
             sitelink = dom.new_tag('a', **{"href": f"{APP['sakai_url']}/portal/site/{SITE_ID}", "target":"_blank"})
             sitelink.string = SITE_ID
             site_title_tag.append(sitelink)

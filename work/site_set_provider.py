@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: iso-8859-15 -*-
 
-## This script accesses a Vula DB (config.py) and exports the rubrics of a site to a packaged zip file.
+## This script accesses a Sakai DB (config.py) and exports the rubrics of a site to a packaged zip file.
 ## REF: AMA-37
 
 import sys

@@ -2,7 +2,7 @@
 
 """
 ## This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder
-## and replaces adds styling to vula tool names.
+## and replaces adds styling to Sakai tool names.
 ## REF: AMA-753
 """
 
@@ -21,7 +21,7 @@ from bs4 import BeautifulSoup
 
 
 def run(SITE_ID, APP):
-    logging.info('Highlight Vula tools : {}'.format(SITE_ID))
+    logging.info('Highlight Sakai tools : {}'.format(SITE_ID))
 
     xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
     xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)

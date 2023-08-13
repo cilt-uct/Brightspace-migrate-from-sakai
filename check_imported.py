@@ -108,7 +108,7 @@ def migration_site_expired(APP, db_config, link_id, site_id, started_by, notific
         raise Exception(f'Could not update record in migration_site_expired() for {link_id} : {site_id}') from e
 
     # Send expired email
-    msg_subject = f"Vula to Amathuba: Import timed out [{title}]"
+    msg_subject = f"Sakai to Amathuba: Import timed out [{title}]"
     send_template_email(
         APP,
         template='error_import_timeout.html',
@@ -140,7 +140,7 @@ def migration_site_failed(APP, db_config, link_id, site_id, started_by, notifica
         raise Exception(f'Could not update in migration_site_failed for {link_id} : {site_id}') from e
 
     # Send expired email
-    msg_subject = f"Vula to Amathuba: Import failed [{title}]"
+    msg_subject = f"Sakai to Amathuba: Import failed [{title}]"
     send_template_email(
         APP,
         template='error_import_failed.html',
@@ -410,7 +410,7 @@ def check_imported(APP):
             else:
                 started_by = None
 
-            msg_subject = f"Vula to Amathuba: Import workflow error [{site_title}]"
+            msg_subject = f"Sakai to Amathuba: Import workflow error [{site_title}]"
             send_template_email(
                 APP,
                 template='error_import.html',

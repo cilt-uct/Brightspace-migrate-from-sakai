@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: iso-8859-15 -*-
 
-## This script accesses a Vula DB (config.py) and exports the rubrics of a site to a packaged zip file.
+## This script accesses a Sakai DB (config.py) and exports the rubrics of a site to a packaged zip file.
 ## REF: AMA-37
 
 import sys
@@ -268,7 +268,7 @@ def main():
 
     global APP
 
-    parser = argparse.ArgumentParser(description="This script accesses a Vula DB and exports the rubrics in D2L XML format.",
+    parser = argparse.ArgumentParser(description="This script accesses a Sakai DB and exports the rubrics in D2L XML format.",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID from which to create a rubrics file")
     parser.add_argument('-d', '--debug', action='store_true')

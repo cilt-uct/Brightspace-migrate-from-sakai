@@ -2,7 +2,7 @@
 
 """
 ## This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder
-## and replaces adds styling to any links that are vula/tools related
+## and replaces adds styling to any links that are Sakai/tools related
 ## REF: AMA-752
 """
 
@@ -20,7 +20,7 @@ from lib.utils import *
 
 
 def run(SITE_ID, APP):
-    logging.info('Highlight Vula tools : {}'.format(SITE_ID))
+    logging.info('Highlight Sakai tools : {}'.format(SITE_ID))
 
     xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
     xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)
