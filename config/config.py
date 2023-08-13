@@ -188,7 +188,7 @@ APP = {
   'path': Path().absolute(),
   # Here for the config unittest
   'loaded' : True,
-  'vula_tools': ['Blogs', 'Calendar', 'Chat Room', 'Commons', 'Gradebook', 'Lessons', 'Polls', 'Rubrics',
+  'lessons_highlight_names': ['Blogs', 'Calendar', 'Chat Room', 'Commons', 'Gradebook', 'Lessons', 'Polls', 'Rubrics',
                  'Tests & Quizzes', 'Resources', 'Q&A', 'Lecture Videos', 'Discussions'],
-  'external_links': ['vula.uct.ac.za']
+  'lessons_highlight_domains': ['vula.uct.ac.za']
 }

@@ -44,7 +44,7 @@ def run(SITE_ID, APP):
             html = BeautifulSoup(item.attrib['html'], 'html.parser')
             html = make_well_formed(html, title)
 
-            for tool in APP['vula_tools']:
+            for tool in APP['lessons_highlight_names']:
                 pattern = re.compile(r'\b{}\b'.format(tool), re.IGNORECASE)
                 occurrences = html.find_all(string=pattern)
                 for rep in occurrences:
