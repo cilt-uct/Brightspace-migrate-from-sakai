@@ -43,7 +43,7 @@ def run(SITE_ID, APP):
             html = BeautifulSoup(item.attrib['html'], 'html.parser')
             html = make_well_formed(html, title)
 
-            for link in APP['lessons']['lessons_highlight_domains']:
+            for link in APP['lessons']['highlight_domains']:
                 pattern = re.compile(f'{link}(/\S+)?', re.IGNORECASE)
                 occurrences = html.find_all(string=pattern)
 

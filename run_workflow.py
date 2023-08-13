@@ -352,7 +352,7 @@ def start_workflow(link_id, site_id, APP):
     except Exception as e:
 
         job_started_by = record['started_by_email'] if (record is not None and 'started_by_email' in record) else 'unknown'
-        msg_subject = f"Sakai to Amathuba: Failed [{site_title}]"
+        msg_subject = f"{APP['sakai_name']} to {APP['brightspace_name']}: Failed [{site_title}]"
 
         try:
             send_template_email(
