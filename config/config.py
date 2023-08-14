@@ -18,7 +18,9 @@ LOG_IN_FILE = True
 brightspace = getAuth('BrightspaceMiddleware')
 APP = {
   'sakai_url' : 'https://vula.uct.ac.za',
+  'sakai_name' : 'Vula',
   'brightspace_url' : 'https://amathuba.uct.ac.za',
+  'brightspace_name' : 'Amathuba',
   'admin_emails' : ['corne.oosthuizen@uct.ac.za'],
   'helpdesk-email' : ('Amathuba','cilt-helpdesk@uct.ac.za'),
 
@@ -91,8 +93,7 @@ APP = {
 
   'content': {
     'mime-types': Path(SCRIPT_FOLDER) / 'config' / 'mime_types.yaml',
-    'restricted-ext': Path(SCRIPT_FOLDER) / 'config' / 'restricted_ext.yaml',
-    'lesson_replace': {'help@vula.uct.ac.za': 'cilt-helpdesk.uct.ac.za', 'The Vula Help Team': 'CILT Help Desk', 'Vula Help': 'CILT Help Desk'}
+    'restricted-ext': Path(SCRIPT_FOLDER) / 'config' / 'restricted_ext.yaml'
   },
 
   'email': {
@@ -163,6 +164,15 @@ APP = {
 
   'lessons': {
       'styles': Path(SCRIPT_FOLDER) / 'config' / 'lesson_styles.json',
+      'replace_strings': {
+            'help@vula.uct.ac.za': 'cilt-helpdesk.uct.ac.za',
+            'The Vula Help Team': 'CILT Help Desk',
+            'Vula Help': 'CILT Help Desk'
+        },
+      'highlight_names': ['Blogs', 'Calendar', 'Chat Room', 'Commons',
+                                  'Gradebook', 'Lessons', 'Polls', 'Rubrics',
+                                  'Tests & Quizzes', 'Resources', 'Q&A', 'Lecture Videos', 'Discussions'],
+      'highlight_domains': ['vula.uct.ac.za']
   },
 
   'qna': {
@@ -188,7 +198,4 @@ APP = {
   'path': Path().absolute(),
   # Here for the config unittest
   'loaded' : True,
-  'vula_tools': ['Blogs', 'Calendar', 'Chat Room', 'Commons', 'Gradebook', 'Lessons', 'Polls', 'Rubrics',
-                 'Tests & Quizzes', 'Resources', 'Q&A', 'Lecture Videos', 'Discussions'],
-  'external_links': ['vula.uct.ac.za']
 }

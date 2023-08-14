@@ -240,7 +240,7 @@ def start_workflow(link_id, site_id, APP):
 
         failure_detail = str(e)
 
-        msg_subject = f"Vula to Amathuba: Import failed [{site_title}]"
+        msg_subject = f"{APP['sakai_name']} to {APP['brightspace_name']}: Import failed [{site_title}]"
 
         send_template_email(
             APP,

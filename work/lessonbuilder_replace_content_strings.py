@@ -15,11 +15,11 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-current = os.path.dirname(os.path.realpath(__file__)) 
+current = os.path.dirname(os.path.realpath(__file__))
 
 # Function that replaces node text with app content: lesson_replace strings
 def replace_with_text(st):
-    for key, value in APP['content']['lesson_replace'].items():
+    for key, value in APP['lessons']['replace_strings'].items():
         st = st.replace(key, value)
     return st
 
@@ -37,7 +37,7 @@ def run(SITE_ID, APP):
         for item in root.findall(".//item[@type='5']"):
             # pass the html here
             html = BeautifulSoup(replace_with_text(str(item.attrib['html'])), 'html.parser')
-            
+
             item.set('html', str(html))
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 

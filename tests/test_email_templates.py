@@ -190,7 +190,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertEqual('error_import.html', mock_send_template_email.call_args.kwargs['template'])
         self.assertIsNone(mock_send_template_email.call_args.kwargs['to'])
         self.assertEqual('cilt@uct.ac.za', mock_send_template_email.call_args.kwargs['started_by'])
-        self.assertEqual('Vula to Amathuba: Import failed [test_title]', mock_send_template_email.call_args.kwargs['subj'])
+        self.assertEqual(f"{APP['sakai_name']} to {APP['brightspace_name']}: Import failed [test_title]", mock_send_template_email.call_args.kwargs['subj'])
         self.assertEqual('test_title', mock_send_template_email.call_args.kwargs['title'])
         self.assertEqual('site_id', mock_send_template_email.call_args.kwargs['site_id'])
 
@@ -225,7 +225,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertEqual('error_import.html', mock_send_template_email.call_args.kwargs['template'])
         self.assertEqual('notifyme@gmail.com', mock_send_template_email.call_args.kwargs['to'])
         self.assertEqual('cilt@uct.ac.za', mock_send_template_email.call_args.kwargs['started_by'])
-        self.assertEqual('Vula to Amathuba: Import workflow error [test_title]', mock_send_template_email.call_args.kwargs['subj'])
+        self.assertEqual(f"{APP['sakai_name']} to {APP['brightspace_name']}: Import workflow error [test_title]", mock_send_template_email.call_args.kwargs['subj'])
         self.assertEqual('test_title', mock_send_template_email.call_args.kwargs['title'])
         self.assertEqual('site_id_12345', mock_send_template_email.call_args.kwargs['site_id'])
 
@@ -291,7 +291,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertEqual('error_workflow.html', mock_send_template_email.call_args.kwargs['template'])
         self.assertIsNone(mock_send_template_email.call_args.kwargs['to'])
         self.assertEqual('cilt@uct.ac.za', mock_send_template_email.call_args.kwargs['started_by'])
-        self.assertEqual('Vula to Amathuba: Failed [site_id]', mock_send_template_email.call_args.kwargs['subj'])
+        self.assertEqual(f"{APP['sakai_name']} to {APP['brightspace_name']}: Failed [site_id]", mock_send_template_email.call_args.kwargs['subj'])
         self.assertEqual('site_id', mock_send_template_email.call_args.kwargs['title'])
         self.assertEqual('site_id', mock_send_template_email.call_args.kwargs['site_id'])
 

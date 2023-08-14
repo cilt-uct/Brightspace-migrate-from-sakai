@@ -158,7 +158,47 @@ def lessons_question_correct(lessons_soup):
         if 'answers' in qAttr:
             for answer in qAttr['answers']:
                 if answer['correct']:
-                    return True;
+                    return True
+
+
+def lessons_hyperlinks(lessons_soup):
+    data = {
+        'link': set(),
+    }
+
+    items = lessons_soup.find_all("item", attrs={"type": "5"})
+    for item in items:
+        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
+        link = parsed_html.find("span", attrs={"data-type": "link"})
+        parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
+        if len(parent) > 0 and link:
+            title = parent[0]['title']
+            data['link'].add(title)
+
+    if len(data['link']) > 0:
+        return data
+    else:
+        return None
+
+
+def lessons_tools(lessons_soup):
+    data = {
+        'tool': set(),
+    }
+
+    items = lessons_soup.find_all("item", attrs={"type": "5"})
+    for item in items:
+        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
+        tool = parsed_html.find("span", attrs={"data-type": "tool"})
+        parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
+        if len(parent) > 0 and tool:
+            title = parent[0]['title']
+            data['tool'].add(title)
+
+    if len(data['tool']) > 0:
+        return data
+    else:
+        return None
 
 
 # B1 Resources - Hidden folders and files

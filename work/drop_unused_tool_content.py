@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-## Drop tool content where the tools are not in the Vula site,
+## Drop tool content where the tools are not in the Sakai site,
 ## defined by drop-if-unused=true property in config/conversion_issues.json
 ## REF: AMA-473
 

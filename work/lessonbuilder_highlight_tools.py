@@ -2,7 +2,7 @@
 
 """
 ## This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder
-## and replaces adds styling to vula tool names.
+## and replaces adds styling to Sakai tool names.
 ## REF: AMA-753
 """
 
@@ -17,10 +17,11 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.utils import *
+from bs4 import BeautifulSoup
 
 
 def run(SITE_ID, APP):
-    logging.info('Highlight Vula tools : {}'.format(SITE_ID))
+    logging.info('Highlight Sakai tools : {}'.format(SITE_ID))
 
     xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
     xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)
@@ -43,10 +44,14 @@ def run(SITE_ID, APP):
             html = BeautifulSoup(item.attrib['html'], 'html.parser')
             html = make_well_formed(html, title)
 
-            for tool in APP['vula_tools']:
-                for rep in html.find_all(string=re.compile(r'\b{}\b'.format(tool), re.IGNORECASE)):
-                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;">{}</span>'.format(rep))
-                    rep.replace_with(replacement.span)
+            for tool in APP['lessons']['highlight_names']:
+                pattern = re.compile(r'\b{}\b'.format(tool), re.IGNORECASE)
+                occurrences = html.find_all(string=pattern)
+                for rep in occurrences:
+                    replacement = r'<span style="color: red; font-weight: bold;" data-type="tool">{}</span>'.format(tool)
+                    highlighted = pattern.sub(replacement, rep)
+                    highlighted_html = BeautifulSoup(highlighted, 'html.parser')
+                    rep.replace_with(highlighted_html)
                     item.set('html', str(html))
 
             tree.write(xml_src, encoding='utf-8', xml_declaration=True)

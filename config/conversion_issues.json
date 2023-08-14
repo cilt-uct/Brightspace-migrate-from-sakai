@@ -147,6 +147,38 @@
       }
     },
     {
+      "key": "lessons_hyperlinks",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons content hyperlinks",
+      "found": "Some Vula related hyperlinks were found in some lessons pages. Please see the table below for more details.",
+      "not_found": "Good to go! No Vula lessons hyperlinks found.",
+      "args": [
+        "lessons_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.kszd2wgf91v7",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "lessons_tools",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons external tools",
+      "found": "Some Vula related tools were found in the lessons page. Please see the table below for more details.",
+      "not_found": "Good to go! No Vula lessons tools found.",
+      "args": [
+        "lessons_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.kszd2wgf91v7",
+        "a": "more info"
+      }
+    },
+    {
       "key": "b1",
       "active": false,
       "tool": "sakai.resources",

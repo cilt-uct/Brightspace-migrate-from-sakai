@@ -62,10 +62,10 @@ def archive_site(SITE_ID, APP, auth):
         if int(size_result) >= 0:
             size_result = size_result * 1024
             if (size_result < max_size):
-                logging.info(f"Vula Resources size for {SITE_ID} is {format_bytes(size_result)}")
+                logging.info(f"Resources size for {SITE_ID} is {format_bytes(size_result)}")
             else:
                 logout = login_client.service.logout(session_details[0])
-                raise SizeExceededError(f"Vula Resources size in {SITE_ID} of {format_bytes(size_result)} exceeds limit {format_bytes(max_size)}")
+                raise SizeExceededError(f"Resources size in {SITE_ID} of {format_bytes(size_result)} exceeds limit {format_bytes(max_size)}")
 
         # Go ahead with archive
         archive_ws = APP['archive']['endpoint']

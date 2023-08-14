@@ -2,7 +2,7 @@
 
 """
 ## This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder
-## and replaces adds styling to any links that are vula/tools related
+## and replaces adds styling to any links that are Sakai/tools related
 ## REF: AMA-752
 """
 
@@ -20,7 +20,7 @@ from lib.utils import *
 
 
 def run(SITE_ID, APP):
-    logging.info('Highlight Vula tools : {}'.format(SITE_ID))
+    logging.info('Highlight Sakai tools : {}'.format(SITE_ID))
 
     xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
     xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)
@@ -43,11 +43,22 @@ def run(SITE_ID, APP):
             html = BeautifulSoup(item.attrib['html'], 'html.parser')
             html = make_well_formed(html, title)
 
-            for link in APP['external_links']:
-                for rep in html.find_all(string=re.compile(f'{link}(/\S+)?', re.IGNORECASE)):
-                    replacement = BeautifulSoup(r'<span style="color: red; font-weight: bold;">{}</span>'.format(rep))
-                    rep.replace_with(replacement.span)
-                    item.set('html', str(html))
+            for link in APP['lessons']['highlight_domains']:
+                pattern = re.compile(f'{link}(/\S+)?', re.IGNORECASE)
+                occurrences = html.find_all(string=pattern)
+
+                occurrences_links = html.find_all('a')
+                for occurrences_link in occurrences_links:
+                    if link in str(occurrences_link):
+                        occurrences_link['style'] = 'color: red; font-weight: bold;'
+
+                for rep in occurrences:
+                    replacement = r'<span style="color: red; font-weight: bold;" data-type="link">{}</span>'.format(link)
+                    highlighted = pattern.sub(replacement, rep)
+                    highlighted_html = BeautifulSoup(highlighted, 'html.parser')
+                    rep.replace_with(highlighted_html)
+
+                item.set('html', str(html))
 
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 

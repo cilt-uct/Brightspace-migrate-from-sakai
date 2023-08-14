@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-## Workflow operation to update vula site property with migration status
+## Workflow operation to update Sakai site property with migration status
 ## REF: AMA-254
 
 import sys
