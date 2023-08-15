@@ -160,7 +160,8 @@ def lessons_question_correct(lessons_soup):
                 if answer['correct']:
                     return True
 
-
+# AMA-726 Flag highlighted links in Lessons html content (replaces a9)
+# data-type:link attribute is set by the workflow operation lessonbuilder_highlight_tools
 def lessons_hyperlinks(lessons_soup):
     data = {
         'link': set(),
@@ -180,7 +181,8 @@ def lessons_hyperlinks(lessons_soup):
     else:
         return None
 
-
+# AMA-726 Flag highlighted tool names in Lessons html content
+# data-type:tool attribute is set by the workflow operation lessonbuilder_highlight_external_links
 def lessons_tools(lessons_soup):
     data = {
         'tool': set(),

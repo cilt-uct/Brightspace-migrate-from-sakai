@@ -96,7 +96,7 @@
     },
     {
       "key": "a9",
-      "active": true,
+      "active": false,
       "tool": "sakai.lessonbuildertool",
       "actor": ["LD"],
       "icon-class": "icon-edit",
@@ -151,8 +151,8 @@
       "active": true,
       "tool": "sakai.lessonbuildertool",
       "icon-class": "icon-edit",
-      "description": "Lessons content hyperlinks",
-      "found": "Some Vula related hyperlinks were found in some lessons pages. Please see the table below for more details.",
+      "description": "Lessons content links",
+      "found": "Some Lessons pages contain static hyperlinks to Vula. These have been highlighted in red in the converted Content pages. Review and update these links on the pages listed in Issue Details below.",
       "not_found": "Good to go! No Vula lessons hyperlinks found.",
       "args": [
         "lessons_soup"
@@ -167,8 +167,8 @@
       "active": true,
       "tool": "sakai.lessonbuildertool",
       "icon-class": "icon-edit",
-      "description": "Lessons external tools",
-      "found": "Some Vula related tools were found in the lessons page. Please see the table below for more details.",
+      "description": "Lessons tool references",
+      "found": "Some Lessons pages contain references to Vula tools. These have been highlighted in red in the converted Content pages. Review and update these references on the pages listed in Issue Details below.",
       "not_found": "Good to go! No Vula lessons tools found.",
       "args": [
         "lessons_soup"
