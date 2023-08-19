@@ -612,7 +612,7 @@ def c16(site_folder, samigo_soup):
                 _title = _soup.find("assessment")
                 _items = _soup.find_all("item")
                 for _collection in _items:
-                    fieldentry = _collection.find_all('fieldentry')
+                    fieldentry = _collection.find('fieldentry')
                     if fieldentry.text == "Fill In the Blank":
                         data['fill_in_the_blank'].add(f'{_title.attrs["title"]}')
 
