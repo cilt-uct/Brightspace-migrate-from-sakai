@@ -597,6 +597,9 @@ def c15(site_folder, samigo_soup):
 # C16 Fill in the blank
 #  in: site_folder
 def c16(site_folder, samigo_soup):
+        data = {
+            'fill_in_the_blank': set(),
+        }
         items = samigo_soup.find_all("assessment")
         # iterate through all assessment items
         for collection in items:
@@ -606,11 +609,17 @@ def c16(site_folder, samigo_soup):
             file_path_assignment = os.path.join(site_folder, 'qti', assignment_file_name)
             with open(file_path_assignment, "r", encoding="utf8") as _fp:
                 _soup = BeautifulSoup(_fp, 'xml')
+                _title = _soup.find("assessment")
                 _items = _soup.find_all("item")
                 for _collection in _items:
-                    fieldentry = _collection.find('fieldentry')
+                    fieldentry = _collection.find_all('fieldentry')
                     if fieldentry.text == "Fill In the Blank":
-                        return True
+                        data['fill_in_the_blank'].add(f'{_title.attrs["title"]}')
+
+        if len(data['fill_in_the_blank']) > 0:
+            return data
+        else:
+            return None
 
 
 # C17 Question level feedback
