@@ -557,6 +557,9 @@ def c13(site_folder, samigo_soup):
 # C14 Calculated questions - Scientific notation
 #  in: site_folder
 def c14(site_folder, samigo_soup):
+        data = {
+            'calculated': set(),
+        }
         items = samigo_soup.find_all("assessment")
         # iterate through all assessment items
         for collection in items:
@@ -566,13 +569,19 @@ def c14(site_folder, samigo_soup):
             file_path_assignment = os.path.join(site_folder, 'qti', assignment_file_name)
             with open(file_path_assignment, "r", encoding="utf8") as _fp:
                 _soup = BeautifulSoup(_fp, 'xml')
+                _title = _soup.find("assessment")
                 _items = _soup.find_all("item")
                 for _collection in _items:
                     fieldentry = _collection.find('fieldentry')
                     if fieldentry.text == "Calculated Question":
                         formulas = _collection.find('formulas')
                         if formulas is not None:
-                            return True
+                            data['calculated'].add(f'{_title.attrs["title"]}')
+
+        if len(data['calculated']) > 0:
+            return data
+        else:
+            return None
 
 
 # C15 Numeric response question
