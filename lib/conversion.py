@@ -174,9 +174,9 @@ def lessons_hyperlinks(lessons_soup):
         parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
         if len(parent) > 0 and link:
             title = parent[0]['title']
-            data['link'].add(title)
+            data['items'].add(title)
 
-    if len(data['link']) > 0:
+    if len(data['items']) > 0:
         return data
     else:
         return None
@@ -195,9 +195,9 @@ def lessons_tools(lessons_soup):
         parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
         if len(parent) > 0 and tool:
             title = parent[0]['title']
-            data['tool'].add(title)
+            data['items'].add(title)
 
-    if len(data['tool']) > 0:
+    if len(data['items']) > 0:
         return data
     else:
         return None
