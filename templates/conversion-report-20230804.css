@@ -3,7 +3,6 @@ body {
 }
 
 table {
-    border: 2px solid #ddd;
     border-collapse: separate;
     border-radius: 1em;
     border-spacing: 0px;
