@@ -118,7 +118,7 @@ def populate_issues(dom, found_div, items, config, found_details):
             card_item.find("p", {"id": "issue_desc"}).append(moreinfo)
 
         if line in found_details:
-            details = dom.new_tag('button', **{"type": "button", "class": "detail-button"})
+            details = dom.new_tag('a', **{"href": f'#{line["key"]}'})
             details.string = f'Issue detail- {line["key"]}'
             card_item.find("p", {"id": "issue_desc"}).append(details)
 
