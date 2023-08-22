@@ -164,7 +164,7 @@ def lessons_question_correct(lessons_soup):
 # data-type:link attribute is set by the workflow operation lessonbuilder_highlight_tools
 def lessons_hyperlinks(lessons_soup):
     data = {
-        'link': set(),
+        'items': set(),
     }
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})
@@ -185,7 +185,7 @@ def lessons_hyperlinks(lessons_soup):
 # data-type:tool attribute is set by the workflow operation lessonbuilder_highlight_external_links
 def lessons_tools(lessons_soup):
     data = {
-        'tool': set(),
+        'items': set(),
     }
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})

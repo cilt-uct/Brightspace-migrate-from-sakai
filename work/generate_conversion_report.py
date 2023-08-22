@@ -46,7 +46,7 @@ def populate_issue_details(found_div, items):
                 table = copy.copy(table_template)
                 table['id'] = name
                 table_head = table.find('th', {'id': 'head'})
-                table_head['id'] = f'head_{name}'
+                table_head['id'] = issue_item['key']
                 table_head.string = issue_item['description']
                 table_row = table.find('tr', {'id': 'data-row'})
                 table_data = table.find('td', {'id': 'data'})
@@ -118,8 +118,8 @@ def populate_issues(dom, found_div, items, config, found_details):
             card_item.find("p", {"id": "issue_desc"}).append(moreinfo)
 
         if line in found_details:
-            details = dom.new_tag('button', **{"type": "button", "class": "collapsible detail-button"})
-            details.string = "issue details"
+            details = dom.new_tag('button', **{"type": "button", "class": "detail-button"})
+            details.string = f'Issue detail- {line["key"]}'
             card_item.find("p", {"id": "issue_desc"}).append(details)
 
         # Make the id elements unique
