@@ -41,37 +41,37 @@ def site(site_folder):
 def populate_issue_details(dom, found_div, items):
     table_template = found_div.find('table', {'id': 'issue_details_table_template'})
     for issue_item in items:
-        for issues in issue_item['is_found']:
-            if issues:
-                table = copy.copy(table_template)
-                header = dom.new_tag('h3')
-                header.string = issue_item['description']
-                table['id'] = f'table_{issue_item["is_found"]}'
-                table_head = table.find('th', {'id': 'head'})
-                table_head['id'] = issue_item['key']
-                table_head.append(header)
-                table_row = table.find('tr', {'id': 'data-row'})
-                table_data = table.find('td', {'id': 'data'})
-                page = dom.new_tag('b')
-                page.string = issue_item['detail-heading']
-                row = copy.copy(table_row)
-                data = copy.copy(table_data)
-                data['id'] = f'page_{issue_item["key"]}'
-                data.append(page)
-                row.clear()
-                row.append(data)
-                table.append(row)
-                for issue in issues:
-                    row = copy.copy(table_row)
-                    data = copy.copy(table_data)
-                    data['id'] = f'data_{issue}'
-                    data.string = issue
-                    row.clear()
-                    row.append(data)
-                    table.append(row)
+        table = copy.copy(table_template)
+        header = dom.new_tag('h3')
+        header.string = issue_item['description']
+        table['id'] = f'table_{issue_item["is_found"]}'
+        table_head = table.find('th', {'id': 'head'})
+        table_head['id'] = issue_item['key']
+        table_head.string = ''
+        table_head.append(header)
+        table_row = table.find('tr', {'id': 'data-row'})
+        table_data = table.find('td', {'id': 'data'})
+        page = dom.new_tag('b')
+        page.string = issue_item['detail-heading']
+        row = copy.copy(table_row)
+        data = copy.copy(table_data)
+        data['id'] = f'page_{issue_item["key"]}'
+        data.string = ''
+        data.append(page)
+        row.clear()
+        row.append(data)
+        table.append(row)
+        for issue in issue_item['is_found']:
+            list_row = copy.copy(table_row)
+            list_data = copy.copy(table_data)
+            list_data['id'] = f'data_{issue}'
+            list_data.string = issue
+            list_row.clear()
+            list_row.append(list_data)
+            table.append(list_row)
 
-                table_data.decompose()
-                found_div.append(table)
+        table_data.decompose()
+        found_div.append(table)
 
     table_template.decompose()
 
@@ -221,7 +221,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             all_pages = set()
             for detail in found_details:
                 for set_items in detail['is_found']:
-                    all_pages.update(set_items)
+                    all_pages.add(set_items)
 
             # Have issues
             issues_container = dom.find("div", {"id": "issues-container"})
