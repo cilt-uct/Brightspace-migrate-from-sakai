@@ -218,7 +218,6 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             sorted_items = sorted(found_items, key=lambda i: i['tool'] + i['description'])
 
             found_details = list(filter(lambda i: isinstance(i['is_found'], set), sorted_items))
-            print(f'***********************{found_details}')
             all_pages = set()
             for detail in found_details:
                 for set_items in detail['is_found']:
@@ -279,7 +278,7 @@ def do_check(step, **soups):
     args = project(soups, step['args'])
 
     returned = func(**args)
-    if isinstance(returned, dict):
+    if isinstance(returned, set):
         return returned
     return returned is not None
 
