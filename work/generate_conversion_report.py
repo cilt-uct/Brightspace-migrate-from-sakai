@@ -214,10 +214,10 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             site_title_tag.append(sitelink)
 
             # Sort the issues list
-            found_items = list(filter(lambda i: i['is_found'] or isinstance(i['is_found'], dict), config['issues']))
+            found_items = list(filter(lambda i: i['is_found'] or isinstance(i['is_found'], set), config['issues']))
             sorted_items = sorted(found_items, key=lambda i: i['tool'] + i['description'])
 
-            found_details = list(filter(lambda i: isinstance(i['is_found'], dict), sorted_items))
+            found_details = list(filter(lambda i: isinstance(i['is_found'], set), sorted_items))
             all_pages = set()
             for detail in found_details:
                 for set_items in detail['is_found'].values():
