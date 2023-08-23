@@ -38,18 +38,29 @@ def site(site_folder):
         return site
 
 
-def populate_issue_details(found_div, items):
+def populate_issue_details(dom, found_div, items):
     table_template = found_div.find('table', {'id': 'issue_details_table_template'})
     for issue_item in items:
-        for name, issues in issue_item['is_found'].items():
+        for issues in issue_item['is_found']:
             if issues:
                 table = copy.copy(table_template)
-                table['id'] = name
+                header = dom.new_tag('h3')
+                header.string = issue_item['description']
+                table['id'] = f'table_{issue_item["is_found"]}'
                 table_head = table.find('th', {'id': 'head'})
                 table_head['id'] = issue_item['key']
-                table_head.string = issue_item['description']
+                table_head.append(header)
                 table_row = table.find('tr', {'id': 'data-row'})
                 table_data = table.find('td', {'id': 'data'})
+                page = dom.new_tag('b')
+                page.string = issue_item['detail-heading']
+                row = copy.copy(table_row)
+                data = copy.copy(table_data)
+                data['id'] = f'page_{issue_item["key"]}'
+                data.append(page)
+                row.clear()
+                row.append(data)
+                table.append(row)
                 for issue in issues:
                     row = copy.copy(table_row)
                     data = copy.copy(table_data)
@@ -119,8 +130,10 @@ def populate_issues(dom, found_div, items, config, found_details):
 
         if line in found_details:
             details = dom.new_tag('a', **{"href": f'#{line["key"]}'})
-            details.string = f'Issue detail- {line["key"]}'
-            card_item.find("p", {"id": "issue_desc"}).append(details)
+            details.string = 'Issue detail'
+            p_tag = card_item.find("p", {"id": "issue_desc"})
+            p_tag.append(details)
+            p_tag.append(f'- {line["key"]}')
 
         # Make the id elements unique
         card_item['id'] = f"issue_{key}"
@@ -235,7 +248,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
                     issues_details_desc.string = f"{len(all_pages)} page(s) flagged in this site may need further attention"
                     issues_detail_list = dom.find("div", {"id": "issues_details_list"})
                     if issues_detail_list:
-                        populate_issue_details(issues_detail_list, found_details)
+                        populate_issue_details(dom, issues_detail_list, found_details)
             else:
                 # Remove the issues banner
                 issues_banner.decompose()

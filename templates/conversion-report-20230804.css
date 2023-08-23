@@ -27,7 +27,6 @@ th {
     padding-left: 5%;
 }
 td {
-    border-top: 1px solid #ddd;
     padding-left: 10%;
 }
 thead:first-child tr:first-child th:first-child, tbody:first-child tr:first-child td:first-child {
