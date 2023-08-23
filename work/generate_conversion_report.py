@@ -44,7 +44,7 @@ def populate_issue_details(dom, found_div, items):
         table = copy.copy(table_template)
         header = dom.new_tag('h3')
         header.string = issue_item['description']
-        table['id'] = f'table_{issue_item["is_found"]}'
+        table['id'] = f'table_{issue_item["key"]}'
         table_head = table.find('th', {'id': 'head'})
         table_head['id'] = issue_item['key']
         table_head.string = ''
