@@ -163,9 +163,7 @@ def lessons_question_correct(lessons_soup):
 # AMA-726 Flag highlighted links in Lessons html content (replaces a9)
 # data-type:link attribute is set by the workflow operation lessonbuilder_highlight_tools
 def lessons_hyperlinks(lessons_soup):
-    data = {
-        'link': set(),
-    }
+    data = set()
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})
     for item in items:
@@ -174,19 +172,17 @@ def lessons_hyperlinks(lessons_soup):
         parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
         if len(parent) > 0 and link:
             title = parent[0]['title']
-            data['link'].add(title)
+            data.add(title)
 
-    if len(data['link']) > 0:
-        return data
+    if len(data) > 0:
+        return sorted(data)
     else:
         return None
 
 # AMA-726 Flag highlighted tool names in Lessons html content
 # data-type:tool attribute is set by the workflow operation lessonbuilder_highlight_external_links
 def lessons_tools(lessons_soup):
-    data = {
-        'tool': set(),
-    }
+    data = set()
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})
     for item in items:
@@ -195,10 +191,10 @@ def lessons_tools(lessons_soup):
         parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
         if len(parent) > 0 and tool:
             title = parent[0]['title']
-            data['tool'].add(title)
+            data.add(title)
 
-    if len(data['tool']) > 0:
-        return data
+    if len(data) > 0:
+        return sorted(data)
     else:
         return None
 
