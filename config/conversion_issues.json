@@ -588,6 +588,7 @@
       "actor": ["Lecturer"],
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes Calculated question",
+      "detail-heading": "Assignments",
       "found": "If you used \u201ce\u201d scientific notation for powers (e.g., \u201c3.456e11\u201d as \u201c3.456 x 1011 \u201d), you may need to review your question, as Amathuba's \u201cSignificant Figures\u201d question type supports powers as separate fields, but does not support scientific notation within a single field.",
       "not_found": "Good to go! You have not used a calculated question in Vula.",
       "args": [
@@ -624,6 +625,7 @@
       "actor": ["Lecturer"],
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes Fill in the Blank question",
+      "detail-heading": "Assignments",
       "found": "You have used a Fill in the Blank question. Currently, there may be issues if there are multiple responses/answers in the question. Please review your question.",
       "not_found": "Good to go! You have not used a Fill-in-the-Blank question in Vula.",
       "args": [

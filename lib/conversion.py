@@ -553,9 +553,7 @@ def c13(site_folder, samigo_soup):
 # C14 Calculated questions - Scientific notation
 #  in: site_folder
 def c14(site_folder, samigo_soup):
-        data = {
-            'calculated': set(),
-        }
+        data = set()
         items = samigo_soup.find_all("assessment")
         # iterate through all assessment items
         for collection in items:
@@ -572,9 +570,9 @@ def c14(site_folder, samigo_soup):
                     if fieldentry.text == "Calculated Question":
                         formulas = _collection.find('formulas')
                         if formulas is not None:
-                            data['calculated'].add(f'{_title.attrs["title"]}')
+                            data.add(f'{_title.attrs["title"]}')
 
-        if len(data['calculated']) > 0:
+        if len(data) > 0:
             return data
         else:
             return None
@@ -602,9 +600,7 @@ def c15(site_folder, samigo_soup):
 # C16 Fill in the blank
 #  in: site_folder
 def c16(site_folder, samigo_soup):
-        data = {
-            'fill_in_the_blank': set(),
-        }
+        data = set()
         items = samigo_soup.find_all("assessment")
         # iterate through all assessment items
         for collection in items:
@@ -619,9 +615,9 @@ def c16(site_folder, samigo_soup):
                 for _collection in _items:
                     fieldentry = _collection.find('fieldentry')
                     if fieldentry.text == "Fill In the Blank":
-                        data['fill_in_the_blank'].add(f'{_title.attrs["title"]}')
+                        data.add(f'{_title.attrs["title"]}')
 
-        if len(data['fill_in_the_blank']) > 0:
+        if len(data) > 0:
             return data
         else:
             return None
