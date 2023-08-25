@@ -38,29 +38,40 @@ def site(site_folder):
         return site
 
 
-def populate_issue_details(found_div, items):
+def populate_issue_details(dom, found_div, items):
     table_template = found_div.find('table', {'id': 'issue_details_table_template'})
     for issue_item in items:
-        for name, issues in issue_item['is_found'].items():
-            if issues:
-                table = copy.copy(table_template)
-                table['id'] = name
-                table_head = table.find('th', {'id': 'head'})
-                table_head['id'] = f'head_{name}'
-                table_head.string = issue_item['description']
-                table_row = table.find('tr', {'id': 'data-row'})
-                table_data = table.find('td', {'id': 'data'})
-                for issue in issues:
-                    row = copy.copy(table_row)
-                    data = copy.copy(table_data)
-                    data['id'] = f'data_{issue}'
-                    data.string = issue
-                    row.clear()
-                    row.append(data)
-                    table.append(row)
+        table = copy.copy(table_template)
+        header = dom.new_tag('h3')
+        header.string = issue_item['description']
+        table['id'] = f'table_{issue_item["key"]}'
+        table_head = table.find('th', {'id': 'head'})
+        table_head['id'] = issue_item['key']
+        table_head.string = ''
+        table_head.append(header)
+        table_row = table.find('tr', {'id': 'data-row'})
+        table_data = table.find('td', {'id': 'data'})
+        page = dom.new_tag('b')
+        page.string = issue_item['detail-heading']
+        row = copy.copy(table_row)
+        data = copy.copy(table_data)
+        data['id'] = f'page_{issue_item["key"]}'
+        data.string = ''
+        data.append(page)
+        row.clear()
+        row.append(data)
+        table.append(row)
+        for issue in issue_item['is_found']:
+            list_row = copy.copy(table_row)
+            list_data = copy.copy(table_data)
+            list_data['id'] = f'data_{issue}'
+            list_data.string = issue
+            list_row.clear()
+            list_row.append(list_data)
+            table.append(list_row)
 
-                table_data.decompose()
-                found_div.append(table)
+        table_data.decompose()
+        found_div.append(table)
 
     table_template.decompose()
 
@@ -118,9 +129,10 @@ def populate_issues(dom, found_div, items, config, found_details):
             card_item.find("p", {"id": "issue_desc"}).append(moreinfo)
 
         if line in found_details:
-            details = dom.new_tag('button', **{"type": "button", "class": "collapsible detail-button"})
-            details.string = "issue details"
-            card_item.find("p", {"id": "issue_desc"}).append(details)
+            details = dom.new_tag('a', **{"href": f'#{line["key"]}'})
+            details.string = 'Issue detail'
+            p_tag = card_item.find("p", {"id": "issue_desc"})
+            p_tag.append(details)
 
         # Make the id elements unique
         card_item['id'] = f"issue_{key}"
@@ -201,14 +213,14 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             site_title_tag.append(sitelink)
 
             # Sort the issues list
-            found_items = list(filter(lambda i: i['is_found'] or isinstance(i['is_found'], dict), config['issues']))
+            found_items = list(filter(lambda i: i['is_found'] or isinstance(i['is_found'], list), config['issues']))
             sorted_items = sorted(found_items, key=lambda i: i['tool'] + i['description'])
 
-            found_details = list(filter(lambda i: isinstance(i['is_found'], dict), sorted_items))
+            found_details = list(filter(lambda i: isinstance(i['is_found'], list), sorted_items))
             all_pages = set()
             for detail in found_details:
-                for set_items in detail['is_found'].values():
-                    all_pages.update(set_items)
+                for set_items in detail['is_found']:
+                    all_pages.add(set_items)
 
             # Have issues
             issues_container = dom.find("div", {"id": "issues-container"})
@@ -235,7 +247,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
                     issues_details_desc.string = f"{len(all_pages)} page(s) flagged in this site may need further attention"
                     issues_detail_list = dom.find("div", {"id": "issues_details_list"})
                     if issues_detail_list:
-                        populate_issue_details(issues_detail_list, found_details)
+                        populate_issue_details(dom, issues_detail_list, found_details)
             else:
                 # Remove the issues banner
                 issues_banner.decompose()
@@ -265,7 +277,7 @@ def do_check(step, **soups):
     args = project(soups, step['args'])
 
     returned = func(**args)
-    if isinstance(returned, dict):
+    if isinstance(returned, list):
         return returned
     return returned is not None
 
