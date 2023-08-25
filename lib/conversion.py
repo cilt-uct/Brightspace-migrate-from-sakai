@@ -573,7 +573,7 @@ def c14(site_folder, samigo_soup):
                             data.add(f'{_title.attrs["title"]}')
 
         if len(data) > 0:
-            return data
+            return sorted(data)
         else:
             return None
 
@@ -618,7 +618,7 @@ def c16(site_folder, samigo_soup):
                         data.add(f'{_title.attrs["title"]}')
 
         if len(data) > 0:
-            return data
+            return sorted(data)
         else:
             return None
 
