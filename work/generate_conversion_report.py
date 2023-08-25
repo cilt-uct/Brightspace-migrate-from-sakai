@@ -133,7 +133,6 @@ def populate_issues(dom, found_div, items, config, found_details):
             details.string = 'Issue detail'
             p_tag = card_item.find("p", {"id": "issue_desc"})
             p_tag.append(details)
-            p_tag.append(f'- {line["key"]}')
 
         # Make the id elements unique
         card_item['id'] = f"issue_{key}"
