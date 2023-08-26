@@ -217,10 +217,10 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             sorted_items = sorted(found_items, key=lambda i: i['tool'] + i['description'])
 
             found_details = list(filter(lambda i: isinstance(i['is_found'], list), sorted_items))
-            all_pages = set()
+            all_items = set()
             for detail in found_details:
                 for set_items in detail['is_found']:
-                    all_pages.add(set_items)
+                    all_items.add(set_items)
 
             # Have issues
             issues_container = dom.find("div", {"id": "issues-container"})
@@ -244,7 +244,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
 
                 if found_details:
                     issues_details_desc = dom.find("span", {"id": "issues_details_desc"})
-                    issues_details_desc.string = f"{len(all_pages)} page(s) flagged in this site may need further attention"
+                    issues_details_desc.string = f"The {len(all_items)} items(s) listed below may need further attention"
                     issues_detail_list = dom.find("div", {"id": "issues_details_list"})
                     if issues_detail_list:
                         populate_issue_details(dom, issues_detail_list, found_details)

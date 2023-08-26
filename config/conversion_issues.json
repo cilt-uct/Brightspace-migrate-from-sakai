@@ -153,7 +153,7 @@
       "icon-class": "icon-edit",
       "description": "Lessons content links",
       "detail-heading": "Lessons pages",
-      "found": "Some Lessons pages contain static hyperlinks to Vula. These have been highlighted in red in the converted Content pages. Review and update these links on the pages listed in Issue Details below.",
+      "found": "Some Lessons pages contain static hyperlinks to Vula. These have been highlighted in red in the converted pages. Review and update these links.",
       "not_found": "Good to go! No Vula lessons hyperlinks found.",
       "args": [
         "lessons_soup"
@@ -170,7 +170,7 @@
       "icon-class": "icon-edit",
       "description": "Lessons tool references",
       "detail-heading": "Lessons pages",
-      "found": "Some Lessons pages contain references to Vula tools. These have been highlighted in red in the converted Content pages. Review and update these references on the pages listed in Issue Details below.",
+      "found": "Some Lessons pages contain references to Vula tools. These have been highlighted in red in the converted pages. Review and update this text.",
       "not_found": "Good to go! No Vula lessons tools found.",
       "args": [
         "lessons_soup"
