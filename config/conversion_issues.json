@@ -768,6 +768,23 @@
       ]
     },
     {
+      "key": "lessons_use_comments",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "actor": ["Lecturer"],
+      "icon-class": "icon-edit",
+      "description": "Lessons use comments",
+      "found": "One or more Lessons pages allow student comments. Set up a Discussion Forum for this purpose.",
+      "not_found": "Good to go! No Lessons comments found.",
+      "args": [
+        "lessons_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.isn28cxtqgko",
+        "a": "more info"
+      }
+    },
+    {
       "key": "detect_custom_css",
       "active": true,
       "tool": "sakai.lessonbuildertool",

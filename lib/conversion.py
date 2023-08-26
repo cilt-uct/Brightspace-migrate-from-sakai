@@ -720,6 +720,12 @@ def lessons_use_checklists(lessons_soup):
         return True
 
 
+# AMA-656 Lessons uses comments
+def lessons_use_comments(lessons_soup):
+    if lessons_soup.find("item", attrs={"type": "9"}):
+        return True
+
+
 # AMA-351 Lessons use prerequisites
 #  in: lessons_soup
 def a4(lessons_soup):
