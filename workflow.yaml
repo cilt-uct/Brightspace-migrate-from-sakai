@@ -45,7 +45,6 @@ STEPS:
 
   # Lessons
   - action: lessonbuilder_strip_formatting
-  - action: lessonbuilder_add_banner
   - action: lessonbuilder_add_css
   - action: lessonbuilder_fix_headings
   - action: lessonbuilder_fix_ol
@@ -67,6 +66,7 @@ STEPS:
   - action: lessonbuilder_highlight_tools
   - action: lessonbuilder_merge_page
     flagged: 0
+  - action: lessonbuilder_add_banner
 
   # Tests and Quizzes
   - action: test_and_quiz_replace_wiris

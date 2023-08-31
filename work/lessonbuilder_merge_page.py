@@ -8,6 +8,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+from config.logging_config import *
 from lib.utils import *
 
 
@@ -24,10 +25,10 @@ def run(SITE_ID, APP):
     file_path = os.path.join(site_folder, xml_src)
 
     with open(file_path, "r", encoding="utf8") as fp:
-        merged = BeautifulSoup('<div></div>', 'html.parser')
         soup = BeautifulSoup(fp, 'xml')
         pages = soup.find_all('page')
         for page in pages:
+            merged = BeautifulSoup('<div></div>', 'html.parser')
             items = page.find_all('item')
             for item in items:
                 if item.attrs['type'] == '5':
