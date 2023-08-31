@@ -65,6 +65,8 @@ STEPS:
   - action: lessonbuilder_update_links_attr
   - action: lessonbuilder_highlight_external_links
   - action: lessonbuilder_highlight_tools
+  - action: lessonbuilder_merge_page
+    flagged: 0
 
   # Tests and Quizzes
   - action: test_and_quiz_replace_wiris
