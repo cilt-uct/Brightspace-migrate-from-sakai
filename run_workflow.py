@@ -331,7 +331,7 @@ def start_workflow(link_id, site_id, APP):
                     if 'state' in step:
                         state = step['state']
 
-                    if 'flagged' in step and step['flagged']:
+                    if 'flagged' in step and not step['flagged']:
                         continue
 
                     if run_workflow_step(step=step, site_id=site_id, log_file=log_file, db_config=DB_AUTH,
