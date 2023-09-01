@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 import cssutils
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -59,7 +59,7 @@ def run(SITE_ID, APP):
         html = BeautifulSoup(item.attrib['html'], 'html.parser')
         for attr in ['src', 'href']:
             for element in html.find_all(attrs={attr: True}):
-                currenturl = element.get(attr)
+                currenturl = unquote(element.get(attr))
                 if url_prefix in currenturl:
                     element[attr] = fix_unwanted_url_chars(currenturl, url_prefix)
                     rewrite = True
