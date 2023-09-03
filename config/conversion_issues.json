@@ -181,6 +181,23 @@
       }
     },
     {
+      "key": "lessons_attached_content",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons attached content",
+      "detail-heading": "Lessons pages",
+      "found": "Some Lessons pages have attachments that could not be moved automatically. These have been identified and placeholder put in place. Review and update this content.",
+      "not_found": "Good to go! No Vula lessons attachments found.",
+      "args": [
+        "lessons_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.kszd2wgf91v7",
+        "a": "more info"
+      }
+    },
+    {
       "key": "b1",
       "active": false,
       "tool": "sakai.resources",
