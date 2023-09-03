@@ -35,7 +35,7 @@ def run(SITE_ID, APP):
                     html = BeautifulSoup(item.attrs['html'], 'html.parser')
                 else:
                     #  Placeholder
-                    html = BeautifulSoup('<p>PLACEHOLDER</p>', 'html.parser')
+                    html = BeautifulSoup(f'<p data-type="placeholder"><span style="color: red; font-weight: bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
                 merged.div.append(html)
 
             updated_item = page.find('item', {'type': '5'})
