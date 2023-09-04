@@ -34,7 +34,8 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
                 html = BeautifulSoup(item.attrib['html'], 'html.parser')
                 for attr in ['src', 'href']:
                     for element in html.find_all(attrs={attr: True}):
-                        self.assertEqual(element.get(attr), '../Lesson%201%20with%20in%20title/Jpeg_thumb_artifacts_test.jpg')
+                        self.assertEqual(element.get(attr), '../Lesson 1 with in title/Jpeg_thumb_artifacts_test.jpg')
+
 
     # with . inbetween names
     def test_unwanted_chars(self):
@@ -63,19 +64,20 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
         expected3 = '../SCT%20with%20%20in%20filename/VIELEN%20DANK%20.gif'
         self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected3)
 
-    # testing src startswith .. and ! in name
-    def test_unwanted_chars_4(self):
-        currenturl = '../SCT%20with%20!%20in%20filename/VIELEN%20DANK%20!!!.gif'
-        prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
-        expected4 = '../SCT%20with%20%20in%20filename/VIELEN%20DANK%20.gif'
-        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected4)
 
     # testing non vula url with special chars
     def test_unwanted_chars_5(self):
         currenturl = 'https://www.google.com/?search=!:'
         prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
-        expected4 = 'https://www.google.com/?search=!:'
-        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected4)
+        expected5 = 'https://www.google.com/?search=!:'
+        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected5)
+
+    # testing src + in name
+    def test_unwanted_chars_5(self):
+        currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/SCT+with+in+filename+/VIELEN+DANK+.gif'
+        prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
+        expected6 ='../SCTwithinfilename/VIELENDANK.gif'
+        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected6)
 
 if __name__ == '__main__':
     unittest.main(failfast=True)
