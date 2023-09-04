@@ -31,7 +31,9 @@ def fix_unwanted_url_chars(currenturl, url_prefix):
     replacements = [
         (re.escape(parsed_url.netloc) + re.escape(parsed_url.path), ".."),
         ("%3A", ""),
-        ("!", "")
+        ("!", ""),
+        (":",""),
+        (re.escape("+"),"")
     ]
 
     for key, value in replacements:
