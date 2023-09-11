@@ -379,7 +379,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
                 # map issues to list of values to insert into DB
                 for line in conf['issues']:
                     sql = "INSERT INTO `migration_site_property` (`site_id`, `key`, `found`) VALUES (%s, %s, %s);"
-                    cursor.execute(sql, (SITE_ID, line['key'], 1 if line['is_found'] else 0))
+                    cursor.execute(sql, (SITE_ID, line['key'], 1 if line.get('is_found', None) else 0))
 
             connection.commit()
 
