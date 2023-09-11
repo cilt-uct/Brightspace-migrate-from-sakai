@@ -213,7 +213,6 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             site_title_tag.append(sitelink)
 
             # Sort the issues list
-            logging.info(config['issues'])
             found_items = list(filter(lambda i: i['is_found'] or isinstance(i['is_found'], list), config['issues']))
             sorted_items = sorted(found_items, key=lambda i: i['tool'] + i['description'])
 
