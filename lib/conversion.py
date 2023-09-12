@@ -199,7 +199,7 @@ def lessons_tools(lessons_soup):
         return None
 
 
-def lessons_attached_content(lessons_soup):
+def lessons_embedded_content(lessons_soup):
     data = set()
 
     items = lessons_soup.find_all("item", attrs={"type": "5"})
