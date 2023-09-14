@@ -34,8 +34,11 @@ def run(SITE_ID, APP):
                 if item.attrs['type'] == '5':
                     html = BeautifulSoup(item.attrs['html'], 'html.parser')
                 else:
-                    #  Placeholder
-                    html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder"><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
+                    if item.attrs['html'] in APP['lessons']['type_to_link']:
+                        href = f'{APP["sakai_url"]}/access/content/{item.attrs["sakaiid"]}'
+                        html = BeautifulSoup(f'<a href="{href}">{item.attrs["name"]}</a>', 'html.parser')
+                    else:
+                        html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder"><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
                 merged.div.append(html)
 
             updated_item = page.find('item', {'type': '5'})
@@ -43,7 +46,7 @@ def run(SITE_ID, APP):
             updated_item['data-merged'] = True
 
             for item in items:
-                if not item.attrs.get('data-merged'):
+                if not item.attrs.get('data-merged') and item.attrs.get('type') == 5:
                     item.extract()
 
         updated_xml = soup.prettify()
