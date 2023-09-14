@@ -44,8 +44,6 @@ STEPS:
     use_link_id: 1
 
   # Lessons
-  - action: lessonbuilder_highlight_external_links
-  - action: lessonbuilder_highlight_tools
   - action: lessonbuilder_merge_page
   - action: lessonbuilder_strip_formatting
   - action: lessonbuilder_add_css
@@ -65,6 +63,8 @@ STEPS:
   - action: lessonbuilder_update_quiz_title
   - action: lessonbuilder_replace_content_strings
   - action: lessonbuilder_update_links_attr
+  - action: lessonbuilder_highlight_external_links
+  - action: lessonbuilder_highlight_tools
   - action: lessonbuilder_add_banner
 
   # Tests and Quizzes

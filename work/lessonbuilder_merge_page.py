@@ -35,8 +35,8 @@ def run(SITE_ID, APP):
                     html = BeautifulSoup(item.attrs['html'], 'html.parser')
                 else:
                     if item.attrs['html'] in APP['lessons']['type_to_link']:
-                        href = f'{APP["sakai_url"]}/access/content/{item.attrs["sakaiid"]}'
-                        html = BeautifulSoup(f'<p><a href="{href}" rel="noopener" target="_blank">{item.attrs["name"]}</a></p>', 'html.parser')
+                        href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
+                        html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
                     else:
                         html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder"><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
                 merged.div.append(html)
