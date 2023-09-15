@@ -42,8 +42,9 @@ def run(SITE_ID, APP):
                 merged.div.append(html)
 
             updated_item = page.find('item', {'type': '5'})
-            updated_item['html'] = str(merged)
-            updated_item['data-merged'] = True
+            if updated_item:
+                updated_item['html'] = str(merged)
+                updated_item['data-merged'] = True
 
             for item in items:
                 if not item.attrs.get('data-merged') and item.attrs.get('type') == 5:
