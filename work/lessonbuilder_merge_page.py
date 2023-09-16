@@ -47,7 +47,7 @@ def run(SITE_ID, APP):
                 updated_item['data-merged'] = True
 
             for item in items:
-                if not item.attrs.get('data-merged') and item.attrs.get('type') == 5:
+                if not item.attrs.get('data-merged') and item.attrs.get('type') == '5':
                     item.extract()
 
         updated_xml = soup.prettify()
