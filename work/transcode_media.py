@@ -80,6 +80,7 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
         file_extension = file_extension.upper().replace(".","")
         content_type = item.get('content-type')
         src_id = item.get('id')
+        src_rel_id = item.get('rel-id')
 
         if content_type == "audio/x-mpegurl":
             # AMA-604 M3U files are plain text collections of resource identifiers
@@ -100,11 +101,12 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
                 # Update resource details
 
                 new_id = src_id.rsplit('.', 1)[0] + '.' + target_ext
+                new_rel_id = src_rel_id.rsplit('.', 1)[0] + '.' + target_ext
 
                 logging.info(f"Got new type {target_type} ext {target_ext} newid {new_id}")
 
                 item.set('original-id', src_id)
-                item.set('rel-id', Path(new_id).name)
+                item.set('rel-id', new_rel_id)
                 item.set('id', new_id)
 
                 item.set('content-type', target_type)
