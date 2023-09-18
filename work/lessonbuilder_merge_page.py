@@ -10,6 +10,7 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.utils import *
+from lib.lessons import *
 
 
 def run(SITE_ID, APP):
@@ -34,10 +35,10 @@ def run(SITE_ID, APP):
 
                 html = None
 
-                if item.attrs['type'] == APP['lessons']['types']['TEXT']:
+                if item.attrs['type'] == LessonType.TEXT.value:
                     html = BeautifulSoup(item.attrs['html'], 'html.parser')
 
-                if item.attrs['type'] == APP['lessons']['types']['RESOURCE'] or item.attrs['type'] == APP['lessons']['types']['MULTIMEDIA']:
+                if item.attrs['type'] == LessonType.RESOURCE.value or item.attrs['type'] == LessonType.MULTIMEDIA.value:
                     if item.get('html') and item.attrs['html'] in APP['lessons']['type_to_link']:
                         href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
                         html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
@@ -47,13 +48,13 @@ def run(SITE_ID, APP):
                 if html:
                     merged.div.append(html)
 
-            updated_item = page.find('item', {'type': APP['lessons']['types']['TEXT']})
+            updated_item = page.find('item', {'type': LessonType.TEXT.value})
             if updated_item:
                 updated_item['html'] = str(merged)
                 updated_item['data-merged'] = True
 
             for item in items:
-                if not item.attrs.get('data-merged') and item.attrs.get('type') == APP['lessons']['types']['TEXT']:
+                if not item.attrs.get('data-merged') and item.attrs.get('type') == LessonType.TEXT.value:
                     item.extract()
 
         updated_xml = soup.prettify()

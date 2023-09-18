@@ -16,7 +16,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.lessons import *
 
 # Lessons item types
 # https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36
@@ -32,20 +32,20 @@ def update_item_types(APP, items):
 
         item_html = item['html'] if 'html' in item else None
 
-        if item['type'] == APP['lessons']['types']['MULTIMEDIA'] and is_image(content_path, item_html):
+        if item['type'] == LessonType.MULTIMEDIA.value and is_image(content_path, item_html):
             alt_text = item['alt']
             item['sakaiid'] = ''
-            item['type'] = APP['lessons']['types']['TEXT']
+            item['type'] = LessonType.TEXT.value
             item['name'] = alt_text
 
             img_path = urllib.parse.quote(content_path)
             item['html'] = f'<p><img style=\"max-width: 100%\" alt=\"{alt_text}\" src=\"{content_path_prefix}{img_path}\"></p>'
 
-        if item['type'] == APP['lessons']['types']['BREAK'] and item['name']:
+        if item['type'] == LessonType.BREAK.value and item['name']:
             name = item['name']
             html_name = f'<h2 class=\"section-heading\">{name}</h2>'
             item['html'] = html_name
-            item['type'] = APP['lessons']['types']['TEXT']
+            item['type'] = LessonType.TEXT.value
 
     return items
 
@@ -54,7 +54,7 @@ def remove_adj_breaks(items):
     i = 0
     while i < len(items) - 1:
         # <break><break> => <break>
-        if items[i]['type'] == APP['lessons']['types']['BREAK'] and items[i+1]['type'] == APP['lessons']['types']['BREAK']:
+        if items[i]['type'] == LessonType.BREAK.value and items[i+1]['type'] == LessonType.BREAK.value:
             items.pop(i)
             i = i - 1
         i = i + 1
@@ -64,7 +64,7 @@ def remove_adj_breaks(items):
 def remove_breaks(items):
     i = 0
     while i <= len(items) - 1:
-        if items[i]['type'] == APP['lessons']['types']['BREAK']:
+        if items[i]['type'] == LessonType.BREAK.value:
             items.pop(i)
             i = i - 1
         i = i + 1
@@ -76,9 +76,9 @@ def remove_break_and_text(items):
     while i < len(items)-1:
         try:
             # <text><break><text> => <text w/ hr>
-            if items[i-1]['type'] == APP['lessons']['types']['TEXT'] and \
-                    items[i]['type'] == APP['lessons']['types']['BREAK'] \
-                    and items[i+1]['type'] == APP['lessons']['types']['TEXT']:
+            if items[i-1]['type'] == LessonType.TEXT.value and \
+                    items[i]['type'] == LessonType.BREAK.value \
+                    and items[i+1]['type'] == LessonType.TEXT.value:
                 victim = items.pop(i+1)
                 items.pop(i)
                 merged = items[i-1]
@@ -96,7 +96,7 @@ def merge_adj_text(items):
     while i < len(items) - 1:
         try:
             # <text><text> => <text>
-            if items[i]['type'] == APP['lessons']['types']['TEXT'] and items[i + 1]['type'] == APP['lessons']['types']['TEXT']:
+            if items[i]['type'] == LessonType.TEXT.value and items[i + 1]['type'] == LessonType.TEXT.value:
                 victim = items.pop(i + 1)
                 merged = items[i]
                 merged['html'] = merged['html'] + victim['html']
@@ -112,7 +112,7 @@ def name_nameless_items(items):
     i = 0
     while i <= len(items):
         try:
-            if items[i]['type'] == APP['lessons']['types']['TEXT']:
+            if items[i]['type'] == LessonType.TEXT.value:
                 if items[i]['name'] == '' or (i == 0 and is_image(items[i]['name'], None)):
                     html = BeautifulSoup(items[i]['html'], 'html.parser')
 
