@@ -35,10 +35,10 @@ def run(SITE_ID, APP):
 
                 html = None
 
-                if item.attrs['type'] == LessonType.TEXT.value:
+                if item.attrs['type'] == LessonType.TEXT:
                     html = BeautifulSoup(item.attrs['html'], 'html.parser')
 
-                if item.attrs['type'] == LessonType.RESOURCE.value or item.attrs['type'] == LessonType.MULTIMEDIA.value:
+                if item.attrs['type'] == LessonType.RESOURCE or item.attrs['type'] == LessonType.MULTIMEDIA:
                     if item.get('html') and item.attrs['html'] in APP['lessons']['type_to_link']:
                         href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
                         html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
@@ -48,13 +48,13 @@ def run(SITE_ID, APP):
                 if html:
                     merged.div.append(html)
 
-            updated_item = page.find('item', {'type': LessonType.TEXT.value})
+            updated_item = page.find('item', {'type': LessonType.TEXT})
             if updated_item:
                 updated_item['html'] = str(merged)
                 updated_item['data-merged'] = True
 
             for item in items:
-                if not item.attrs.get('data-merged') and item.attrs.get('type') == LessonType.TEXT.value:
+                if not item.attrs.get('data-merged') and item.attrs.get('type') == LessonType.TEXT:
                     item.extract()
 
         updated_xml = soup.prettify()

@@ -32,20 +32,20 @@ def update_item_types(APP, items):
 
         item_html = item['html'] if 'html' in item else None
 
-        if item['type'] == LessonType.MULTIMEDIA.value and is_image(content_path, item_html):
+        if item['type'] == LessonType.MULTIMEDIA and is_image(content_path, item_html):
             alt_text = item['alt']
             item['sakaiid'] = ''
-            item['type'] = LessonType.TEXT.value
+            item['type'] = LessonType.TEXT
             item['name'] = alt_text
 
             img_path = urllib.parse.quote(content_path)
             item['html'] = f'<p><img style=\"max-width: 100%\" alt=\"{alt_text}\" src=\"{content_path_prefix}{img_path}\"></p>'
 
-        if item['type'] == LessonType.BREAK.value and item['name']:
+        if item['type'] == LessonType.BREAK and item['name']:
             name = item['name']
             html_name = f'<h2 class=\"section-heading\">{name}</h2>'
             item['html'] = html_name
-            item['type'] = LessonType.TEXT.value
+            item['type'] = LessonType.TEXT
 
     return items
 
@@ -54,7 +54,7 @@ def remove_adj_breaks(items):
     i = 0
     while i < len(items) - 1:
         # <break><break> => <break>
-        if items[i]['type'] == LessonType.BREAK.value and items[i+1]['type'] == LessonType.BREAK.value:
+        if items[i]['type'] == LessonType.BREAK and items[i+1]['type'] == LessonType.BREAK:
             items.pop(i)
             i = i - 1
         i = i + 1
@@ -64,7 +64,7 @@ def remove_adj_breaks(items):
 def remove_breaks(items):
     i = 0
     while i <= len(items) - 1:
-        if items[i]['type'] == LessonType.BREAK.value:
+        if items[i]['type'] == LessonType.BREAK:
             items.pop(i)
             i = i - 1
         i = i + 1
@@ -76,9 +76,9 @@ def remove_break_and_text(items):
     while i < len(items)-1:
         try:
             # <text><break><text> => <text w/ hr>
-            if items[i-1]['type'] == LessonType.TEXT.value and \
-                    items[i]['type'] == LessonType.BREAK.value \
-                    and items[i+1]['type'] == LessonType.TEXT.value:
+            if items[i-1]['type'] == LessonType.TEXT and \
+                    items[i]['type'] == LessonType.BREAK \
+                    and items[i+1]['type'] == LessonType.TEXT:
                 victim = items.pop(i+1)
                 items.pop(i)
                 merged = items[i-1]
@@ -96,7 +96,7 @@ def merge_adj_text(items):
     while i < len(items) - 1:
         try:
             # <text><text> => <text>
-            if items[i]['type'] == LessonType.TEXT.value and items[i + 1]['type'] == LessonType.TEXT.value:
+            if items[i]['type'] == LessonType.TEXT and items[i + 1]['type'] == LessonType.TEXT:
                 victim = items.pop(i + 1)
                 merged = items[i]
                 merged['html'] = merged['html'] + victim['html']
@@ -112,7 +112,7 @@ def name_nameless_items(items):
     i = 0
     while i <= len(items):
         try:
-            if items[i]['type'] == LessonType.TEXT.value:
+            if items[i]['type'] == LessonType.TEXT:
                 if items[i]['name'] == '' or (i == 0 and is_image(items[i]['name'], None)):
                     html = BeautifulSoup(items[i]['html'], 'html.parser')
 

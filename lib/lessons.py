@@ -1,7 +1,4 @@
-import enum
-
-
-class LessonType(enum.Enum):
+class LessonType:
     RESOURCE = '1'
     PAGE = '2'
     ASSIGNMENT = '3'
