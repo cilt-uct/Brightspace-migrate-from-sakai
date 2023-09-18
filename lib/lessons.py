@@ -1,4 +1,4 @@
-class LessonType:
+class ItemType:
     RESOURCE = '1'
     PAGE = '2'
     ASSIGNMENT = '3'
