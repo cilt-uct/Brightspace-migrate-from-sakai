@@ -45,13 +45,17 @@ def set_running(db_config, link_id, site_id):
         raise Exception(f'Could not update migration record {link_id} : {site_id}') from e
 
 def another_running(db_config, link_id, site_id):
+
+    # Possible states:
+    # ('init','starting','exporting','running','queued','uploading','importing','updating','completed','error','paused','admin')
+
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
         with connection:
             with connection.cursor() as cursor:
                 sql = """SELECT link_id FROM migration_site `A`
                             where  `A`.link_id <> %s and `A`.site_id = %s and `active` = 1
-                            and `A`.state in ('exporting','running')"""
+                            and `A`.state NOT in ('init', 'starting', 'completed', 'error')"""
                 cursor.execute(sql, (link_id, site_id))
                 cursor.fetchall()
                 return cursor.rowcount
@@ -88,16 +92,18 @@ def check_migrations(APP):
         want_to_migrate = lib.db.get_records(db_config=DB_AUTH, state='starting')
         for site in want_to_migrate:
             site_id = site['site_id']
+            link_id = site['link_id']
             site_url = site['url']
             site_title = site['title']
             failure_type = site['failure_type']
             failure_detail = site['failure_detail']
             started_by = site['started_by_email']
             try:
-                logging.info(f"migration started for {site_id}")
 
-                if (not another_running(DB_AUTH, site['link_id'], site['site_id'])):
-                    set_running(DB_AUTH, site['link_id'], site['site_id'])
+                if (not another_running(DB_AUTH, link_id, site_id)):
+                    set_running(DB_AUTH, link_id, site_id)
+
+                    logging.info(f"migration started for {site_id} from {link_id}")
 
                     cmd = "python3 {}/run_workflow.py {} {}".format(SCRIPT_FOLDER, site['link_id'],site['site_id']).split()
                     # if APP['debug']:
@@ -108,7 +114,8 @@ def check_migrations(APP):
 
                     time.sleep(5)
                 else:
-                    logging.info("\tHas another task running for {}".format(site['site_id']))
+                    logging.info(f"Migration for {site_id} from {link_id} queued, but another task is running for this site")
+
             except Exception as e:
                 send_template_email(
                     APP,
