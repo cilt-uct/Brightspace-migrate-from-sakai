@@ -39,11 +39,8 @@ def run(SITE_ID, APP):
                     html = BeautifulSoup(item.attrs['html'], 'html.parser')
 
                 if item.attrs['type'] == ItemType.RESOURCE or item.attrs['type'] == ItemType.MULTIMEDIA:
-                    if item.get('html') and item.attrs['html'] in APP['lessons']['type_to_link']:
-                        href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
-                        html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
-                    else:
-                        html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-sakaiid={item.attrs["sakaiid"]}><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
+                    href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
+                    html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
 
                 if html:
                     merged.div.append(html)
