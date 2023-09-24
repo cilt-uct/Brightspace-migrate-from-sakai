@@ -20,6 +20,7 @@ APP = {
   'sakai_url' : 'https://vula.uct.ac.za',
   'sakai_name' : 'Vula',
   'brightspace_url' : 'https://amathuba.uct.ac.za',
+  'brightspace_lessons': '/d2l/le/lessons/',
   'brightspace_name' : 'Amathuba',
   'admin_emails' : ['corne.oosthuizen@uct.ac.za'],
   'helpdesk-email' : ('Amathuba','cilt-helpdesk@uct.ac.za'),
@@ -112,7 +113,9 @@ APP = {
           'copy_url': '/d2l/api/course/copy_orientation',
           'course_info_order_url': '/d2l/api/content/order/course_info',
           'course_outline_order_url': '/d2l/api/content/order/course_outline',
-          'course_content_src': 9944
+          'course_content_src': 9944,
+          'content_root_url': '/content/root/',
+          'update_content_url': '/lti/update_module_description'
   },
 
   'course': {
