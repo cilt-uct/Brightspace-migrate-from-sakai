@@ -37,6 +37,17 @@
                     <attributes>{}</attributes>
                 </item>
             </page>
+            <page hidden="false" pageid="312671" siteid="9da6b86e-15d3-4d29-b6f4-3a129109b869" title="Lessons 2.0" toolid="6cdc5f45-3615-41b4-91f4-9adc40401c40">
+                <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" id="2913418" name="sample.pdf" nextpage="false" pageId="313240" prerequisite="false" required="false" requirementtext="" sakaiid="/group/81814b18-6ae4-4570-be9d-7459154a94b4/Lessons 2.0/sample.pdf" samewindow="false" sequence="2" showComments="false" subrequirement="false" type="7" width="">
+                    <attributes>{"addedby":"fb4d835f-c6d8-470c-8ee5-4f1db8f42447"}</attributes>
+                </item>
+                <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" html="&lt;p>Standard lessons page.&lt;/p>&#xa;" id="2906055" name="" nextpage="false" pageId="312671" prerequisite="false" required="false" requirementtext="" sakaiid="" samewindow="false" sequence="1" showComments="false" subrequirement="false" type="5" width="">
+                    <attributes>{}</attributes>
+                </item>
+                 <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" id="2906036" name="Embedded PDF" nextpage="false" pageId="311233" prerequisite="false" required="false" requirementtext="" sakaiid="/group/9da6b86e-15d3-4d29-b6f4-3a129109b869/Lessons/sample.pdf" samewindow="false" sequence="5" showComments="false" subrequirement="false" type="1" width="">
+                    <attributes>{"addedby":"fb4d835f-c6d8-470c-8ee5-4f1db8f42447"}</attributes>
+                </item>
+            </page>
             <lessonbuilder functions.require="" name="Lessons" pageId="311233" pagePosition="3" pageVisibility="" toolid="61e92b35-4010-4c83-a3ee-a333dba46c65"/>
             <lessonbuilder functions.require="" name="Lessons 2.0" pagePosition="6" pageVisibility="" toolid="6cdc5f45-3615-41b4-91f4-9adc40401c40"/>
         </lessonbuilder>

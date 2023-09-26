@@ -43,7 +43,8 @@ def run(SITE_ID, APP):
                         href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
                         html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
                     else:
-                        html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-sakaiid={item.attrs["sakaiid"]}><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
+                        html_type = 'N/A' if 'html' not in item.attrs else item.attrs["html"]
+                        html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-sakaiid={item.attrs["sakaiid"]}><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {html_type}]</p>', 'html.parser')
 
                 if html:
                     merged.div.append(html)

@@ -49,5 +49,12 @@ class MergePageTestCase(unittest.TestCase):
                 if page_count == 3:
                     self.assertEqual(1, len(items))
                     self.assertEqual("5", items[0].attrs['type'])
+                if page_count == 4:
+                    self.assertEqual(3, len(items))
+                    self.assertEqual("7", items[0].attrs['type'])
+                    self.assertEqual("5", items[1].attrs['type'])
+                    html = '<div><p 2.0="" data-sakaiid="/group/81814b18-6ae4-4570-be9d-7459154a94b4/Lessons" data-type="placeholder" sample.pdf="" style="border-style:solid;"><span style="font-weight:bold;">PLACEHOLDER</span> [name: sample.pdf; type: N/A]</p><p>Standard lessons page.</p><p data-sakaiid="/group/9da6b86e-15d3-4d29-b6f4-3a129109b869/Lessons/sample.pdf" data-type="placeholder" style="border-style:solid;"><span style="font-weight:bold;">PLACEHOLDER</span> [name: Embedded PDF; type: N/A]</p></div>'
+                    self.assertEqual(html, items[1].attrs['html'])
+                    self.assertEqual("1", items[2].attrs['type'])
 
                 page_count += 1
