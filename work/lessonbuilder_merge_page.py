@@ -61,9 +61,11 @@ def run(SITE_ID, APP):
 
                         if url:
                             href = url
+                            new_tab = ' target="_blank" rel="noopener"'
                         else:
                             href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
-                        html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
+                            new_tab = ''
+                        html = BeautifulSoup(f'<p><a href="{href}"{new_tab}>{item.attrs["name"]}</a></p>', 'html.parser')
 
                 if html:
                     merged.div.append(html)

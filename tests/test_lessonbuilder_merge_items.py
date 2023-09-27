@@ -65,7 +65,7 @@ class MergePageTestCase(unittest.TestCase):
                     # Merge html text + html text + embedded link + embedded link
                     self.assertEqual(3, len(items))
                     self.assertEqual("5", items[0].attrs['type'])
-                    html = '<div><p>Embedded in the text field and not in the lessons page.</p><p>Here is a video below embedded in the lessons page.</p><p><a href="https://google.com">Search with Google</a></p><p><a href="https://google.com">Search with Google as an embed</a></p></div>'
+                    html = '<div><p>Embedded in the text field and not in the lessons page.</p><p>Here is a video below embedded in the lessons page.</p><p><a href="https://google.com" rel="noopener" target="_blank">Search with Google</a></p><p><a href="https://google.com" rel="noopener" target="_blank">Search with Google as an embed</a></p></div>'
                     self.assertEqual(html, items[0].attrs['html'])
                     self.assertEqual("1", items[1].attrs['type'])
                     self.assertEqual("7", items[2].attrs['type'])
