@@ -37,6 +37,28 @@
                     <attributes>{}</attributes>
                 </item>
             </page>
+            <page folder="Lessons/" hidden="false" pageid="311233" siteid="9da6b86e-15d3-4d29-b6f4-3a129109b869" title="Lessons" toolid="61e92b35-4010-4c83-a3ee-a333dba46c65">
+                <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" html="&lt;p>Embedded in the text field and not in the lessons page." id="2883082" name="" nextpage="false" pageId="311233" prerequisite="false" required="false" requirementtext="" sakaiid="" samewindow="false" sequence="1" showComments="false" subrequirement="false" type="5" width="">
+                    <attributes>{}</attributes>
+                </item>
+                <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" html="&lt;p>Here is a video below embedded in the lessons page.&lt;/p>&#xa;" id="2906032" name="" nextpage="false" pageId="311233" prerequisite="false" required="false" requirementtext="" sakaiid="" samewindow="false" sequence="2" showComments="false" subrequirement="false" type="5" width="">
+                    <attributes>{}</attributes>
+                </item>
+                <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" html="text/html" id="2915122" name="Search with Google" nextpage="false" pageId="313240" prerequisite="false" required="false" requirementtext="" sakaiid="/url/0/https://google.com" samewindow="false" sequence="3" showComments="false" subrequirement="false" type="1" width="">
+                    <attributes>{"addedby":"14085e39-ce5d-4d36-8699-161ae4103612","multimediaUrl":"https:\/\/google.com"}</attributes>
+                </item>
+                <item alt="" altPoints="null" anonymous="false" description="Search with google as an embed" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" id="2915124" name="Search with Google as an embed" nextpage="false" pageId="313240" prerequisite="false" required="false" requirementtext="" sakaiid="/url/0/https://google.com" samewindow="false" sequence="4" showComments="false" subrequirement="false" type="7" width="">
+                    <attributes>{"multimediaDisplayType":"3","addedby":"14085e39-ce5d-4d36-8699-161ae4103612","multimediaUrl":"https:\/\/google.com"}</attributes>
+                </item>
+            </page>
+            <page folder="Lessons/" hidden="false" pageid="311233" siteid="9da6b86e-15d3-4d29-b6f4-3a129109b869" title="Lessons" toolid="61e92b35-4010-4c83-a3ee-a333dba46c65">
+                <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" html="&lt;p>Embedded in the text field and not in the lessons page." id="2883082" name="" nextpage="false" pageId="311233" prerequisite="false" required="false" requirementtext="" sakaiid="" samewindow="false" sequence="1" showComments="false" subrequirement="false" type="5" width="">
+                    <attributes>{}</attributes>
+                </item>
+                <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" html="video/mp4" id="2767361" name="Business Plan _ video.mp4" nextpage="false" pageId="296783" prerequisite="false" required="false" requirementtext="" sakaiid="/group/9917b8aa-d130-48dd-9c9c-48b280e4eadb/EWC/Business Plan _ video.mp4" samewindow="false" sequence="41" showComments="false" subrequirement="false" type="1" width="">
+                    <attributes>{"addedby":"8e2fe0cf-6d18-479d-bf9b-695b37a059a3"}</attributes>
+                </item>
+            </page>
             <lessonbuilder functions.require="" name="Lessons" pageId="311233" pagePosition="3" pageVisibility="" toolid="61e92b35-4010-4c83-a3ee-a333dba46c65"/>
             <lessonbuilder functions.require="" name="Lessons 2.0" pagePosition="6" pageVisibility="" toolid="6cdc5f45-3615-41b4-91f4-9adc40401c40"/>
         </lessonbuilder>

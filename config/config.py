@@ -173,8 +173,7 @@ APP = {
                                   'Gradebook', 'Lessons', 'Polls', 'Rubrics',
                                   'Tests & Quizzes', 'Resources', 'Q&A', 'Lecture Videos', 'Discussions'],
       'highlight_domains': ['vula.uct.ac.za'],
-      'type_to_link': ['application/msword', 'application/pdf',
-                       'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      'type_to_placeholder': ['audio', 'video']
   },
 
   'qna': {
