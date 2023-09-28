@@ -9,6 +9,7 @@ import shutil
 import copy
 import argparse
 import urllib.parse
+import json
 from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -32,6 +33,7 @@ def update_item_types(APP, items):
 
         item_html = item['html'] if 'html' in item else None
 
+        # Inline images
         if item['type'] == ItemType.MULTIMEDIA and is_image(content_path, item_html):
             alt_text = item['alt']
             item['sakaiid'] = ''
@@ -41,11 +43,32 @@ def update_item_types(APP, items):
             img_path = urllib.parse.quote(content_path)
             item['html'] = f'<p><img style=\"max-width: 100%\" alt=\"{alt_text}\" src=\"{content_path_prefix}{img_path}\"></p>'
 
+        # Page breaks
         if item['type'] == ItemType.BREAK and item['name']:
             name = item['name']
             html_name = f'<h2 class=\"section-heading\">{name}</h2>'
             item['html'] = html_name
             item['type'] = ItemType.TEXT
+
+        # URLs
+        if item['type'] in (ItemType.RESOURCE, ItemType.MULTIMEDIA) and item.find('attributes'):
+
+            aJson = item.find("attributes").get_text()
+            attributes = json.loads(aJson)
+
+            # Links that are not embeds
+            if 'multimediaUrl' in attributes and 'multimediaDisplayType' not in attributes:
+                url = attributes['multimediaUrl']
+                desc = item['description']
+                name = item['name']
+
+                if item['type'] == ItemType.MULTIMEDIA and desc:
+                    link_html = f'<p><a href="{url}" target="_blank" rel="noopener">{url}</a><br>{desc}</p>'
+                else:
+                    link_html = f'<p><a href="{url}" target="_blank" rel="noopener">{name}</a></p>'
+
+                item['type'] = ItemType.TEXT
+                item['html'] = link_html
 
     return items
 
