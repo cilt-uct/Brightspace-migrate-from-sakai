@@ -14,6 +14,7 @@ class MergeTestCases(unittest.TestCase):
     @patch('argparse.ArgumentParser.parse_args', return_value=argparse.Namespace(SITE_ID='site_id', debug=True))
     def test_read_xml(self, *_):
         work.lessonbuilder_merge_items.main()
+
         file_path = self.ROOT_DIR + '/test_files/output.xml'
         with open(file_path, 'r') as f:
             data = f.read()
@@ -26,7 +27,7 @@ class MergeTestCases(unittest.TestCase):
             items.extend(page_items)
 
         self.assertEqual(2, len(pages))
-        self.assertEqual(16, len(items))
+        self.assertEqual(3, len(items))
 
         os.remove(file_path)
 

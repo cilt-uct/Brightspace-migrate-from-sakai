@@ -38,6 +38,7 @@ def update_item_types(APP, items):
 
             img_path = urllib.parse.quote(content_path)
             item['html'] = f'<p><img style=\"max-width: 100%\" alt=\"{alt_text}\" src=\"{content_path_prefix}{img_path}\"></p>'
+            continue
 
         # Page breaks
         if item['type'] == ItemType.BREAK and item['name']:
@@ -45,11 +46,13 @@ def update_item_types(APP, items):
             html_name = f'<h2 class=\"section-heading\">{name}</h2>'
             item['html'] = html_name
             item['type'] = ItemType.TEXT
+            continue
 
         # URLs
         if item['type'] in (ItemType.RESOURCE, ItemType.MULTIMEDIA) and item.find('attributes'):
 
-            aJson = item.find("attributes").get_text()
+            attr = item.find("attributes")
+            aJson = attr.get_text()
             attributes = json.loads(aJson)
 
             # Links that are not embeds
@@ -65,6 +68,8 @@ def update_item_types(APP, items):
 
                 item['type'] = ItemType.TEXT
                 item['html'] = link_html
+                attr.decompose()
+                continue
 
             # Youtube
             if 'multimediaUrl' in attributes and 'multimediaDisplayType' in attributes:
@@ -77,6 +82,15 @@ def update_item_types(APP, items):
 
                     item['type'] = ItemType.TEXT
                     item['html'] = youtube_embed(youtube_id, start_time, name)
+                    attr.decompose()
+                    continue
+
+            # Generic embed code
+            if 'multimediaEmbedCode' in attributes:
+                item['type'] = ItemType.TEXT
+                item['html'] = generic_embed(attributes['multimediaEmbedCode'])
+                attr.decompose()
+                continue
 
     return items
 

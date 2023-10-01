@@ -71,3 +71,14 @@ def parse_youtube(url):
             start_time = m2.group(1)
 
     return (youtube_id, start_time)
+
+# Embed a generic html fragment with some special handling
+def generic_embed(html):
+
+    embed_html = html
+
+    # Add twitter widgets which aren't included in the Lessons embed code
+    if html.startswith('<blockquote class="twitter-tweet">'):
+        embed_html += '<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+
+    return embed_html
