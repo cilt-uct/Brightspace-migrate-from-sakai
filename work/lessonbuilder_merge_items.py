@@ -1,4 +1,4 @@
-# Python version of NYU code to merge Lessons items on a page for D2L import:
+# Extended from NYU code to merge Lessons items on a page for D2L import:
 # https://github.com/cilt-uct/sakai/blob/21.x/common/archive-impl/impl2/src/java/org/sakaiproject/archive/impl/LessonsRejigger.java
 # AMA-449
 
@@ -18,10 +18,6 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.lessons import *
-
-# Lessons item types
-# https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36
-
 
 def update_item_types(APP, items):
 
@@ -69,6 +65,18 @@ def update_item_types(APP, items):
 
                 item['type'] = ItemType.TEXT
                 item['html'] = link_html
+
+            # Youtube
+            if 'multimediaUrl' in attributes and 'multimediaDisplayType' in attributes:
+                url = attributes['multimediaUrl']
+                mmdt = attributes['multimediaDisplayType']
+                name = item['name']
+
+                if is_youtube(url):
+                    (youtube_id, start_time) = parse_youtube(url)
+
+                    item['type'] = ItemType.TEXT
+                    item['html'] = youtube_embed(youtube_id, start_time, name)
 
     return items
 
