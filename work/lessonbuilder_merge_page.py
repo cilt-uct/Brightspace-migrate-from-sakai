@@ -3,6 +3,7 @@
 import sys
 import os
 import argparse
+from html import escape
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -41,7 +42,11 @@ def run(SITE_ID, APP):
                 if item.attrs['type'] == ItemType.RESOURCE or item.attrs['type'] == ItemType.MULTIMEDIA:
                     if item.get('html') and item.attrs['html'] in APP['lessons']['type_to_link']:
                         href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
-                        html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
+                        desc = item.attrs['description']
+                        if desc:
+                            html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a><br>{escape(desc)}</p>', 'html.parser')
+                        else:
+                            html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
                     else:
                         html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-sakaiid={item.attrs["sakaiid"]}><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
 
