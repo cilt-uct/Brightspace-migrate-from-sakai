@@ -228,6 +228,11 @@ def run(SITE_ID, APP):
     for page in pages:
         items = page.find_all('item')
 
+        if not items and not page.get('parent'):
+            logging.info(f"Removing empty page with no parent: {page.get('pageid')} hidden: {page.get('hidden')} title: {page.get('title')}")
+            page.decompose()
+            continue
+
         items = update_item_types(APP, items)
         items = remove_adj_breaks(items)
         items = remove_break_and_text(items)
