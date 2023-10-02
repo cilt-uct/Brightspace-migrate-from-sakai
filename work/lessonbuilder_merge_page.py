@@ -50,7 +50,7 @@ def run(SITE_ID, APP):
                     else:
                         # Matches an extension that we want to link
                         for link_ext in APP['lessons']['ext_to_link']:
-                            if sakai_id.lower().endswith(f".{lower(link_ext)}"):
+                            if sakai_id.lower().endswith(f".{link_ext.lower()}"):
                                 link_item = True
                                 break
 
