@@ -42,8 +42,8 @@ def run(SITE_ID, APP):
                 if item.attrs['type'] == ItemType.RESOURCE or item.attrs['type'] == ItemType.MULTIMEDIA:
                     if item.get('html') and item.attrs['html'] in APP['lessons']['type_to_link']:
                         href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
-                        desc = item.attrs['description']
-                        if desc:
+                        if 'description' in item.attrs:
+                            desc = item.attrs['description']
                             html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a><br>{escape(desc)}</p>', 'html.parser')
                         else:
                             html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
