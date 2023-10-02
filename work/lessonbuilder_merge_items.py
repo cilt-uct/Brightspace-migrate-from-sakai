@@ -71,7 +71,14 @@ def update_item_types(APP, items):
                 attr.decompose()
                 continue
 
-            # Youtube
+            # Generic embed code
+            if 'multimediaEmbedCode' in attributes:
+                item['type'] = ItemType.TEXT
+                item['html'] = generic_embed(attributes['multimediaEmbedCode'])
+                attr.decompose()
+                continue
+
+            # Youtube or other known embed type
             if 'multimediaUrl' in attributes and 'multimediaDisplayType' in attributes:
                 url = attributes['multimediaUrl']
                 mmdt = attributes['multimediaDisplayType']
@@ -80,17 +87,21 @@ def update_item_types(APP, items):
                 if is_youtube(url):
                     (youtube_id, start_time) = parse_youtube(url)
 
+                    logging.info(f"Embedding youtube video {youtube_id}")
                     item['type'] = ItemType.TEXT
                     item['html'] = youtube_embed(youtube_id, start_time, name)
                     attr.decompose()
                     continue
 
-            # Generic embed code
-            if 'multimediaEmbedCode' in attributes:
-                item['type'] = ItemType.TEXT
-                item['html'] = generic_embed(attributes['multimediaEmbedCode'])
-                attr.decompose()
-                continue
+                if is_twitter(url):
+                    logging
+                    embed = twitter_embed(url)
+                    if embed:
+                        logging.info(f"Embedding twitter URL {url}")
+                        item['type'] = ItemType.TEXT
+                        item['html'] = embed
+                        attr.decompose()
+                        continue
 
     return items
 

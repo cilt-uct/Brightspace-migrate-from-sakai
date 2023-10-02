@@ -1,6 +1,7 @@
 # Classes and functions for Lessons conversion
 
 import re
+import oembed
 
 # Lessons item types
 # https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36
@@ -30,6 +31,9 @@ class ItemType:
 YOUTUBE_RE = "^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$"
 YOUTUBE_PARAMS_RE = "t=([0-9]+)"
 
+# https://stackoverflow.com/questions/4138483/twitter-status-url-regex
+TWITTER_RE = "^https?:\/\/(www.|m.|mobile.)?twitter\.com\/(?:#!\/)?\w+\/status?\/\d+"
+
 # Embed HTML for a youtube video with the given id
 def youtube_embed(youtube_id, start_timestamp, title):
 
@@ -49,9 +53,29 @@ def youtube_embed(youtube_id, start_timestamp, title):
 
     return f'<p><span style="font-size: 19px;">{embed_iframe}</span></p>'
 
+def twitter_embed(url):
+
+    consumer = oembed.OEmbedConsumer()
+    endpoint = oembed.OEmbedEndpoint('https://publish.twitter.com/oembed', ['https://twitter.com/*'])
+    consumer.addEndpoint(endpoint)
+    response = consumer.embed(url)
+
+    if response:
+        embedJson = response.getData()
+        if embedJson and 'html' in embedJson:
+            return embedJson['html']
+
+    return None
+
 def is_youtube(url):
 
     if re.search(YOUTUBE_RE, url):
+        return True
+
+    return False
+
+def is_twitter(url):
+    if re.search(TWITTER_RE, url):
         return True
 
     return False
