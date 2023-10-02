@@ -176,8 +176,14 @@ APP = {
                                   'Gradebook', 'Lessons', 'Polls', 'Rubrics',
                                   'Tests & Quizzes', 'Resources', 'Q&A', 'Lecture Videos', 'Discussions'],
       'highlight_domains': ['vula.uct.ac.za'],
-      'type_to_link': ['application/msword', 'application/pdf',
-                       'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      # these are resources we want to both link and retain as separate Content topics,
+      # because Amathuba will render them as PDFs which may be helpful for students
+      'type_to_link': ['application/msword',
+                       'application/pdf',
+                       'application/vnd.ms-powerpoint',
+                       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                       'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+      'ext_to_link': ['pdf','ppt','pptx']
   },
 
   'qna': {

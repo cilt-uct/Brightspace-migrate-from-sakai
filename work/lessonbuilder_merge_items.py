@@ -1,4 +1,4 @@
-# Python version of NYU code to merge Lessons items on a page for D2L import:
+# Extended from NYU code to merge Lessons items on a page for D2L import:
 # https://github.com/cilt-uct/sakai/blob/21.x/common/archive-impl/impl2/src/java/org/sakaiproject/archive/impl/LessonsRejigger.java
 # AMA-449
 
@@ -9,6 +9,7 @@ import shutil
 import copy
 import argparse
 import urllib.parse
+import json
 from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -17,10 +18,6 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.lessons import *
-
-# Lessons item types
-# https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36
-
 
 def update_item_types(APP, items):
 
@@ -32,6 +29,7 @@ def update_item_types(APP, items):
 
         item_html = item['html'] if 'html' in item else None
 
+        # Inline images
         if item['type'] == ItemType.MULTIMEDIA and is_image(content_path, item_html):
             alt_text = item['alt']
             item['sakaiid'] = ''
@@ -40,12 +38,80 @@ def update_item_types(APP, items):
 
             img_path = urllib.parse.quote(content_path)
             item['html'] = f'<p><img style=\"max-width: 100%\" alt=\"{alt_text}\" src=\"{content_path_prefix}{img_path}\"></p>'
+            continue
 
+        # Page breaks
         if item['type'] == ItemType.BREAK and item['name']:
             name = item['name']
             html_name = f'<h2 class=\"section-heading\">{name}</h2>'
             item['html'] = html_name
             item['type'] = ItemType.TEXT
+            continue
+
+        # URLs
+        if item['type'] in (ItemType.RESOURCE, ItemType.MULTIMEDIA) and item.find('attributes'):
+
+            attr = item.find("attributes")
+            aJson = attr.get_text()
+            attributes = json.loads(aJson)
+
+            # Links that are not embeds
+            if 'multimediaUrl' in attributes and 'multimediaDisplayType' not in attributes:
+                url = attributes['multimediaUrl']
+                desc = item['description']
+                name = item['name']
+
+                if item['type'] == ItemType.MULTIMEDIA and desc:
+                    link_html = f'<p><a href="{url}" target="_blank" rel="noopener">{url}</a><br>{desc}</p>'
+                else:
+                    link_html = f'<p><a href="{url}" target="_blank" rel="noopener">{name}</a></p>'
+
+                item['type'] = ItemType.TEXT
+                item['html'] = link_html
+                attr.decompose()
+                continue
+
+            # Generic embed code
+            if 'multimediaEmbedCode' in attributes:
+                item['type'] = ItemType.TEXT
+                item['html'] = generic_embed(attributes['multimediaEmbedCode'])
+                attr.decompose()
+                continue
+
+            # Youtube or other known embed type
+            if 'multimediaUrl' in attributes and 'multimediaDisplayType' in attributes:
+                url = attributes['multimediaUrl']
+                mmdt = attributes['multimediaDisplayType']
+                name = item['name']
+
+                if is_youtube(url):
+                    (youtube_id, start_time) = parse_youtube(url)
+
+                    logging.info(f"Embedding youtube video {youtube_id}")
+                    item['type'] = ItemType.TEXT
+                    item['html'] = youtube_embed(youtube_id, start_time, name)
+                    attr.decompose()
+                    continue
+
+                if is_twitter(url):
+                    embed = twitter_embed(url)
+                    if embed:
+                        logging.info(f"Embedding twitter URL {url}")
+                        item['type'] = ItemType.TEXT
+                        item['html'] = embed
+                        attr.decompose()
+                        continue
+
+                if url and mmdt == '4':
+                    # Generic embed: iframe it if the url returns text/html content type
+                    if is_url_html(url):
+                        embed = generic_iframe(url)
+                        if embed:
+                            logging.info(f"Embedding multimedia URL with iframe: {url}")
+                            item['type'] = ItemType.TEXT
+                            item['html'] = embed
+                            attr.decompose()
+                            continue
 
     return items
 
@@ -182,6 +248,11 @@ def run(SITE_ID, APP):
 
     for page in pages:
         items = page.find_all('item')
+
+        if not items and not page.get('parent'):
+            logging.info(f"Removing empty page with no parent: {page.get('pageid')} hidden: {page.get('hidden')} title: {page.get('title')}")
+            page.decompose()
+            continue
 
         items = update_item_types(APP, items)
         items = remove_adj_breaks(items)

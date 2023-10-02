@@ -3,6 +3,7 @@
 import sys
 import os
 import argparse
+from html import escape
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -38,11 +39,31 @@ def run(SITE_ID, APP):
                 if item.attrs['type'] == ItemType.TEXT:
                     html = BeautifulSoup(item.attrs['html'], 'html.parser')
 
-                if item.attrs['type'] == ItemType.RESOURCE or item.attrs['type'] == ItemType.MULTIMEDIA:
+                if item.attrs['type'] in (ItemType.RESOURCE, ItemType.MULTIMEDIA):
+
+                    link_item = False
+                    sakai_id = item.attrs["sakaiid"]
+
                     if item.get('html') and item.attrs['html'] in APP['lessons']['type_to_link']:
-                        href = f'{APP["sakai_url"]}/access/content{item.attrs["sakaiid"]}'
-                        html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
+                        # Matches a content type that we want to link
+                        link_item = True
                     else:
+                        # Matches an extension that we want to link
+                        for link_ext in APP['lessons']['ext_to_link']:
+                            if sakai_id.lower().endswith(f".{link_ext.lower()}"):
+                                link_item = True
+                                break
+
+                    if link_item:
+                        href = f'{APP["sakai_url"]}/access/content{sakai_id}'
+                        if 'description' in item.attrs:
+                            desc = item.attrs['description']
+                            html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a><br>{escape(desc)}</p>', 'html.parser')
+                        else:
+                            html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
+                    else:
+                        # Create a placeholder that will later be replaced with embed code (mostly video and audio)
+                        logging.info(f'Placeholder for name: {item.attrs["name"]}; type: {item.attrs["html"]}; id: {item.attrs["sakaiid"]}')
                         html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-sakaiid={item.attrs["sakaiid"]}><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
 
                 if html:
