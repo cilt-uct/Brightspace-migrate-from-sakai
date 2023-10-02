@@ -2,6 +2,7 @@
 
 import re
 import oembed
+import requests
 
 # Lessons item types
 # https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36
@@ -67,6 +68,24 @@ def twitter_embed(url):
 
     return None
 
+def generic_iframe(url):
+
+    width = "640"
+    height = "360"
+    m = re.search('https?://([A-Za-z_0-9.-]+).*', url)
+    if m:
+        title = f"Web content from {m.group(1)}"
+    else:
+        title = "Web content"
+
+    embed_link = f'<p><a href="{url}" target="_blank">Open in new window</a></p>'
+
+    allow_options = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    embed_iframe = f'<iframe width="{width}" height="{height}" src="{url}" frameborder="0" allow="{allow_options}" allowfullscreen="allowfullscreen" title="{title}"></iframe>'
+
+    return f"{embed_link}{embed_iframe}"
+
+
 def is_youtube(url):
 
     if re.search(YOUTUBE_RE, url):
@@ -77,6 +96,16 @@ def is_youtube(url):
 def is_twitter(url):
     if re.search(TWITTER_RE, url):
         return True
+
+    return False
+
+def is_url_html(url):
+
+    url_head = requests.head(url)
+
+    if 'Content-Type' in url_head.headers:
+        if url_head.headers['Content-Type'].startswith('text/html'):
+            return True
 
     return False
 

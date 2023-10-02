@@ -94,7 +94,6 @@ def update_item_types(APP, items):
                     continue
 
                 if is_twitter(url):
-                    logging
                     embed = twitter_embed(url)
                     if embed:
                         logging.info(f"Embedding twitter URL {url}")
@@ -102,6 +101,17 @@ def update_item_types(APP, items):
                         item['html'] = embed
                         attr.decompose()
                         continue
+
+                if url and mmdt == '4':
+                    # Generic embed: iframe it if the url returns text/html content type
+                    if is_url_html(url):
+                        embed = generic_iframe(url)
+                        if embed:
+                            logging.info(f"Embedding multimedia URL with iframe: {url}")
+                            item['type'] = ItemType.TEXT
+                            item['html'] = embed
+                            attr.decompose()
+                            continue
 
     return items
 
