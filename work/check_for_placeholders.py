@@ -19,10 +19,35 @@ def get_lessons_html(url, session):
     return r.text
 
 # Get the media ID for a given audio or video path
-def get_media_id(topics, unit_pages, filename, sakaiid):
+# Match the filename in the Structure of the unit with the given parent id,
+# and then find the video URL in topics
+def get_media_id(unit_pages, topics, parent_id, filename):
 
-    return "d43ef9b8-8cc8-4bac-9b0b-fb0875c98acb"
+    print(f"Checking for parent_id {parent_id} with filename {filename}")
 
+    unit_list = list(filter(lambda x: x['Id'] == parent_id, unit_pages))
+    if unit_list:
+        unit = unit_list[0]
+    else:
+        print(f"No unit!")
+        return None
+
+    print(f"Got unit: {unit}")
+
+    for file in unit['Structure']:
+        if filename == file['Title']:
+            topic_id = file['Id']
+            print("Got topic of the video: {topic_id}")
+
+            topic = list(filter(lambda x: x['Id'] == topic_id, topics))[0]
+            media_url = topic['Url']
+
+            print(f"Got URL: {media_url}")
+            media_id = media_url.split(':')[-1].split('/')[0]
+
+            return media_id
+
+    return None
 
 def run(SITE_ID, APP, import_id):
 
@@ -99,7 +124,8 @@ def run(SITE_ID, APP, import_id):
         print(f"Found matching topic: {topic[0]}")
         topic_url = "{}{}".format(brightspace_url, topic[0]['Url'])
         topic_id = topic[0]['Id']
-        print(f"URL: {topic_url}")
+        parent_id = topic[0]['ParentModuleId']
+        print(f"URL: {topic_url} parent_id {parent_id}")
 
         # Get the HTML
         page_html = get_lessons_html(topic_url, brightspace_session)
@@ -116,14 +142,15 @@ def run(SITE_ID, APP, import_id):
             sakai_id = placeholder.attrs['data-sakaiid']
             print(f"Got placeholder: {file_name} {sakai_id}")
 
-            media_id = get_media_id(topics, unit_pages, file_name, sakai_id)
-
             # Institution specific
             org_ou=6606
 
-            link = BeautifulSoup(f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{file_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>', 'html.parser')
-            placeholder.replace_with(link)
-            updated = True
+            media_id = get_media_id(unit_pages, topics, parent_id, file_name)
+
+            if media_id:
+                link = BeautifulSoup(f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{file_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>', 'html.parser')
+                placeholder.replace_with(link)
+                updated = True
 
         if updated:
             update_endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['update_html_file'].format(import_id, topic_id))
@@ -131,21 +158,6 @@ def run(SITE_ID, APP, import_id):
 
 
     return
-
-'''
-
-
-                                for file in files:
-                                    if file_name == file['Title']:
-
-                                        topic = list(filter(lambda x: x['data']['Id'] == file['Id'], topics_response))[0]
-                                        media_id = topic['data']['Url'].split(':')[-1].split('/')[0]
-
-                                        link = BeautifulSoup(f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou=6606&amp;entryId={media_id}&amp;captionsEdit=False" title="{file_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>', 'html.parser')
-                                        placeholder.replace_with(link)
-                                        updated = True
-
-'''
 
 def main():
     global APP
