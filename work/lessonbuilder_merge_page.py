@@ -36,25 +36,27 @@ def run(SITE_ID, APP):
 
                 html = None
 
-                if item.attrs['type'] == ItemType.TEXT:
+                if item['type'] == ItemType.TEXT:
                     html = BeautifulSoup(item.attrs['html'], 'html.parser')
 
-                if item.attrs['type'] in (ItemType.RESOURCE, ItemType.MULTIMEDIA):
+                if item['type'] in (ItemType.RESOURCE, ItemType.MULTIMEDIA):
 
                     sakai_id = item.attrs["sakaiid"]
                     content_type = item.attrs['html'] if 'html' in item.attrs else None
+                    link_name = item.attrs["name"]
 
                     if link_item(APP, content_type, sakai_id):
+                        # Add a direct link to the item
                         href = f'{APP["sakai_url"]}/access/content{sakai_id}'
                         if 'description' in item.attrs:
                             desc = item.attrs['description']
-                            html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a><br>{escape(desc)}</p>', 'html.parser')
+                            html = BeautifulSoup(f'<p><a href="{href}">{link_name}</a><br>{escape(desc)}</p>', 'html.parser')
                         else:
-                            html = BeautifulSoup(f'<p><a href="{href}">{item.attrs["name"]}</a></p>', 'html.parser')
+                            html = BeautifulSoup(f'<p><a href="{href}">{link_name}</a></p>', 'html.parser')
                     else:
-                        # Create a placeholder that will later be replaced with embed code (mostly video and audio)
+                        # Create a placeholder that will later be replaced with embed or link code (mostly video and audio)
                         logging.info(f'Placeholder for name: {item.attrs["name"]}; type: {item.attrs["html"]}; id: {item.attrs["sakaiid"]}')
-                        html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-sakaiid={item.attrs["sakaiid"]} data-name={item.attrs["name"]}><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
+                        html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-item-type="{item["type"]}" data-sakaiid="{item.attrs["sakaiid"]}" data-name="{link_name}"><span style="font-weight:bold;">PLACEHOLDER</span> [name: {link_name}; type: {content_type}]</p>', 'html.parser')
 
                 if html:
                     merged.div.append(html)

@@ -12,6 +12,7 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
+from lib.lessons import *
 
 # See https://docs.valence.desire2learn.com/res/content.html
 
@@ -140,8 +141,15 @@ def run(SITE_ID, APP, import_id):
             (topic_id, media_id) = get_media_id(content_toc, topic_path, sakai_id)
 
             if media_id and topic_id:
-                link = BeautifulSoup(f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{placeholder_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>', 'html.parser')
-                placeholder.replace_with(link)
+
+                if placeholder['data-item-type'] == ItemType.RESOURCE:
+                    # Link
+                    link_html = f'<p><a href="/d2l/common/dialogs/quickLink/quickLink.d2l?ou={{orgUnitId}}&type=mediaLibrary&contentId={media_id}" target="_blank" rel="noopener">{placeholder_name}</a></p>'
+                else:
+                    # Embed
+                    link_html = f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{placeholder_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>'
+
+                placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
                 updated = True
             else:
                 raise Exception(f"Could not get media_id or topic_id for {sakai_id}")

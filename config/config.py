@@ -20,7 +20,6 @@ APP = {
   'sakai_url' : 'https://vula.uct.ac.za',
   'sakai_name' : 'Vula',
   'brightspace_url' : 'https://amathuba.uct.ac.za',
-  'brightspace_lessons': '/d2l/le/lessons/',
   'brightspace_name' : 'Amathuba',
   'admin_emails' : ['corne.oosthuizen@uct.ac.za'],
   'helpdesk-email' : ('Amathuba','cilt-helpdesk@uct.ac.za'),
@@ -56,7 +55,7 @@ APP = {
 
   # Only accept True or False
   'debug': False,
-  'clean_up': False,
+  'clean_up': True,
 
   'archive' : {
     # Custom UCT endpoint; for regular Sakai use '/sakai-ws/soap/sakai'
@@ -114,9 +113,7 @@ APP = {
           'course_info_order_url': '/d2l/api/content/order/course_info',
           'course_outline_order_url': '/d2l/api/content/order/course_outline',
           'course_content_src': 9944,
-          'content_root_url': '/d2l/api/content/root/',
           'update_html_file': '/d2l/api/content/{}/topics/{}/file',
-          'get_topics': '/d2l/api/content/{}/topics'
   },
 
   'course': {
