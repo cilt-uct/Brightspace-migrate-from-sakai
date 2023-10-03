@@ -365,7 +365,7 @@ def stripspace(orig):
     return new
 
 # Call middleware API and return JSON response with optional retries
-def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None):
+def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None, method = None):
 
     tmp = getAuth(APP['auth']['middleware'])
     if (tmp is not None):
@@ -389,7 +389,10 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
 
         try:
             if payload_data is not None:
-                response = requests.post(url, data=payload_data, auth=(AUTH['user'], AUTH['password']))
+                if method == 'PUT':
+                    response = requests.put(url, data=payload_data, auth=(AUTH['user'], AUTH['password']))
+                else:
+                    response = requests.post(url, data=payload_data, auth=(AUTH['user'], AUTH['password']))
             else:
                 response = requests.get(url, auth=(AUTH['user'], AUTH['password']))
 
@@ -466,3 +469,17 @@ def get_var(varname):
     CMD = f'echo $(source {base}; echo $%s)' % varname
     p = subprocess.Popen(CMD, stdout=subprocess.PIPE, shell=True, executable='/bin/bash')
     return p.stdout.readlines()[0].strip().decode("utf-8")
+
+def web_login(login_url, username, password):
+
+    logging.info(f"Web UI login with service account {username}")
+
+    values = {
+        'web_loginPath': '/d2l/login',
+        'username': username,
+        'password': password
+    }
+
+    session = requests.Session()
+    session.post(login_url, data=values, timeout=30)
+    return session

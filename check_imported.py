@@ -253,20 +253,6 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
         logging.exception(e)
         return False
 
-def web_login(login_url, username, password):
-
-    logging.info(f"Web UI login with service account {username}")
-
-    values = {
-        'web_loginPath': '/d2l/login',
-        'username': username,
-        'password': password
-    }
-
-    session = requests.Session()
-    session.post(login_url, data=values, timeout=30)
-    return session
-
 def get_import_history(brightspace_url, org_unit, session):
     url = f'{brightspace_url}/d2l/le/conversion/import/{org_unit}/history/display?ou={org_unit}'
     r = session.get(url, timeout=30)
