@@ -11,6 +11,7 @@ import argparse
 import urllib.parse
 import json
 from bs4 import BeautifulSoup
+from html import escape
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -27,7 +28,7 @@ def update_item_types(APP, items):
     for item in items:
         content_path = item['sakaiid']
 
-        item_html = item['html'] if 'html' in item else None
+        item_html = item['html'] if 'html' in item.attrs else None
 
         # Inline images
         if item['type'] == ItemType.MULTIMEDIA and is_image(content_path, item_html):
@@ -112,6 +113,25 @@ def update_item_types(APP, items):
                             item['html'] = embed
                             attr.decompose()
                             continue
+
+            # Plain link to internal resource, where we don't want to leave the resource
+            # as a separate item because there is no D2L preview support for this type
+
+            if (item['type'] in (ItemType.RESOURCE, ItemType.MULTIMEDIA)) and content_path:
+
+                content_type = item['html'] if 'html' in item.attrs else None
+
+                if not link_item(APP, content_type, content_path):
+                    href = f'{APP["sakai_url"]}/access/content{content_path}'
+                    if 'description' in item.attrs and item['description']:
+                        desc = item['description']
+                        html = f'<p><a href="{href}">{item.attrs["name"]}</a><br>{escape(desc)}</p>'
+                    else:
+                        html = f'<p><a href="{href}">{item.attrs["name"]}</a></p>'
+
+                    item['type'] = ItemType.TEXT
+                    item['html'] = html
+                    continue
 
     return items
 
@@ -206,19 +226,6 @@ def name_nameless_items(items):
 
         i = i + 1
     return items
-
-
-def is_image(att, content_type):
-
-    if content_type and content_type.startswith("image/"):
-        return True
-
-    extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg', '.jfif', '.pjpeg', '.pjp', '.ico', '.cur',
-                  '.tif', '.tiff', '.webp']
-    path = att.lower()
-    for ex in extensions:
-        if path.endswith(ex):
-            return True
 
 
 def run(SITE_ID, APP):

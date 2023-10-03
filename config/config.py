@@ -179,8 +179,9 @@ APP = {
                        'application/pdf',
                        'application/vnd.ms-powerpoint',
                        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                       'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-      'ext_to_link': ['pdf','ppt','pptx']
+                       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+      'ext_to_link': ['pdf','ppt','xls','pptx','xlsx']
   },
 
   'qna': {
