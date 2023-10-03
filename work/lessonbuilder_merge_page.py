@@ -64,7 +64,7 @@ def run(SITE_ID, APP):
                     else:
                         # Create a placeholder that will later be replaced with embed code (mostly video and audio)
                         logging.info(f'Placeholder for name: {item.attrs["name"]}; type: {item.attrs["html"]}; id: {item.attrs["sakaiid"]}')
-                        html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-sakaiid={item.attrs["sakaiid"]}><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
+                        html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-sakaiid={item.attrs["sakaiid"]} data-name={item.attrs["name"]}><span style="font-weight:bold;">PLACEHOLDER</span> [name: {item.attrs["name"]}; type: {item.attrs["html"]}]</p>', 'html.parser')
 
                 if html:
                     merged.div.append(html)

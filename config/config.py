@@ -115,7 +115,8 @@ APP = {
           'course_outline_order_url': '/d2l/api/content/order/course_outline',
           'course_content_src': 9944,
           'content_root_url': '/content/root/',
-          'update_content_url': '/lti/update_module_description'
+          'update_html_file': '/content/{}/topics/{}/file',
+          'get_topics': '/content/{}/topics'
   },
 
   'course': {
