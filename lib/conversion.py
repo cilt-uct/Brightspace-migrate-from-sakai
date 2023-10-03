@@ -840,7 +840,7 @@ def disallowed_extensions(content_soup, attachment_soup, restricted_ext):
 def supported_media_types(content_soup, attachment_soup, restricted_ext):
 
     supported_audio = restricted_ext['SUPPORTED_AUDIO']
-    supported_video = restricted_ext['SUPPORTED_AUDIO']
+    supported_video = restricted_ext['SUPPORTED_VIDEO']
 
     # Find extensions in Resources and check against disallowed list
     if content_soup:
