@@ -41,20 +41,10 @@ def run(SITE_ID, APP):
 
                 if item.attrs['type'] in (ItemType.RESOURCE, ItemType.MULTIMEDIA):
 
-                    link_item = False
                     sakai_id = item.attrs["sakaiid"]
+                    content_type = item.attrs['html'] if 'html' in item.attrs else None
 
-                    if item.get('html') and item.attrs['html'] in APP['lessons']['type_to_link']:
-                        # Matches a content type that we want to link
-                        link_item = True
-                    else:
-                        # Matches an extension that we want to link
-                        for link_ext in APP['lessons']['ext_to_link']:
-                            if sakai_id.lower().endswith(f".{link_ext.lower()}"):
-                                link_item = True
-                                break
-
-                    if link_item:
+                    if link_item(APP, content_type, sakai_id):
                         href = f'{APP["sakai_url"]}/access/content{sakai_id}'
                         if 'description' in item.attrs:
                             desc = item.attrs['description']

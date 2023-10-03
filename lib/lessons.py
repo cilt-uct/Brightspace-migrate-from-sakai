@@ -35,6 +35,33 @@ YOUTUBE_PARAMS_RE = "t=([0-9]+)"
 # https://stackoverflow.com/questions/4138483/twitter-status-url-regex
 TWITTER_RE = "^https?:\/\/(www.|m.|mobile.)?twitter\.com\/(?:#!\/)?\w+\/status?\/\d+"
 
+def is_image(att, content_type):
+
+    if content_type and content_type.startswith("image/"):
+        return True
+
+    extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg', '.jfif', '.pjpeg', '.pjp', '.ico', '.cur',
+                  '.tif', '.tiff', '.webp']
+    path = att.lower()
+    for ex in extensions:
+        if path.endswith(ex):
+            return True
+
+    return False
+
+def link_item(APP, content_type, sakai_id):
+
+    if content_type in APP['lessons']['type_to_link']:
+        # Matches a content type that we want to link
+        return True
+    else:
+        # Matches an extension that we want to link
+        for link_ext in APP['lessons']['ext_to_link']:
+            if sakai_id.lower().endswith(f".{link_ext.lower()}"):
+                return True
+
+    return False
+
 # Embed HTML for a youtube video with the given id
 def youtube_embed(youtube_id, start_timestamp, title):
 
