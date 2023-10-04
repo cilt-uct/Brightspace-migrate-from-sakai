@@ -216,6 +216,22 @@ def lessons_embedded_content(lessons_soup):
     else:
         return None
 
+def lessons_missing_content(lessons_soup):
+    data = set()
+
+    items = lessons_soup.find_all("item", attrs={"type": "5"})
+    for item in items:
+        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
+        tool = parsed_html.find("p", attrs={"data-type": "missing-content"})
+        parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
+        if len(parent) > 0 and tool:
+            title = parent[0]['title']
+            data.add(title)
+
+    if len(data) > 0:
+        return sorted(data)
+    else:
+        return None
 
 # B1 Resources - Hidden folders and files
 #  in: content_soup

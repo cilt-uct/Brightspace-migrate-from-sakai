@@ -114,6 +114,19 @@ def update_item_types(APP, items):
                             attr.decompose()
                             continue
 
+                if url and mmdt == '3':
+                    # Generic link with description
+                    if 'description' in item.attrs and item['description']:
+                        desc = item['description']
+                        html = f'<p><a href="{url}">{url}</a><br>{escape(desc)}</p>'
+                    else:
+                        html = f'<p><a href="{url}">{url}</a></p>'
+
+                    item['type'] = ItemType.TEXT
+                    item['html'] = html
+                    continue
+
+
             # Plain link to internal resource, where we don't want to leave the resource
             # as a separate item because there is no D2L preview support for this type
 
