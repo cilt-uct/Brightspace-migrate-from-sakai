@@ -82,7 +82,7 @@ def get_media_id(content_toc, topic_path, sakai_id):
                 module_search = list(filter(lambda x: x['Title'] == path, resource_node['Modules']))
 
                 if module_search:
-                    resource_node = module[0]
+                    resource_node = module_search[0]
                 else:
                     raise Exception(f"Path element {path} from {sakai_id} not found in ToC")
 
@@ -212,8 +212,9 @@ def run(SITE_ID, APP, import_id):
                 # raise Exception(f"Could not get media_id or topic_id for {sakai_id}")
 
         if updated:
+            new_topic_filename = f"lessonBuilder_{itemid}a.html"
             update_endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['update_html_file'].format(import_id, topic_id))
-            json_response = middleware_api(APP, update_endpoint, payload_data={'html': soup_html.html.encode("utf-8")}, method='PUT')
+            json_response = middleware_api(APP, update_endpoint, payload_data={'html': soup_html.html.encode("utf-8"), 'name': new_topic_filename}, method='PUT')
             print(f"Updating response: {json_response}")
             logging.info(f"Updating Amathuba topic {import_id} / {topic_id} for Lessons item {itemid}")
 
