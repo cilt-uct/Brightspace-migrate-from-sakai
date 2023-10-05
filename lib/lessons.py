@@ -49,6 +49,16 @@ def is_image(att, content_type):
 
     return False
 
+def is_audio_video(content_type, sakai_id):
+
+    if content_type and content_type.startswith("video/"):
+        return True
+
+    if content_type and content_type.startswith("audio/"):
+        return True
+
+    return False
+
 def link_item(APP, content_type, sakai_id):
 
     if content_type in APP['lessons']['type_to_link']:

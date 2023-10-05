@@ -112,7 +112,8 @@ APP = {
           'copy_url': '/d2l/api/course/copy_orientation',
           'course_info_order_url': '/d2l/api/content/order/course_info',
           'course_outline_order_url': '/d2l/api/content/order/course_outline',
-          'course_content_src': 9944
+          'course_content_src': 9944,
+          'update_html_file': '/d2l/api/content/{}/topics/{}/file',
   },
 
   'course': {

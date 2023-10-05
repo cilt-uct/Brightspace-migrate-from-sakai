@@ -182,7 +182,7 @@
     },
     {
       "key": "lessons_embedded_content",
-      "active": true,
+      "active": false,
       "tool": "sakai.lessonbuildertool",
       "icon-class": "icon-edit",
       "description": "Lessons embedded content",
@@ -196,6 +196,19 @@
         "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.wws25ljl6xja",
         "a": "more info"
       }
+    },
+    {
+      "key": "lessons_missing_content",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons missing content",
+      "detail-heading": "Lessons pages",
+      "found": "One or more Lessons pages have embedded content that was not found in Resources. Please review these pages and update as needed.",
+      "not_found": "Good to go! No Vula lessons attachments found.",
+      "args": [
+        "lessons_soup"
+      ]
     },
     {
       "key": "b1",
