@@ -47,7 +47,7 @@ def main():
 
     global APP
 
-    parser = argparse.ArgumentParser(description="This script gets Amathuba import statuses",
+    parser = argparse.ArgumentParser(description="This script gets Brightspace import statuses",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-org_ids', help="comma seperated list of org ids")
     args = vars(parser.parse_args())

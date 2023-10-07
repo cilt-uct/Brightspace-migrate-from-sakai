@@ -148,7 +148,7 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
 #  in: site_id
 # out: rubric.xml
 
-def exportVulaRubric(db_config, site_id, rubrics_file):
+def exportSakaiRubric(db_config, site_id, rubrics_file):
     db = pymysql.connect(**db_config)
     cursor = db.cursor()
 
@@ -259,7 +259,7 @@ def run(SITE_ID, APP, now_st = None):
     rubrics_file = os.path.join(output_folder, "rubrics_d2l.xml")
 
     # generate the rubrics export file
-    if exportVulaRubric(DB_AUTH, SITE_ID, rubrics_file):
+    if exportSakaiRubric(DB_AUTH, SITE_ID, rubrics_file):
         logging.info(f"Created {rubrics_file}")
     else:
         logging.info("Rubrics XML not created")

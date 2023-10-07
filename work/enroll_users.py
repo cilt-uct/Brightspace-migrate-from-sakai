@@ -50,7 +50,7 @@ def run(SITE_ID, APP, import_id):
                         find_user_and_enroll_in_site(APP, _eid, import_id, APP['course']['enroll_user_role'])
 
         except Exception as e:
-            raise Exception(f'Could not enroll users from {SITE_ID} in Amathuba site {import_id}') from e
+            raise Exception(f'Could not enroll users from {SITE_ID} in Brightspacd site {import_id}') from e
     else:
         raise Exception(f'XML file does not exist anymore {dir}/site.xml or user.xml')
 
@@ -59,7 +59,7 @@ def main():
     parser = argparse.ArgumentParser(description="Workflow operation to enrol site owners of converted site into reference and teaching site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
-    parser.add_argument("IMPORT_ID", help="The Amathuba ID to enroll the users into")
+    parser.add_argument("IMPORT_ID", help="The Brightspace ID to enroll the users into")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
 

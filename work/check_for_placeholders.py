@@ -268,7 +268,7 @@ def run(SITE_ID, APP, import_id):
             json_response = middleware_api(APP, update_endpoint, payload_data={'html': soup_html.html.encode("utf-8"), 'name': new_topic_filename}, method='PUT')
             if not 'status' in json_response or json_response['status'] != 'success':
                 raise Exception(f"Error updating topic {topic_id}: {json_response}")
-            logging.info(f"Updating Amathuba topic {import_id} / {topic_id} for Lessons item {itemid}")
+            logging.info(f"Updating topic {import_id} / {topic_id} for Lessons item {itemid}")
 
     # raise Exception("paused")
 
