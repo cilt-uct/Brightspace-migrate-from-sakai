@@ -4,6 +4,8 @@ import re
 import oembed
 import requests
 
+from lib.utils import *
+
 # Lessons item types
 # https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36
 class ItemType:
@@ -69,6 +71,19 @@ def link_item(APP, content_type, sakai_id):
         for link_ext in APP['lessons']['ext_to_link']:
             if sakai_id.lower().endswith(f".{link_ext.lower()}"):
                 return True
+
+    return False
+
+# Audio or video ile extensions we expect to have been imported into Media Library
+def supported_media_type(APP, file_path):
+
+    restricted_ext = read_yaml(APP['content']['restricted-ext'])
+    supported_audio = restricted_ext['SUPPORTED_AUDIO']
+    supported_video = restricted_ext['SUPPORTED_VIDEO']
+
+    if "." in file_path:
+        file_extension = file_path.split(".")[-1].upper()
+        return (file_extension in supported_audio) or (file_extension in supported_video)
 
     return False
 

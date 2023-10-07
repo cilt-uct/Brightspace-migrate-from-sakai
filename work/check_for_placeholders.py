@@ -15,6 +15,8 @@ from lib.utils import *
 from lib.local_auth import *
 from lib.lessons import *
 
+API_VERSION="1.67"
+
 # See https://docs.valence.desire2learn.com/res/content.html
 
 # Get an HTML page directly from Brightspace
@@ -24,7 +26,7 @@ def get_lessons_html(url, session):
 
 # Returns ToC as JSON: https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
 def get_toc(base_url, org_id, session):
-    api_url = f"{base_url}/d2l/api/le/1.67/{org_id}/content/toc"
+    api_url = f"{base_url}/d2l/api/le/{API_VERSION}/{org_id}/content/toc"
     print(f"TOC from: {api_url}")
     r = session.get(api_url, timeout=30)
     return r.text if r.status_code == 200 else None
@@ -32,16 +34,22 @@ def get_toc(base_url, org_id, session):
 # Get the media ID for a given audio or video path
 # Match the filename in the Structure of the unit with the given parent id,
 # and then find the video URL in topics
-def get_media_id(content_toc, topic_path, sakai_id):
+def get_media_id(content_toc, file_path):
 
     resource_node = list(filter(lambda x: x['Title'] == 'Resources', content_toc['Modules']))[0]
     toplevel_lessons = list(filter(lambda x: x['Title'] not in ('Resources','External Resources'), content_toc['Modules']))
-    #print("LESSONS:\n")
-    #pprint.pprint(toplevel_lessons)
 
-    # /group/42190a5a-3b44-4eda-9fb9-83773b4f6410/
-    media_paths = sakai_id.split('/')[3:]
-    print(f"paths: {media_paths}")
+    media_paths = []
+
+    if file_path.startswith("/group/"):
+        # Sakai ID: /group/42190a5a-3b44-4eda-9fb9-83773b4f6410/
+        media_paths = file_path.split('/')[3:]
+
+    if file_path.startswith("../"):
+        # Relative link
+        media_paths = file_path[3:].split('/')
+
+    # print(f"paths: {media_paths}")
 
     filename = media_paths[-1]
 
@@ -57,7 +65,7 @@ def get_media_id(content_toc, topic_path, sakai_id):
     topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
 
     if not topic_match:
-        raise Exception(f"No match for mediapath '{sakai_id}' and Title = '{filename}' in Topics")
+        raise Exception(f"No match for mediapath '{file_path}' and Title = '{filename}' in Topics")
 
     media_url = None
 
@@ -66,7 +74,7 @@ def get_media_id(content_toc, topic_path, sakai_id):
         media_url = topic_match[0].value['Url']
     else:
         # Find it another way
-        print(f"Multiple matches: traversing path {sakai_id}")
+        print(f"Multiple matches: traversing path {file_path}")
 
         # The Sakai path contained in the id may not match the
         # Resources tree directly, because of display names and/or changes to folder
@@ -84,7 +92,7 @@ def get_media_id(content_toc, topic_path, sakai_id):
                 if module_search:
                     resource_node = module_search[0]
                 else:
-                    raise Exception(f"Path element {path} from {sakai_id} not found in ToC")
+                    raise Exception(f"Path element {path} from {file_path} not found in ToC")
 
     if not media_url:
         raise Exception("Cannot find media url for {filename}")
@@ -94,9 +102,15 @@ def get_media_id(content_toc, topic_path, sakai_id):
 
     print(f"media_id is: {media_id} from {media_url}")
 
-    # Find the topic ID by matching on the URL for the underlying html file which is
-    # named from the Sakai Lessons ID by the Brightspace import code. So this is
-    # guaranteed to match immediately after the import.
+    return media_id
+
+# Find the topic ID by matching on the URL for the underlying html file which is
+# named from the Sakai Lessons ID by the Brightspace import code. So this is
+# guaranteed to match immediately after the import.
+
+def get_topic_id(content_toc, topic_path):
+
+    toplevel_lessons = list(filter(lambda x: x['Title'] not in ('Resources','External Resources'), content_toc['Modules']))
 
     jpe = f"$..Topics[?(@.Url=='{topic_path}')]"
     jsonpath_expression = parse(jpe)
@@ -106,12 +120,12 @@ def get_media_id(content_toc, topic_path, sakai_id):
         # pprint.pprint(toplevel_lessons, indent=3)
         # raise Exception(f"No topic found with URL matching {topic_path}")
         # TODO
-        return (None, None)
+        return None
 
     for match in topic_matches:
         topic_id = match.value['TopicId']
 
-    return (topic_id, media_id)
+    return topic_id
 
 
 def run(SITE_ID, APP, import_id):
@@ -119,26 +133,37 @@ def run(SITE_ID, APP, import_id):
     logging.info('Replace placeholders with multimedia links for import_id: {}'.format(import_id))
 
     # Check that there are placeholders in this site
+
     site_folder = APP['archive_folder']
     xml_src = r'{}{}-archive/lessonbuilder.xml'.format(site_folder, SITE_ID)
     remove_unwanted_characters(xml_src)
     file_path = os.path.join(site_folder, xml_src)
 
+    # Find the Lessons items that contain placeholders and/or audio/video links
+
     placeholder_items = []
+
     with open(file_path, "r", encoding="utf8") as fp:
         soup = BeautifulSoup(fp, 'xml')
         items = soup.find_all('item', attrs={"type": "5"})
         for item in items:
             html = BeautifulSoup(item['html'], 'html.parser')
+
+            # At least one placeholder
             if html.find('p', attrs={"data-type": "placeholder"}):
                 placeholder_items.append(item['id'])
+                continue
 
-    # TODO check for inline HTML links to video and audio that need replacing (not placeholders)
+            # Or at least one link to an audio or video file
+            for link in html.find_all('a'):
+                href = link.get('href')
+                if href.startswith("../") and supported_media_type(APP, href):
+                    # printf(f"item {item.get('id')} has a relevant link: {href}")
+                    placeholder_items.append(item['id'])
+                    continue
 
-    if placeholder_items:
-        print(f"Placeholders in these item ids: {placeholder_items}")
-    else:
-        logging.info("No placeholders in Lessons content")
+    if not placeholder_items:
+        logging.info("No placeholders or audio/video links in Lessons content")
         return
 
     # Login to fetch files directly
@@ -157,10 +182,12 @@ def run(SITE_ID, APP, import_id):
     # Get the ToC
     content_toc = json.loads(get_toc(brightspace_url, import_id, brightspace_session))
     print("#### TOC ####")
+
     #pprint.pprint(content_toc, width=sys.maxsize)
     #print(json.dumps(content_toc, indent=3))
 
     content_defaultpath = content_toc['Modules'][0]['DefaultPath']
+    topic_prefix = f"{content_defaultpath}LessonBuilder/"
 
     #  'Url': '/content/enforced/43233-81814b18-6ae4-4570-be9d-7459154a94b4_20231003_1202/LessonBuilder/lessonBuilder_2911898.html'},
 
@@ -170,32 +197,41 @@ def run(SITE_ID, APP, import_id):
         updated = False
 
         # Get the HTML
-        topic_path = f"{content_defaultpath}LessonBuilder/lessonBuilder_{itemid}.html"
-        topic_url = f"{brightspace_url}{topic_path}"
+        topic_path = f"{topic_prefix}lessonBuilder_{itemid}.html"
+        topic_id = get_topic_id(content_toc, topic_path)
+        if not topic_id:
+            continue
+
+        topic_url = f"{brightspace_url}/d2l/api/le/{API_VERSION}/{import_id}/content/topics/{topic_id}/file"
 
         print(f"Contents from: {topic_url}")
         page_html = get_lessons_html(topic_url, brightspace_session)
+
+        # print(f"HTML:\n{page_html}")
 
         if not page_html:
             raise Exception(f"Could not get content page from {topic_url}")
 
         soup_html = BeautifulSoup(page_html, 'html.parser')
-        placeholders = soup_html.find_all('p', attrs={"data-type": "placeholder"})
+
+        if not soup_html:
+            raise Exception("Cannot parse HTML from {topic_url}")
+
         updated = False
 
-        print(f"Item: {item.prettify()}")
+        # Institution specific
+        org_ou=6606
 
         # Replace the placeholders with embed code
+        placeholders = soup_html.find_all('p', attrs={"data-type": "placeholder"})
         for placeholder in placeholders:
-            print(f"placeholder: {placeholder.prettify()}")
+
+            # print(f"placeholder: {placeholder.prettify()}")
             placeholder_name = placeholder['data-name']
             sakai_id_enc = placeholder['data-sakai-id']
             sakai_id = base64.b64decode(sakai_id_enc).decode("utf-8")
 
-            # Institution specific
-            org_ou=6606
-
-            (topic_id, media_id) = get_media_id(content_toc, topic_path, sakai_id)
+            media_id = get_media_id(content_toc, sakai_id)
 
             if media_id and topic_id:
                 if placeholder['data-item-type'] == ItemType.RESOURCE:
@@ -208,15 +244,33 @@ def run(SITE_ID, APP, import_id):
                 placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
                 updated = True
             else:
-                logging.warn(f"Ignoring {sakai_id} - possibly already run")
+                logging.warning(f"Ignoring {sakai_id} - possibly already run")
                 # raise Exception(f"Could not get media_id or topic_id for {sakai_id}")
+
+        # Replace links
+        for link in soup_html.find_all('a'):
+
+            # Link without any parameters
+            href = link.get('href').split("?")[0]
+            href = href.replace(f"{brightspace_url}{topic_prefix}", "")
+            print(f"looking at: {href}")
+
+            if href.startswith("../") and supported_media_type(APP, href):
+                media_id = get_media_id(content_toc, href)
+                link_href = f"/d2l/common/dialogs/quickLink/quickLink.d2l?ou={{orgUnitId}}&type=mediaLibrary&contentId={media_id}"
+                print(f"Updated link href to: {link_href}")
+                link['href'] = link_href
+                updated = True
 
         if updated:
             new_topic_filename = f"lessonBuilder_{itemid}a.html"
             update_endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['update_html_file'].format(import_id, topic_id))
             json_response = middleware_api(APP, update_endpoint, payload_data={'html': soup_html.html.encode("utf-8"), 'name': new_topic_filename}, method='PUT')
-            print(f"Updating response: {json_response}")
+            if not 'status' in json_response or json_response['status'] != 'success':
+                raise Exception(f"Error updating topic {topic_id}: {json_response}")
             logging.info(f"Updating Amathuba topic {import_id} / {topic_id} for Lessons item {itemid}")
+
+    # raise Exception("paused")
 
     return
 
