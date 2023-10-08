@@ -32,20 +32,26 @@ def do_work(site_info_file):
     tmpl = BeautifulSoup(tmpl_contents, 'html.parser')
 
     # remove previous meta and style links
-    for rm in html.head.find_all(['meta','link']):
+    for rm in html.head.find_all(['meta', 'link']):
         rm.decompose()
 
     # add the appropriate meta and style links
-    for tag in tmpl.head.find_all(['meta','link']):
+    for tag in tmpl.head.find_all(['meta', 'link']):
         html.head.append(tag)
 
     for rep in html.find_all(text=re.compile('Site Information.html')):
         rep.replace_with('Site Information')
 
-    # print(html.head.prettify())
+    body = html.find('body')
+    contents = [str(tag) for tag in body.contents if tag.name is not None]
+    body_contents = ''.join(contents)
+    body_soup = BeautifulSoup(body_contents, 'html.parser')
 
-    with open(f"{site_info_file}", "w", encoding = 'utf-8') as file:
-        return file.write(str(html.prettify()))
+    target_div = tmpl.find('div', class_='col-sm-10 offset-sm-1')
+    target_div.append(body_soup)
+
+    with open(f"{site_info_file}", "w", encoding='utf-8') as file:
+        return file.write(str(tmpl.prettify()))
 
     return 0
 
@@ -58,7 +64,7 @@ def run(SITE_ID, APP):
         contents = f.read()
 
     tree = BeautifulSoup(contents, 'xml')
-    for item in tree.find_all('resource', {'rel-id' : 'Site Information.html'}):
+    for item in tree.find_all('resource', {'rel-id': 'Site Information.html'}):
         # item['id'] = "/group/{}/Site Information".format(SITE_ID)
         # item['file-path'] = "/tmp/Site Information"
         # item['rel-id'] = "Site Information"
