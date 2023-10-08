@@ -40,13 +40,18 @@ def do_work(site_info_file, title):
     for tag in tmpl.head.find_all(['meta', 'link']):
         html.head.append(tag)
 
-    html = make_well_formed(html, title)
+    body = html.find('body')
+    contents = [str(tag) for tag in body.contents if tag.name is not None]
+    body_contents = ''.join(contents)
+    body_soup = BeautifulSoup(body_contents, 'html.parser')
 
-    for rep in html.find_all(text=re.compile('Site Information.html')):
+    new_html = make_well_formed(body_soup, title)
+
+    for rep in new_html.find_all(text=re.compile('Site Information.html')):
         rep.replace_with('Site Information')
 
     with open(f"{site_info_file}", "w", encoding='utf-8') as file:
-        return file.write(str(html.prettify()))
+        return file.write(str(new_html.prettify()))
 
     return 0
 
