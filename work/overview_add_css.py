@@ -19,7 +19,8 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-def do_work(site_info_file):
+
+def do_work(site_info_file, title):
     # print(site_info_file)
 
     with open(site_info_file, "r", encoding="utf8") as f:
@@ -39,19 +40,13 @@ def do_work(site_info_file):
     for tag in tmpl.head.find_all(['meta', 'link']):
         html.head.append(tag)
 
+    html = make_well_formed(html, title)
+
     for rep in html.find_all(text=re.compile('Site Information.html')):
         rep.replace_with('Site Information')
 
-    body = html.find('body')
-    contents = [str(tag) for tag in body.contents if tag.name is not None]
-    body_contents = ''.join(contents)
-    body_soup = BeautifulSoup(body_contents, 'html.parser')
-
-    target_div = tmpl.find('div', class_='col-sm-10 offset-sm-1')
-    target_div.append(body_soup)
-
     with open(f"{site_info_file}", "w", encoding='utf-8') as file:
-        return file.write(str(tmpl.prettify()))
+        return file.write(str(html.prettify()))
 
     return 0
 
@@ -68,7 +63,8 @@ def run(SITE_ID, APP):
         # item['id'] = "/group/{}/Site Information".format(SITE_ID)
         # item['file-path'] = "/tmp/Site Information"
         # item['rel-id'] = "Site Information"
-        item['content-length'] = do_work(r'{}{}-archive/{}'.format(APP['archive_folder'], SITE_ID, item['body-location']))
+        item['content-length'] = do_work(
+            r'{}{}-archive/{}'.format(APP['archive_folder'], SITE_ID, item['body-location']), item['rel-id'])
 
     with open(f"{xml_src}", 'w', encoding = 'utf-8') as file:
         file.write(str(tree))
