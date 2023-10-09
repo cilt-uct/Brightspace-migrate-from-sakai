@@ -42,3 +42,21 @@ def get_content_owner(site_folder, sakai_id):
     owner_eid = user.get('eid') if user is not None else None
 
     return (owner_userid, owner_eid)
+
+# Return display name for a content item, if available otherwise None
+def get_content_displayname(site_folder, sakai_id):
+
+    content_src = f'{site_folder}/content.xml'
+    content_tree = ET.parse(content_src)
+    content_root = content_tree.getroot()
+
+    item = content_root.find(f".//resource[@id='{sakai_id}']")
+    if item is None:
+        raise Exception(f"Resource {sakai_id} not found in {content_src}")
+
+    displayprop = item.find('./properties/property[@name="DAV:displayname"]')
+    if displayprop is None:
+        return None
+
+    displayname = str(base64.b64decode(displayprop.get("value")).decode('utf-8'))
+    return displayname

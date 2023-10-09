@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 ## REF: AMA-367 Embedded multimedia from other sites
+# Move attachments from attachment.xml to content.xml
 
 import sys
 import os

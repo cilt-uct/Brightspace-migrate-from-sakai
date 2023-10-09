@@ -14,6 +14,7 @@ from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
 from lib.lessons import *
+from lib.resources import *
 
 API_VERSION="1.67"
 
@@ -22,6 +23,10 @@ API_VERSION="1.67"
 # Get an HTML page directly from Brightspace
 def get_lessons_html(url, session):
     r = session.get(url, timeout=30)
+
+    # Set the encoding explicitly
+    r.encoding="UTF-8"
+
     return r.text if r.status_code == 200 else None
 
 # Returns ToC as JSON: https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
@@ -34,7 +39,7 @@ def get_toc(base_url, org_id, session):
 # Get the media ID for a given audio or video path
 # Match the filename in the Structure of the unit with the given parent id,
 # and then find the video URL in topics
-def get_media_id(content_toc, file_path):
+def get_media_id(content_toc, file_path, displayname):
 
     resource_node = list(filter(lambda x: x['Title'] == 'Resources', content_toc['Modules']))[0]
     toplevel_lessons = list(filter(lambda x: x['Title'] not in ('Resources','External Resources'), content_toc['Modules']))
@@ -49,9 +54,11 @@ def get_media_id(content_toc, file_path):
         # Relative link
         media_paths = file_path[3:].split('/')
 
-    # print(f"paths: {media_paths}")
+    print(f"paths: {media_paths}")
 
-    filename = media_paths[-1]
+    filename = displayname if displayname is not None else media_paths[-1]
+
+    print(f"Filename: {filename}")
 
     media_id = None
     topic_id = None
@@ -64,8 +71,8 @@ def get_media_id(content_toc, file_path):
 
     topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
 
-    if not topic_match:
-        raise Exception(f"No match for mediapath '{file_path}' and Title = '{filename}' in Topics")
+    #if not topic_match:
+    #    raise Exception(f"No match for mediapath '{file_path}' and Title = '{filename}' in Topics")
 
     media_url = None
 
@@ -74,11 +81,10 @@ def get_media_id(content_toc, file_path):
         media_url = topic_match[0].value['Url']
     else:
         # Find it another way
-        print(f"Multiple matches: traversing path {file_path}")
+        print(f"Multiple matches: traversing path {file_path}" if topic_match else f"No match in Lessons modules: looking in Resources for {file_path}")
 
-        # The Sakai path contained in the id may not match the
-        # Resources tree directly, because of display names and/or changes to folder
-        # names made by the Brightspace importer.
+        # The Sakai path contained in the id may not match the Resources tree directly,
+        # because of display names and/or changes to folder names made by the Brightspace importer.
         for path in media_paths:
             if path == filename:
                 # We're at the end, so look for an activity
@@ -92,7 +98,7 @@ def get_media_id(content_toc, file_path):
                 if module_search:
                     resource_node = module_search[0]
                 else:
-                    raise Exception(f"Path element {path} from {file_path} not found in ToC")
+                    raise Exception(f"Path element {path} from {file_path} not found in Resources module in ToC")
 
     if not media_url:
         raise Exception("Cannot find media url for {filename}")
@@ -128,7 +134,7 @@ def get_topic_id(content_toc, topic_path):
     return topic_id
 
 
-def run(SITE_ID, APP, import_id):
+def run(SITE_ID, APP, import_id, transfer_id):
 
     logging.info('Replace placeholders with multimedia links for import_id: {}'.format(import_id))
 
@@ -200,6 +206,7 @@ def run(SITE_ID, APP, import_id):
         topic_path = f"{topic_prefix}lessonBuilder_{itemid}.html"
         topic_id = get_topic_id(content_toc, topic_path)
         if not topic_id:
+            print(f"Topic for {topic_path} not found: possibly already updated")
             continue
 
         topic_url = f"{brightspace_url}/d2l/api/le/{API_VERSION}/{import_id}/content/topics/{topic_id}/file"
@@ -229,9 +236,11 @@ def run(SITE_ID, APP, import_id):
             # print(f"placeholder: {placeholder.prettify()}")
             placeholder_name = placeholder['data-name']
             sakai_id_enc = placeholder['data-sakai-id']
-            sakai_id = base64.b64decode(sakai_id_enc).decode("utf-8")
+            sakai_id = base64.b64decode(sakai_id_enc).decode("utf-8").replace(SITE_ID, transfer_id)
 
-            media_id = get_media_id(content_toc, sakai_id)
+            file_display_name = get_content_displayname(f"{site_folder}{SITE_ID}-archive", sakai_id)
+
+            media_id = get_media_id(content_toc, sakai_id, file_display_name)
 
             if media_id and topic_id:
                 if placeholder['data-item-type'] == ItemType.RESOURCE:
@@ -280,12 +289,13 @@ def main():
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")
     parser.add_argument("IMPORT_ID", help="The org unit id of the imported site")
+    parser.add_argument("TRANSFER_ID", help="The site id as imported into Brightspace")
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
 
-    run(args['SITE_ID'], APP, args['IMPORT_ID'])
+    run(args['SITE_ID'], APP, args['IMPORT_ID'], args['TRANSFER_ID'])
 
 if __name__ == '__main__':
     main()

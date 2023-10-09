@@ -13,6 +13,7 @@ STEPS:
 
   - action: check_for_placeholders
     use_import_id: 1
+    use_transfer_id: 1
 
   # Upload rubrics zip if present
   - action: push_rubrics
