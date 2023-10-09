@@ -19,7 +19,8 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-def do_work(site_info_file):
+
+def do_work(site_info_file, title):
     # print(site_info_file)
 
     with open(site_info_file, "r", encoding="utf8") as f:
@@ -32,20 +33,25 @@ def do_work(site_info_file):
     tmpl = BeautifulSoup(tmpl_contents, 'html.parser')
 
     # remove previous meta and style links
-    for rm in html.head.find_all(['meta','link']):
+    for rm in html.head.find_all(['meta', 'link']):
         rm.decompose()
 
     # add the appropriate meta and style links
-    for tag in tmpl.head.find_all(['meta','link']):
+    for tag in tmpl.head.find_all(['meta', 'link']):
         html.head.append(tag)
 
-    for rep in html.find_all(text=re.compile('Site Information.html')):
+    body = html.find('body')
+    contents = [str(tag) for tag in body.contents if tag.name is not None]
+    body_contents = ''.join(contents)
+    body_soup = BeautifulSoup(body_contents, 'html.parser')
+
+    new_html = make_well_formed(body_soup, title)
+
+    for rep in new_html.find_all(text=re.compile('Site Information.html')):
         rep.replace_with('Site Information')
 
-    # print(html.head.prettify())
-
-    with open(f"{site_info_file}", "w", encoding = 'utf-8') as file:
-        return file.write(str(html.prettify()))
+    with open(f"{site_info_file}", "w", encoding='utf-8') as file:
+        return file.write(str(new_html.prettify()))
 
     return 0
 
@@ -58,11 +64,12 @@ def run(SITE_ID, APP):
         contents = f.read()
 
     tree = BeautifulSoup(contents, 'xml')
-    for item in tree.find_all('resource', {'rel-id' : 'Site Information.html'}):
+    for item in tree.find_all('resource', {'rel-id': 'Site Information.html'}):
         # item['id'] = "/group/{}/Site Information".format(SITE_ID)
         # item['file-path'] = "/tmp/Site Information"
         # item['rel-id'] = "Site Information"
-        item['content-length'] = do_work(r'{}{}-archive/{}'.format(APP['archive_folder'], SITE_ID, item['body-location']))
+        item['content-length'] = do_work(
+            r'{}{}-archive/{}'.format(APP['archive_folder'], SITE_ID, item['body-location']), item['rel-id'])
 
     with open(f"{xml_src}", 'w', encoding = 'utf-8') as file:
         file.write(str(tree))
