@@ -134,7 +134,7 @@ def update_item_types(APP, items):
 
                 content_type = item['html'] if 'html' in item.attrs else None
 
-                if not link_item(APP, content_type, content_path) and not is_audio_video(content_type, content_path):
+                if not link_item(APP, content_type, content_path) and not is_audio_video(APP, content_type, content_path):
                     href = f'{APP["sakai_url"]}/access/content{content_path}'
                     if 'description' in item.attrs and item['description']:
                         desc = item['description']

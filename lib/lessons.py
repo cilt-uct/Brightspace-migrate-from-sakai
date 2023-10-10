@@ -51,7 +51,7 @@ def is_image(att, content_type):
 
     return False
 
-def is_audio_video(content_type, sakai_id):
+def is_audio_video(APP, content_type, sakai_id):
 
     if content_type and content_type.startswith("video/"):
         return True
@@ -59,7 +59,7 @@ def is_audio_video(content_type, sakai_id):
     if content_type and content_type.startswith("audio/"):
         return True
 
-    return False
+    return supported_media_type(APP, sakai_id)
 
 def link_item(APP, content_type, sakai_id):
 

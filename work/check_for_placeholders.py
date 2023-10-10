@@ -71,34 +71,37 @@ def get_media_id(content_toc, file_path, displayname):
 
     topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
 
-    #if not topic_match:
-    #    raise Exception(f"No match for mediapath '{file_path}' and Title = '{filename}' in Topics")
-
-    media_url = None
-
     if len(topic_match)==1:
         print(f"Unique match for {filename}")
         media_url = topic_match[0].value['Url']
     else:
-        # Find it another way
-        print(f"Multiple matches: traversing path {file_path}" if topic_match else f"No match in Lessons modules: looking in Resources for {file_path}")
+        # See if the name is unique in the Resources tree
+        topics = jpe_files.find(resource_node)
+        topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
 
-        # The Sakai path contained in the id may not match the Resources tree directly,
-        # because of display names and/or changes to folder names made by the Brightspace importer.
-        for path in media_paths:
-            if path == filename:
-                # We're at the end, so look for an activity
-                topic = list(filter(lambda x: x['TypeIdentifier'] == 'ContentService' and x['Title'] == filename, resource_node['Topics']))[0]
-                media_url = topic['Url']
-                media_id = media_url.split(':')[-1].split('/')[0]
-                break
-            else:
-                module_search = list(filter(lambda x: x['Title'] == path, resource_node['Modules']))
+        if len(topic_match)==1:
+            print(f"Unique match for {filename}")
+            media_url = topic_match[0].value['Url']
+        else:
+            # Find it another way
+            print(f"Multiple matches: traversing path {file_path}" if topic_match else f"No match in Lessons modules: looking in Resources for {file_path}")
 
-                if module_search:
-                    resource_node = module_search[0]
+            # The Sakai path contained in the id may not match the Resources tree directly,
+            # because of display names and/or changes to folder names made by the Brightspace importer.
+            for path in media_paths:
+                if path == filename:
+                    # We're at the end, so look for an activity
+                    topic = list(filter(lambda x: x['TypeIdentifier'] == 'ContentService' and x['Title'] == filename, resource_node['Topics']))[0]
+                    media_url = topic['Url']
+                    media_id = media_url.split(':')[-1].split('/')[0]
+                    break
                 else:
-                    raise Exception(f"Path element {path} from {file_path} not found in Resources module in ToC")
+                    module_search = list(filter(lambda x: x['Title'] == path, resource_node['Modules']))
+
+                    if module_search:
+                        resource_node = module_search[0]
+                    else:
+                        raise Exception(f"Path element '{path}' from '{file_path}' not found in Resources module in ToC")
 
     if not media_url:
         raise Exception("Cannot find media url for {filename}")
@@ -163,8 +166,8 @@ def run(SITE_ID, APP, import_id, transfer_id):
             # Or at least one link to an audio or video file
             for link in html.find_all('a'):
                 href = link.get('href')
-                if href.startswith("../") and supported_media_type(APP, href):
-                    # printf(f"item {item.get('id')} has a relevant link: {href}")
+                if href and href.startswith("../") and supported_media_type(APP, href):
+                    print(f"item {item.get('id')} title '{item.get('title')}' has a relevant link: {href}")
                     placeholder_items.append(item['id'])
                     continue
 
@@ -259,13 +262,17 @@ def run(SITE_ID, APP, import_id, transfer_id):
         # Replace links
         for link in soup_html.find_all('a'):
 
+            if not link.get('href'):
+                # Anchor tag, not a link
+                continue
+
             # Link without any parameters
             href = link.get('href').split("?")[0]
             href = href.replace(f"{brightspace_url}{topic_prefix}", "")
-            print(f"looking at: {href}")
+            print(f"looking at: {link}")
 
             if href.startswith("../") and supported_media_type(APP, href):
-                media_id = get_media_id(content_toc, href)
+                media_id = get_media_id(content_toc, href, None)
                 link_href = f"/d2l/common/dialogs/quickLink/quickLink.d2l?ou={{orgUnitId}}&type=mediaLibrary&contentId={media_id}"
                 print(f"Updated link href to: {link_href}")
                 link['href'] = link_href
