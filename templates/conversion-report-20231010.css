@@ -596,15 +596,12 @@ div.icon-todo::before {
     .issues-row {
         gap: 0rem;
     }
-
     .card-body .grey-strip {
         display: none;
     }
-
     .column {
         text-align: center;
     }
-
     .issues-row > .column {
         width: 90%;
         margin: auto;
