@@ -35,33 +35,6 @@ thead:first-child tr:first-child th:first-child, tbody:first-child tr:first-chil
 thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td:first-child {
     border-radius: 0 0 0 4px;
 }
-td[id^="page_"] {
-    position: relative;
-}
-td[id^="page_"]::after {
-    content: "";
-    width: 100px;
-    height: 30px;
-    position: absolute;
-    background-image: url('img/Lesson_Grey_Line.svg');
-    background-repeat: no-repeat;
-    bottom: -25px;
-    left: 10%;
-}
-#lessons_tools h3::before {
-    content: "";
-    width: 20px;
-    height: 20px;
-    background-image: url('img/Lesson_Tool_Ref.svg');
-    display: inline-block;
-}
-#lessons_hyperlinks h3::before {
-    content: "";
-    width: 20px;
-    height: 20px;
-    background-image: url('img/Lesson_Content_Links.svg');
-    display: inline-block;
-}
 .issue-detail-content {
     display: none;
     overflow: hidden;
