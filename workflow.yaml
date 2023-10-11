@@ -46,6 +46,7 @@ STEPS:
 
   # Lessons
   - action: lessonbuilder_merge_page
+  - action: lessonbuilder_add_resources_html
   - action: lessonbuilder_strip_formatting
   - action: lessonbuilder_add_css
   - action: lessonbuilder_fix_headings
@@ -66,7 +67,6 @@ STEPS:
   - action: lessonbuilder_update_links_attr
   - action: lessonbuilder_highlight_external_links
   - action: lessonbuilder_highlight_tools
-  - action: lessonbuilder_add_resources_html
   - action: lessonbuilder_add_banner
 
   # Tests and Quizzes
