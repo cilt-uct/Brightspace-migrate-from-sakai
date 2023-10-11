@@ -45,7 +45,7 @@ td[id^="page_"]::after {
     position: absolute;
     background-image: url('img/Grey_strip.svg');
     background-repeat: no-repeat;
-    bottom: -2px;
+    bottom: 0px;
     left: 10%;
 }
 #lessons_tools h3,
