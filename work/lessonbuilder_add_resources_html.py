@@ -56,7 +56,7 @@ def run(SITE_ID, APP):
                 html_soup.append(resource_div)
 
             if html and html_soup:
-                html_item['html'] = str(html_soup)
+                html_item['html'] = str(make_well_formed(html_soup))
 
         updated_xml = lessons_soup.prettify()
         with open(file_path, 'w') as file:
