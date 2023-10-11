@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<archive date="20230612144233578" server="vula101a" source="1953adfb-18cf-4ef5-8b91-e3b5b9018e0b" system="Sakai 2.8" xmlns:CHEF="https://www.sakailms.org/xmlns/archive/CHEF" xmlns:DAV="https://www.sakailms.org/xmlns/archive/DAV" xmlns:sakai="https://www.sakailms.org/xmlns/archive/">
+ <org.sakaiproject.lessonbuildertool.service.LessonBuilderEntityProducer version="2.4">
+  <lessonbuilder>
+   <page hidden="false" pageid="304710" siteid="1953adfb-18cf-4ef5-8b91-e3b5b9018e0b" title="Lessons" toolid="da06dab3-8d7d-4bf9-a2e1-7491bedb1017">
+    <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" html='&lt;h1&gt;&lt;span style="color: rgb(192,57,43);"&gt;Embedded folder listing on a Lessons Page&lt;/span&gt;&lt;/h1&gt;&lt;p&gt; &lt;/p&gt;&lt;p&gt;Here is a list of the "Articles" folder in Resources:&lt;/p&gt;&lt;div data-type="folder-list"&gt;&lt;p&gt;Africa Day Celebrating music and family at the UCT Irma Stern Museum UCT News.pdf&lt;/p&gt;&lt;p&gt;Celebrating Africa Day at MASHA UCT News.pdf&lt;/p&gt;&lt;p&gt;Do You Understand What Accountability Really Means.pdf&lt;/p&gt;&lt;p&gt;How to Actually Encourage Employee Accountability.pdf&lt;/p&gt;&lt;p&gt;png-transparent-sunset-sunset-dusk-xixia-thumbnail.png&lt;/p&gt;&lt;p&gt;sample_excel.xlsx&lt;/p&gt;&lt;p&gt;sample_powerpoint.pptx&lt;/p&gt;&lt;p&gt;sample_text.txt&lt;/p&gt;&lt;p&gt;sample_word_doc.docx&lt;/p&gt;&lt;p&gt;woman-570883_1280.jpg&lt;/p&gt;&lt;/div&gt;' id="2824035" name="" nextpage="false" pageId="304710" prerequisite="false" required="false" requirementtext="" sakaiid="" samewindow="false" sequence="1" showComments="false" subrequirement="false" type="5" width="">
+     <attributes>
+      {}
+     </attributes>
+    </item>
+    <item alt="" altPoints="null" anonymous="false" description="" forcedCommentsAnonymous="false" gradebookPoints="null" groupOwned="false" height="" id="2824036" name="" nextpage="false" pageId="304710" prerequisite="false" required="false" requirementtext="" sakaiid="" samewindow="false" sequence="2" showComments="false" subrequirement="false" type="20" width="">
+     <attributes>
+      {"dataDirectory":"\/group\/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b\/\/Articles\/"}
+     </attributes>
+    </item>
+   </page>
+   <lessonbuilder functions.require="" name="Lessons" pagePosition="1" pageVisibility="" toolid="da06dab3-8d7d-4bf9-a2e1-7491bedb1017"/>
+  </lessonbuilder>
+ </org.sakaiproject.lessonbuildertool.service.LessonBuilderEntityProducer>
+</archive>
