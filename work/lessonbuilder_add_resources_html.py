@@ -49,7 +49,7 @@ def run(SITE_ID, APP):
                                 resources = content_soup.find_all('resource')
                                 for resource in resources:
                                     if directory in resource['id']:
-                                        file_name = resource["rel-id"].split('/')[1]
+                                        file_name = resource["rel-id"]
                                         new_p_tag = BeautifulSoup(f'<p>{file_name}</p>', 'html.parser')
                                         resource_div.append(new_p_tag)
 
