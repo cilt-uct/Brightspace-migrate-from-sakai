@@ -40,26 +40,26 @@ td[id^="page_"] {
 }
 td[id^="page_"]::after {
     content: "";
-    width: 100px;
-    height: 30px;
+    width: 130px;
+    height: 5px;
     position: absolute;
-    background-image: url('img/Lesson_Grey_Line.svg');
+    background-image: url('img/Grey_strip.svg');
     background-repeat: no-repeat;
-    bottom: -25px;
+    bottom: -2px;
     left: 10%;
 }
-#lessons_tools h3::before {
-    content: "";
-    width: 20px;
-    height: 20px;
-    background-image: url('img/Lesson_Tool_Ref.svg');
-    display: inline-block;
+#lessons_tools h3,
+#lessons_hyperlinks h3 {
+    display: flex;
+    align-items: center;
 }
+#lessons_tools h3::before,
 #lessons_hyperlinks h3::before {
     content: "";
-    width: 20px;
-    height: 20px;
-    background-image: url('img/Lesson_Content_Links.svg');
+    width: 25px;
+    height: 25px;
+    background-image: url('img/Edit_icon.svg');
+    background-repeat: no-repeat;
     display: inline-block;
 }
 .issue-detail-content {
