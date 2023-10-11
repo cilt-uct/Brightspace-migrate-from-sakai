@@ -19,6 +19,10 @@ def get_resource_ids(xml_src):
 # the file is embedded from another site), return eid = None
 def get_content_owner(site_folder, sakai_id):
 
+    if sakai_id.startswith("/url/"):
+        # Not a real Sakai ID - used in Lessons
+        return (None, None)
+
     content_src = f'{site_folder}/content.xml'
     content_tree = ET.parse(content_src)
     content_root = content_tree.getroot()
@@ -45,6 +49,10 @@ def get_content_owner(site_folder, sakai_id):
 
 # Return display name for a content item, if available otherwise None
 def get_content_displayname(site_folder, sakai_id):
+
+    if sakai_id.startswith("/url/"):
+        # Not a real Sakai ID - used in Lessons
+        return None
 
     content_src = f'{site_folder}/content.xml'
     content_tree = ET.parse(content_src)

@@ -126,6 +126,20 @@ def update_item_types(APP, items):
                     item['html'] = html
                     continue
 
+                if url and mmdt == '2' and is_audio_url(url):
+                    # Embed audio
+                    desc = item['description'] if 'description' in item.attrs else None
+                    embed = audio_embed(url, desc if None else "")
+                    logging.info(f"Embedding audio URL with <audio>: {url}")
+                    if desc:
+                        html = f'<p>{embed}<br>{escape(desc)}</p>'
+                    else:
+                        html = f'<p>{embed}</p>'
+
+                    item['type'] = ItemType.TEXT
+                    item['html'] = html
+                    continue
+
 
             # Plain link to internal resource, where we don't want to leave the resource
             # as a separate item because there is no D2L preview support for this type

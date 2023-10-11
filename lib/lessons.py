@@ -3,6 +3,7 @@
 import re
 import oembed
 import requests
+from html import escape
 
 from lib.utils import *
 
@@ -61,6 +62,16 @@ def is_audio_video(APP, content_type, sakai_id):
 
     return supported_media_type(APP, sakai_id)
 
+def is_audio_url(url):
+
+    audio_types = ("m4a", "mp3", "ogg", "flac", "wma", "wav")
+
+    for atype in audio_types:
+        if url.endswith(f".{atype}"):
+            return True
+
+    return False
+
 def link_item(APP, content_type, sakai_id):
 
     if content_type in APP['lessons']['type_to_link']:
@@ -105,6 +116,10 @@ def youtube_embed(youtube_id, start_timestamp, title):
     embed_iframe = f'<iframe width="{width}" height="{height}" src="{src_url}" frameborder="0" allow="{allow_options}" allowfullscreen="allowfullscreen" title="{title}"></iframe>'
 
     return f'<p><span style="font-size: 19px;">{embed_iframe}</span></p>'
+
+def audio_embed(url, title):
+
+    return f'<audio title="{escape(title)}" controls="controls"><source src="{url}"></audio>'
 
 def twitter_embed(url):
 
