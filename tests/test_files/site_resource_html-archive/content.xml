@@ -138,7 +138,7 @@
                 <property enc="BASE64" name="DAV:displayname" value="c2FtcGxlX3RleHQudHh0"/>
             </properties>
         </resource>
-        <resource body-location="66f4f100-c8ae-401a-a56f-7870d06804c8" content-length="13632" content-type="application/vnd.openxmlformats-officedocument.wordprocessingml.document" filePath="/vol28/2023/163/14/beff5359-3725-470e-bf47-d2b83b91f7a0" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/sample_word_doc.docx" rel-id="Articles/sample_word_doc.docx" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+        <resource body-location="66f4f100-c8ae-401a-a56f-7870d06804c8" content-length="13632" content-type="application/vnd.openxmlformats-officedocument.wordprocessingml.document" filePath="/vol28/2023/163/14/beff5359-3725-470e-bf47-d2b83b91f7a0" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/somefolder/sample_word_doc.docx" rel-id="Articles/sample_word_doc.docx" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
             <properties>
                 <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
                 <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
@@ -152,7 +152,7 @@
                 <property enc="BASE64" name="DAV:displayname" value="c2FtcGxlX3dvcmRfZG9jLmRvY3g="/>
             </properties>
         </resource>
-        <resource body-location="f578c933-3c59-4bdf-b4ac-3563fe8eb154" content-length="140186" content-type="image/jpeg" filePath="/vol28/2023/163/14/5a32c63e-712d-42f2-80cb-9d622eda8187" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/woman-570883_1280.jpg" rel-id="Articles/woman-570883_1280.jpg" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+        <resource body-location="f578c933-3c59-4bdf-b4ac-3563fe8eb154" content-length="140186" content-type="image/jpeg" filePath="/vol28/2023/163/14/5a32c63e-712d-42f2-80cb-9d622eda8187" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/somefolder/woman-570883_1280.jpg" rel-id="Articles/woman-570883_1280.jpg" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
             <properties>
                 <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
                 <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>

@@ -20,7 +20,7 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.lessons import *
 
-def update_item_types(APP, items):
+def update_item_types(APP, items, content_file_path):
 
     sakai_url = APP['sakai_url']
     content_path_prefix= f"{sakai_url}/access/content"
@@ -146,6 +146,31 @@ def update_item_types(APP, items):
                     item['html'] = html
                     continue
 
+        if item['type'] == ItemType.RESOURCE_FOLDER:
+            attr = item.find("attributes")
+            atrr_json = attr.get_text()
+            attributes = json.loads(atrr_json)
+
+            if 'dataDirectory' in attributes:
+                directory = attributes.get('dataDirectory').replace('//', '/')
+
+                if directory:
+                    with open(content_file_path, "r", encoding="utf8") as cp:
+                        content_soup = BeautifulSoup(cp, 'xml')
+                        resources = content_soup.find_all('resource')
+                        html = '<div data-type="folder-list">'
+                        for resource in resources:
+                            parent_path = os.path.dirname(resource['id'])
+                            parent_directory = os.path.basename(os.path.normpath(directory))
+                            if parent_path.endswith(f'/{parent_directory}'):
+                                file_name = resource["rel-id"]
+                                a_tag = f'<a href="{resource["id"]}">{file_name}</a>'
+                                html = html + a_tag
+
+                        html = html + '</div>'
+                        item['type'] = ItemType.TEXT
+                        item['html'] = html
+
     return items
 
 
@@ -251,6 +276,10 @@ def run(SITE_ID, APP):
     xml_dest = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
     xml_backup = r'{}{}-archive/lessonbuilder.xml.orig'.format(APP['archive_folder'], SITE_ID)
 
+    content_src = r'{}{}-archive/content.xml'.format(APP['archive_folder'], SITE_ID)
+    remove_unwanted_characters(content_src)
+    content_file_path = os.path.join(APP['archive_folder'], content_src)
+
     if APP['debug']:
         ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
         xml_src = ROOT_DIR + '/../tests/test_files/input.xml'
@@ -274,7 +303,7 @@ def run(SITE_ID, APP):
             page.decompose()
             continue
 
-        items = update_item_types(APP, items)
+        items = update_item_types(APP, items, content_file_path)
         items = remove_adj_breaks(items)
         items = remove_break_and_text(items)
         items = merge_adj_text(items)
