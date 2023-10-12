@@ -173,6 +173,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
         items = soup.find_all('item', attrs={"type": "5"})
         for item in items:
             html = BeautifulSoup(item['html'], 'html.parser')
+            found = False
 
             # At least one placeholder
             if html.find('p', attrs={"data-type": "placeholder"}):
@@ -185,7 +186,21 @@ def run(SITE_ID, APP, import_id, transfer_id):
                 if href and href.startswith("../") and supported_media_type(APP, href):
                     print(f"item {item.get('id')} title '{item.get('title')}' has a relevant link: {href}")
                     placeholder_items.append(item['id'])
-                    continue
+                    break
+
+            # Or embedded audio or video (AMA-612)
+            for link in html.find_all(['audio', 'video']):
+
+                src = link.get('src')
+                if not src:
+                    source = link.find('source')
+                    if source:
+                        src = source.get('src')
+
+                if src and src.startswith("../"):
+                    print(f"item {item.get('id')} title '{item.get('title')}' has an embedded HTML5 audio or video link: {src}")
+                    placeholder_items.append(item['id'])
+                    break
 
     if not placeholder_items:
         logging.info("No placeholders or audio/video links in Lessons content")
@@ -297,6 +312,29 @@ def run(SITE_ID, APP, import_id, transfer_id):
                 print(f"Updated link href to: {link_href}")
                 link['href'] = link_href
                 updated = True
+
+        # Replace embedded audio (AMA-612)
+        for link in soup_html.find_all(['audio', 'video']):
+            print(f"got HTML5 audio/video: {link}")
+            src = link.get('src')
+            if not src:
+                source = link.find('source')
+                if source:
+                    src = source.get('src')
+
+            if src:
+                src = src.replace(f"{brightspace_url}{topic_prefix}", "")
+
+                if src.startswith("../"):
+                    sakai_id = f'/group/{transfer_id}/{src[3:]}'
+                    file_display_name = get_content_displayname(f"{site_folder}{SITE_ID}-archive", sakai_id)
+                    media_id = get_media_id(content_toc, sakai_id, file_display_name)
+                    print(f"replacing with HTML5 embed for {src}")
+
+                    # Use an iframe embed
+                    link_html = f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{file_display_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>'
+                    link.replace_with(BeautifulSoup(link_html, 'html.parser'))
+                    updated = True
 
         if updated:
             new_topic_filename = f"lessonBuilder_{itemid}a.html"
