@@ -164,7 +164,7 @@ def update_item_types(APP, items, content_file_path):
                             parent_directory = os.path.basename(os.path.normpath(directory))
                             if parent_path.endswith(f'/{parent_directory}'):
                                 file_name = resource["rel-id"]
-                                a_tag = f'<a href="{resource["id"]}">{file_name}</a>'
+                                a_tag = f'<p><a href="{resource["id"]}">{file_name}</a></p>'
                                 html = html + a_tag
 
                         html = html + '</div>'
