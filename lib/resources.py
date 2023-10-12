@@ -58,7 +58,13 @@ def get_content_displayname(site_folder, sakai_id):
     content_tree = ET.parse(content_src)
     content_root = content_tree.getroot()
 
-    item = content_root.find(f".//resource[@id='{sakai_id}']")
+    if sakai_id.endswith("/"):
+        # Collection
+        item = content_root.find(f".//collection[@id='{sakai_id}']")
+    else:
+        # Resource
+        item = content_root.find(f".//resource[@id='{sakai_id}']")
+
     if item is None:
         raise Exception(f"Resource {sakai_id} not found in {content_src}")
 

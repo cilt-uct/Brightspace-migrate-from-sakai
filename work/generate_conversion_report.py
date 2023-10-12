@@ -244,7 +244,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
 
                 if found_details:
                     issues_details_desc = dom.find("span", {"id": "issues_details_desc"})
-                    issues_details_desc.string = f"The {len(all_items)} items(s) listed below may need further attention"
+                    issues_details_desc.string = f"The {len(all_items)} item(s) listed below may need further attention"
                     issues_detail_list = dom.find("div", {"id": "issues_details_list"})
                     if issues_detail_list:
                         populate_issue_details(dom, issues_detail_list, found_details)

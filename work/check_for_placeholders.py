@@ -41,19 +41,18 @@ def get_toc(base_url, org_id, session):
 # and then find the video URL in topics
 def get_media_id(content_toc, file_path, displayname):
 
+    print(f"get_media_id for {file_path}")
+
     resource_node = list(filter(lambda x: x['Title'] == 'Resources', content_toc['Modules']))[0]
     toplevel_lessons = list(filter(lambda x: x['Title'] not in ('Resources','External Resources'), content_toc['Modules']))
 
     media_paths = []
 
-    if file_path.startswith("/group/"):
-        # Sakai ID: /group/42190a5a-3b44-4eda-9fb9-83773b4f6410/
-        media_paths = file_path.split('/')[3:]
+    # Sakai ID: /group/42190a5a-3b44-4eda-9fb9-83773b4f6410/
+    if not file_path.startswith("/group/"):
+        raise Exception(f"Unexpected path: {file_path}")
 
-    if file_path.startswith("../"):
-        # Relative link
-        media_paths = file_path[3:].split('/')
-
+    media_paths = file_path.split('/')[3:]
     print(f"paths: {media_paths}")
 
     filename = displayname if displayname is not None else media_paths[-1]
@@ -88,6 +87,7 @@ def get_media_id(content_toc, file_path, displayname):
 
             # The Sakai path contained in the id may not match the Resources tree directly,
             # because of display names and/or changes to folder names made by the Brightspace importer.
+
             for path in media_paths:
                 if path == filename:
                     # We're at the end, so look for an activity
@@ -96,12 +96,28 @@ def get_media_id(content_toc, file_path, displayname):
                     media_id = media_url.split(':')[-1].split('/')[0]
                     break
                 else:
+                    # TODO use the folder display  name
                     module_search = list(filter(lambda x: x['Title'] == path, resource_node['Modules']))
 
                     if module_search:
+                        print(f"Moving down to {path}")
                         resource_node = module_search[0]
                     else:
-                        raise Exception(f"Path element '{path}' from '{file_path}' not found in Resources module in ToC")
+                        # Is it unique at this level?
+                        print(f"Checking uniqueness for last time, no match for '{path}'")
+                        topics = jpe_files.find(resource_node)
+                        topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
+                        if not topic_match:
+                            raise Exception(f"Path element '{path}' from '{file_path}' not found in Resources module in ToC")
+
+                        if len(topic_match)==1:
+                            print(f"Unique match for {filename}")
+                        else:
+                            print(f"Using first match of {len(topic_match)} for {filename}")
+                            logging.warning(f"Using non-unique match for {filename} in {file_path} for media id")
+
+                        media_url = topic_match[0].value['Url']
+                        break
 
     if not media_url:
         raise Exception("Cannot find media url for {filename}")
@@ -272,7 +288,11 @@ def run(SITE_ID, APP, import_id, transfer_id):
             print(f"looking at: {link}")
 
             if href.startswith("../") and supported_media_type(APP, href):
-                media_id = get_media_id(content_toc, href, None)
+
+                sakai_id = f'/group/{transfer_id}/{href[3:]}'
+                file_display_name = get_content_displayname(f"{site_folder}{SITE_ID}-archive", sakai_id)
+                media_id = get_media_id(content_toc, sakai_id, file_display_name)
+
                 link_href = f"/d2l/common/dialogs/quickLink/quickLink.d2l?ou={{orgUnitId}}&type=mediaLibrary&contentId={media_id}"
                 print(f"Updated link href to: {link_href}")
                 link['href'] = link_href
