@@ -43,6 +43,10 @@ def check_resources(src_folder, disallowed, paths_map, collection):
     # find each resource with an id that contains that extension
     for item in content_tree.xpath(f".//resource"):
 
+        # Ignore URL resource types
+        if item.get('resource-type') == "org.sakaiproject.content.types.urlResource":
+            continue
+
         # Check restricted extensions
         file_name, file_extension = os.path.splitext(item.get('id'))
         if file_extension and file_extension.upper().replace(".","") in disallowed:
