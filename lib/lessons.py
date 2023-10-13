@@ -6,6 +6,7 @@ import requests
 from html import escape
 
 from lib.utils import *
+from lib.resources import *
 
 # Lessons item types
 # https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36
@@ -202,3 +203,43 @@ def generic_embed(html):
         embed_html += '<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
 
     return embed_html
+
+# Embed a list of files in a Resources folder
+def folder_list_embed(archive_path, collection_id, path_prefix):
+
+    with open(f"{archive_path}/content.xml", "r", encoding="utf8") as cp:
+        content_soup = BeautifulSoup(cp, 'xml')
+
+        # Find the collection
+        print(f"Looking for {collection_id} in {archive_path}")
+        html = '<div data-type="folder-list"><hr>'
+        collection = content_soup.find("collection", id=collection_id)
+        if not collection:
+            print(f"Collection not found")
+            return None
+
+        # Collection title
+        folder_displayname = get_content_displayname(archive_path, collection_id)
+        folder_title = folder_displayname if folder_displayname else collection.get('rel-id')
+        html += f"<p><b>{folder_title}</b></p>"
+
+        # Find the files in the collection
+        html += "<ul style='list-style-type: none;'>"
+        resources = content_soup.find_all('resource')
+
+        for resource in resources:
+            parent_path = os.path.dirname(resource['id'])
+            parent_directory = os.path.basename(os.path.normpath(collection_id))
+            if parent_path.endswith(f'/{parent_directory}'):
+                displayname = get_content_displayname(archive_path, resource['id'])
+                file_name = displayname if displayname else resource["rel-id"]
+
+                # TODO if this is a .URL, then resolve it and link directly
+                if file_name != 'Site Information.html':
+                    href = f'{path_prefix}{resource["id"]}'
+                    a_tag = f'<li><a href="{href}">{file_name}</a></li>'
+                    html = html + a_tag
+
+    html = html + '</ul><hr></div>'
+
+    return html
