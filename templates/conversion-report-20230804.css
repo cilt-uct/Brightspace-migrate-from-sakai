@@ -54,13 +54,17 @@ thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td
     text-decoration: underline;
     color: #23527c;
 }
+
+
 #site {
  background-color: honeydew;
  padding: 1.5em;
 }
+
 #issues_not_found {
  display: none;
 }
+
 #tools_not_used {
  display: none;
 }
@@ -71,13 +75,16 @@ thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td
 #issues_not_found_list {
  list-style: none;
 }
+
 #tool_unused_list {
  list-style: none;
 }
+
 li.not-found {
  border-left: 3px solid rgb(5, 129, 61);
  padding: 0.5em;
 }
+
 li.found {
  padding: 0.5em;
  font-weight: bold;
@@ -196,7 +203,6 @@ p > .ama-logo {
     padding-left: 50px;
     padding-bottom: 20px;
 }
-
 .report_strip {
     background-image: url('img/Report_Strip.svg');
     background-repeat: inherit;
@@ -579,6 +585,7 @@ div.icon-todo::before {
     margin: 0px;
     margin-left: 10px;
 }
+
 .no-issues h3, .issues h3, .tools h3 {
     vertical-align: middle;
     display: inline-block;
@@ -586,7 +593,6 @@ div.icon-todo::before {
     font-weight: bold;
     margin-top: 10px;
 }
-
 .no-issues span, .issues span, .tools span {
     margin-top: 10px !important;
     font-size: 18px;
