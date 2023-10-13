@@ -1,6 +1,7 @@
 body {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
+
 table {
     width: 100%;
     border-collapse: separate;
@@ -36,11 +37,11 @@ thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td
     border-radius: 0 0 0 4px;
 }
 .issue-detail-content {
-    display: none;
-    overflow: hidden;
+  display: none;
+  overflow: hidden;
 }
 .collapsible {
-    cursor: pointer;
+  cursor: pointer;
 }
 .detail-button {
     border: none;
@@ -54,32 +55,34 @@ thead:last-child tr:last-child th:first-child, tbody:last-child tr:last-child td
     color: #23527c;
 }
 #site {
-    background-color: honeydew;
-    padding: 1.5em;
+ background-color: honeydew;
+ padding: 1.5em;
 }
 #issues_not_found {
-    display: none;
+ display: none;
 }
 #tools_not_used {
-    display: none;
+ display: none;
 }
-/* #issues_found_list {
-} */
+
+#issues_found_list {
+}
+
 #issues_not_found_list {
-    list-style: none;
+ list-style: none;
 }
 #tool_unused_list {
-    list-style: none;
+ list-style: none;
 }
 li.not-found {
-    border-left: 3px solid rgb(5, 129, 61);
-    padding: 0.5em;
+ border-left: 3px solid rgb(5, 129, 61);
+ padding: 0.5em;
 }
 li.found {
-    padding: 0.5em;
-    font-weight: bold;
-    font-size: 16px;
-    list-style: none;
+ padding: 0.5em;
+ font-weight: bold;
+ font-size: 16px;
+ list-style: none;
 }
 span.equivalent::before {
     content: '';
@@ -100,8 +103,8 @@ span.equivalent::before {
     list-style-type: none;
 }
 #tool_used_list li {
-    line-height: 25px;
-    margin-left: 10px;
+   line-height: 25px;
+   margin-left: 10px;
 }
 /*.tool_image.equivalent {
    background-image:  url('img/Ama_logo.svg');
@@ -130,14 +133,16 @@ p > .ama-logo {
     /* margin-left: 10px; */
 }
 #issue-detail {
-    font-weight: normal;
+ font-weight: normal;
 }
+
 #tool-detail {
-    font-weight: normal;
-    color: black;
+ font-weight: normal;
+ color: black;
 }
+
 #tools > div {
-    padding: 8px;
+ padding: 8px;
 }
 .img {
     width: auto;
@@ -159,16 +164,20 @@ p > .ama-logo {
     height: inherit;
     width: inherit;
 }
+
 #report-gendetails {
     background-color: #1f3769;
     color: white;
 }
+
 #report-pink {
     background-color: #f37067;
 }
+
 .report-icon {
     width: 20px;
 }
+
 #report_title {
     font-size: 46px;
     font-family: inherit;
@@ -176,15 +185,18 @@ p > .ama-logo {
     font-weight: bold;
 
 }
+
 #site_title, #course_title {
     font-size: 30px;
     font-family: inherit;
     color: #231f20;
 }
+
 .course-header {
     padding-left: 50px;
     padding-bottom: 20px;
 }
+
 .report_strip {
     background-image: url('img/Report_Strip.svg');
     background-repeat: inherit;
@@ -194,11 +206,13 @@ p > .ama-logo {
     padding: 10px;
     padding-left: 6em;
 }
+
 .report_strip p {
     color: white;
     font-weight: 250;
     font-size: 16px;
 }
+
 .report_strip a {
     color: white;
     font-size: 16px;
@@ -208,6 +222,7 @@ p > .ama-logo {
     padding: 0px;
 
 }
+
 .report-details {
     background-color: #1f3769;
     color: white;
@@ -237,17 +252,20 @@ p > .ama-logo {
 .image {
     flex: 0 0 3%;
 }
+
 #complete-message {
     color: #1f3769;
     font-size: 20px;
     font-weight: bold;
     padding-bottom: 0.5em;
 }
+
 #notes-message {
     color: #1f3769;
     font-size: 20px;
     margin-top: -10px;
 }
+
 .top_pill {
     width: auto;
     height: auto;
@@ -271,6 +289,7 @@ p > .ama-logo {
     font-size: 18px;
     font-weight: lighter;
 }
+
 /* .issues-found-icon {
     width: 60px;
     float:left;
@@ -290,6 +309,7 @@ p > .ama-logo {
 .tools-banner.img {
     display: inline-block;
 }
+
 .tools-icon {
     width: 60px;
     float: left;
@@ -320,6 +340,7 @@ p > .ama-logo {
     flex-direction: row;
     align-items: center;
 }
+
 .support > p {
     margin: 6px 0px;
 }
@@ -332,11 +353,13 @@ p > .ama-logo {
     width: 40px;
     margin-top: -40px;
 }
+
 .support-banner{
     background-image: url('img/Support_strip.svg');
     background-size: cover;
     height: 40px;
 }
+
 .support-banner p {
     color: white;
     font-size: 16px;
@@ -375,14 +398,17 @@ p > .ama-logo {
     gap: 6rem;
     padding: 0.55rem;
 }
+
 .issues-row.column:after {
     content: "";
     display: block;
     padding-bottom: 100%;
 }
+
 .issues-row > .column {
     width: 250px;
 }
+
 .card {
     padding: 0px 16px 0px 16px;
     text-align: center;
@@ -392,6 +418,7 @@ p > .ama-logo {
     box-shadow: 0 5px 10px rgba(0,0,0,.2);
     border-bottom: 20px solid #1fa485;
 }
+
 .grey-strip {
     width: 60px;
     height: 30px;
@@ -400,9 +427,11 @@ p > .ama-logo {
     padding: 10px;
     font-size: 16px;
 }
+
 .card-text > a[target="_blank"] {
     display: block;
 }
+
 .card-title {
     color: #1f3769;
     font-weight: bold;
@@ -419,7 +448,7 @@ p > .ama-logo {
     margin: 0 auto;
 }
 .no-issues {
-    background-color: #1fa485;
+   background-color: #1fa485;
     color: white;
     display: inline-block;
     padding: 5px;
@@ -434,6 +463,7 @@ p > .ama-logo {
     font-size: 18px;
     font-weight: lighter;
 }
+
 .no-issues-icon {
     width: 60px;
     float:left;
@@ -441,7 +471,7 @@ p > .ama-logo {
 }
 div.icon-calendar::before {
     content: url('img/Calendar_icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -450,7 +480,7 @@ div.icon-calendar::before {
 }
 div.icon-folder::before {
     content: url('img/Folder_Icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -459,7 +489,7 @@ div.icon-folder::before {
 }
 div.icon-css::before {
     content: url('img/Css_Icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -468,7 +498,7 @@ div.icon-css::before {
 }
 div.icon-edit::before {
     content: url('img/Edit_icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -477,7 +507,7 @@ div.icon-edit::before {
 }
 div.icon-email::before {
     content: url('img/Email_icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -486,7 +516,7 @@ div.icon-email::before {
 }
 div.icon-list::before {
     content: url('img/List_icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -495,7 +525,7 @@ div.icon-list::before {
 }
 div.icon-move::before {
     content: url('img/Move_Icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -513,7 +543,7 @@ div.icon-move::before {
 }*/
 div.icon-settings::before {
     content: url('img/Settings_Icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -522,7 +552,7 @@ div.icon-settings::before {
 }
 div.icon-todo::before {
     content: url('img/Todo_Icon.svg');
-    width: 20%;
+     width: 20%;
     display: block;
     top: 50%;
     transform: translateY(-50%);
@@ -556,15 +586,18 @@ div.icon-todo::before {
     font-weight: bold;
     margin-top: 10px;
 }
+
 .no-issues span, .issues span, .tools span {
     margin-top: 10px !important;
     font-size: 18px;
     font-weight: normal;
 }
+
 .card-body .grey-strip {
     display: block;
     margin: auto;
 }
+
 @media (max-width: 520px) {
     .issues-row {
         gap: 0rem;
@@ -584,6 +617,7 @@ div.icon-todo::before {
         margin-bottom: 6rem;
     }
 }
+
 /* @media (max-width: 700px) {
     .issues-row {
         gap: 0rem;
