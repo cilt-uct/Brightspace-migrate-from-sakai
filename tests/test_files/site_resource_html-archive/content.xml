@@ -1,0 +1,184 @@
+<archive date="20230612144233578" server="vula101a" source="1953adfb-18cf-4ef5-8b91-e3b5b9018e0b" system="Sakai 2.8" xmlns:CHEF="https://www.sakailms.org/xmlns/archive/CHEF" xmlns:DAV="https://www.sakailms.org/xmlns/archive/DAV" xmlns:sakai="https://www.sakailms.org/xmlns/archive/">
+    <org.sakaiproject.content.api.ContentHostingService>
+        <collection id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/" rel-id="" resource-type="org.sakaiproject.content.types.folder" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="SAKAI:content_priority" value="ODg2NjU="/>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:is-collection" value="dHJ1ZQ=="/>
+                <property enc="BASE64" name="DAV:displayname" value="Q0lMVCBURVNUIDYxMg=="/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDAwNTg4MzE="/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDAwNTg3NDk="/>
+            </properties>
+        </collection>
+        <collection id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/" rel-id="Articles/" resource-type="org.sakaiproject.content.types.folder" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:description" value=""/>
+                <property enc="BASE64" name="CHEF:is-collection" value="dHJ1ZQ=="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDAxMTk1MjM="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="Mg=="/>
+                <property enc="BASE64" name="SAKAI:conditionalrelease" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDAxMTk1MjI="/>
+                <property enc="BASE64" name="SAKAI:conditionalNotificationId" value=""/>
+                <property enc="BASE64" name="DAV:displayname" value="QXJ0aWNsZXM="/>
+            </properties>
+        </collection>
+        <resource body-location="c2c125d9-800b-48ff-b35a-e07092414581" content-length="875295" content-type="application/pdf" filePath="/vol28/2023/163/14/b9ce9e8a-b576-4835-8cb4-b755f13d3478" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/Africa Day Celebrating music and family at the UCT Irma Stern Museum UCT News.pdf" rel-id="Articles/Africa Day Celebrating music and family at the UCT Irma Stern Museum UCT News.pdf" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDAyNTUyMjc="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="ODc1Mjk1"/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDU3"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="YXBwbGljYXRpb24vcGRm"/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDAyNTUyMjM="/>
+                <property enc="BASE64" name="DAV:displayname" value="QWZyaWNhIERheSBDZWxlYnJhdGluZyBtdXNpYyBhbmQgZmFtaWx5IGF0IHRoZSBVQ1QgSXJtYSBTdGVybiBNdXNldW0gVUNUIE5ld3MucGRm"/>
+            </properties>
+        </resource>
+        <resource body-location="f0027805-0aa0-42e5-9a59-25dc4a56bb27" content-length="1396382" content-type="application/pdf" filePath="/vol29/2023/163/14/890db83f-11f2-48aa-91f8-1c2a290e60c8" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/Celebrating Africa Day at MASHA UCT News.pdf" rel-id="Articles/Celebrating Africa Day at MASHA UCT News.pdf" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDAyNTU5NTU="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="MTM5NjM4Mg=="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDU4"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="YXBwbGljYXRpb24vcGRm"/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDAyNTU5NTA="/>
+                <property enc="BASE64" name="DAV:displayname" value="Q2VsZWJyYXRpbmcgQWZyaWNhIERheSBhdCBNQVNIQSBVQ1QgTmV3cy5wZGY="/>
+            </properties>
+        </resource>
+        <resource body-location="3f13dd0b-8efb-4379-935f-6401782c6327" content-length="921456" content-type="application/pdf" filePath="/vol29/2023/163/14/1186d1b8-e844-4a54-87bf-e2e02f69a1bc" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/Do You Understand What Accountability Really Means.pdf" rel-id="Articles/Do You Understand What Accountability Really Means.pdf" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDAyNTY0NDI="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="OTIxNDU2"/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDU5"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="YXBwbGljYXRpb24vcGRm"/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDAyNTY0Mzg="/>
+                <property enc="BASE64" name="DAV:displayname" value="RG8gWW91IFVuZGVyc3RhbmQgV2hhdCBBY2NvdW50YWJpbGl0eSBSZWFsbHkgTWVhbnMgLnBkZg=="/>
+            </properties>
+        </resource>
+        <resource body-location="06a4dfc1-ff83-4bc1-88e3-f4f74ac0ed3b" content-length="2151506" content-type="application/pdf" filePath="/vol30/2023/163/14/54bed119-abed-4844-bba0-6f46ffe72cfd" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/How to Actually Encourage Employee Accountability.pdf" rel-id="Articles/How to Actually Encourage Employee Accountability.pdf" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDAyNTcxODA="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="MjE1MTUwNg=="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDYw"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="YXBwbGljYXRpb24vcGRm"/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDAyNTcxNzU="/>
+                <property enc="BASE64" name="DAV:displayname" value="SG93IHRvIEFjdHVhbGx5IEVuY291cmFnZSBFbXBsb3llZSBBY2NvdW50YWJpbGl0eS5wZGY="/>
+            </properties>
+        </resource>
+        <resource body-location="5a402173-2a38-4086-b82c-ab2a8cea0736" content-length="19711" content-type="image/png" filePath="/vol29/2023/163/14/21ff7ec1-208b-40aa-9495-651f813c17a5" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/png-transparent-sunset-sunset-dusk-xixia-thumbnail.png" rel-id="Articles/png-transparent-sunset-sunset-dusk-xixia-thumbnail.png" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDMzMDc0Njg="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="MTk3MTE="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDYy"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="aW1hZ2UvcG5n"/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDMzMDc0NjQ="/>
+                <property enc="BASE64" name="DAV:displayname" value="cG5nLXRyYW5zcGFyZW50LXN1bnNldC1zdW5zZXQtZHVzay14aXhpYS10aHVtYm5haWwucG5n"/>
+            </properties>
+        </resource>
+        <resource body-location="16874bd1-92d4-45e0-afc7-3d9625586c19" content-length="11073" content-type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" filePath="/vol30/2023/163/14/f376694a-aa8f-4c72-a9fe-10f3daf9e433" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/sample_excel.xlsx" rel-id="Articles/sample_excel.xlsx" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDMzMDc3MzY="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="MTEwNzM="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDYz"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="YXBwbGljYXRpb24vdm5kLm9wZW54bWxmb3JtYXRzLW9mZmljZWRvY3VtZW50LnNwcmVhZHNoZWV0bWwuc2hlZXQ="/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDMzMDc3MzA="/>
+                <property enc="BASE64" name="DAV:displayname" value="c2FtcGxlX2V4Y2VsLnhsc3g="/>
+            </properties>
+        </resource>
+        <resource body-location="00ceb14d-3925-4d54-9098-895db8984cee" content-length="49499" content-type="application/vnd.openxmlformats-officedocument.presentationml.presentation" filePath="/vol29/2023/163/14/4193f365-f91c-4b7f-9b0c-8f5944aef2a6" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/sample_powerpoint.pptx" rel-id="Articles/sample_powerpoint.pptx" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDMzMDgwNjg="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="NDk0OTk="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDY0"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="YXBwbGljYXRpb24vdm5kLm9wZW54bWxmb3JtYXRzLW9mZmljZWRvY3VtZW50LnByZXNlbnRhdGlvbm1sLnByZXNlbnRhdGlvbg=="/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDMzMDgwNjE="/>
+                <property enc="BASE64" name="DAV:displayname" value="c2FtcGxlX3Bvd2VycG9pbnQucHB0eA=="/>
+            </properties>
+        </resource>
+        <resource body-location="b141a6cf-7cff-459d-b7c0-089043743cb2" content-length="4487" content-type="text/plain" filePath="/vol28/2023/163/14/28154eb7-9030-47ea-a3eb-86ddf6b2525c" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/sample_text.txt" rel-id="Articles/sample_text.txt" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="encoding" value="VVRGLTg="/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDMzMDg1MDE="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="NDQ4Nw=="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDY1"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="dGV4dC9wbGFpbg=="/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDMzMDg0OTc="/>
+                <property enc="BASE64" name="DAV:displayname" value="c2FtcGxlX3RleHQudHh0"/>
+            </properties>
+        </resource>
+        <resource body-location="66f4f100-c8ae-401a-a56f-7870d06804c8" content-length="13632" content-type="application/vnd.openxmlformats-officedocument.wordprocessingml.document" filePath="/vol28/2023/163/14/beff5359-3725-470e-bf47-d2b83b91f7a0" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/somefolder/sample_word_doc.docx" rel-id="Articles/sample_word_doc.docx" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDMzMDg5Mjk="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="MTM2MzI="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDY2"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="YXBwbGljYXRpb24vdm5kLm9wZW54bWxmb3JtYXRzLW9mZmljZWRvY3VtZW50LndvcmRwcm9jZXNzaW5nbWwuZG9jdW1lbnQ="/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDMzMDg5MTg="/>
+                <property enc="BASE64" name="DAV:displayname" value="c2FtcGxlX3dvcmRfZG9jLmRvY3g="/>
+            </properties>
+        </resource>
+        <resource body-location="f578c933-3c59-4bdf-b4ac-3563fe8eb154" content-length="140186" content-type="image/jpeg" filePath="/vol28/2023/163/14/5a32c63e-712d-42f2-80cb-9d622eda8187" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Articles/somefolder/woman-570883_1280.jpg" rel-id="Articles/woman-570883_1280.jpg" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YTQ2MzUwN2MtNDlmYy00NWFjLTgwZWQtMTYwZWVkMTRjOGE5"/>
+                <property enc="BASE64" name="CHEF:copyrightchoice" value="Y3JlYXRpdmVfY29tbW9ucw=="/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDMzMDcxMTQ="/>
+                <property enc="BASE64" name="DAV:getcontentlength" value="MTQwMTg2"/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="MjY4NDM1NDYx"/>
+                <property enc="BASE64" name="DAV:getcontenttype" value="aW1hZ2UvanBlZw=="/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDMzMDcxMDI="/>
+                <property enc="BASE64" name="DAV:displayname" value="d29tYW4tNTcwODgzXzEyODAuanBn"/>
+            </properties>
+        </resource>
+        <resource body-location="5f15f77e-b0d4-42c5-b24d-54946d8c9c6d" content-length="122" content-type="text/html" file-path="/tmp/Site Information.html" id="/group/1953adfb-18cf-4ef5-8b91-e3b5b9018e0b/Site Information.html" rel-id="Site Information.html" resource-type="org.sakaiproject.content.types.fileUpload" sakai:access_mode="inherited" sakai:hidden="false">
+            <properties>
+                <property enc="BASE64" name="CHEF:creator" value="YWRtaW4="/>
+                <property enc="BASE64" name="CHEF:modifiedby" value="YWRtaW4="/>
+                <property enc="BASE64" name="CHEF:description" value=""/>
+                <property enc="BASE64" name="CHEF:is-collection" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:getlastmodified" value="MjAyMzA2MTIxNDQyMzM5ODI="/>
+                <property enc="BASE64" name="SAKAI:content_priority" value="Mg=="/>
+                <property enc="BASE64" name="SAKAI:conditionalrelease" value="ZmFsc2U="/>
+                <property enc="BASE64" name="DAV:creationdate" value="MjAyMzA2MTIxNDQyMzM5ODI="/>
+                <property enc="BASE64" name="SAKAI:conditionalNotificationId" value=""/>
+                <property enc="BASE64" name="DAV:displayname" value="U2l0ZSBJbmZvcm1hdGlvbg=="/>
+            </properties>
+        </resource>
+    </org.sakaiproject.content.api.ContentHostingService>
+</archive>
