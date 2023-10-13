@@ -55,9 +55,10 @@ def get_media_id(content_toc, file_path, displayname):
     media_paths = file_path.split('/')[3:]
     print(f"paths: {media_paths}")
 
-    filename = displayname if displayname is not None else media_paths[-1]
+    filename = media_paths[-1]
 
-    print(f"Filename: {filename}")
+    # Search for filename in the Lessons tree
+    print(f"Filename: {filename} Displayname: {displayname}")
 
     media_id = None
     topic_id = None
@@ -65,8 +66,9 @@ def get_media_id(content_toc, file_path, displayname):
 
     # Find the media_id. First try to match on title in Lessons, if it's unique in the site.
     jpe_cs = f"$..Topics[?(@.Title='{filename}')]"
-    jpe_files = parse(jpe_cs)
-    topics = jpe_files.find(toplevel_lessons)
+    jpe_lessons = parse(jpe_cs)
+
+    topics = jpe_lessons.find(toplevel_lessons)
 
     topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
 
@@ -74,8 +76,19 @@ def get_media_id(content_toc, file_path, displayname):
         print(f"Unique match for {filename}")
         media_url = topic_match[0].value['Url']
     else:
+
         # See if the name is unique in the Resources tree
-        topics = jpe_files.find(resource_node)
+        search_name = filename
+        if displayname:
+            search_name = displayname
+            if not '.' in search_name and '.' in filename:
+                # append the original extension to match the Brightspace import behaviour
+                file_ext = filename.split('.')[-1]
+                search_name += f".{file_ext}"
+
+        jpe_cs = f"$..Topics[?(@.Title='{search_name}')]"
+        jpe_resources = parse(jpe_cs)
+        topics = jpe_resources.find(resource_node)
         topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
 
         if len(topic_match)==1:
@@ -83,20 +96,25 @@ def get_media_id(content_toc, file_path, displayname):
             media_url = topic_match[0].value['Url']
         else:
             # Find it another way
-            print(f"Multiple matches: traversing path {file_path}" if topic_match else f"No match in Lessons modules: looking in Resources for {file_path}")
+            if topic_match:
+                print(f"Multiple matches: traversing path {file_path}")
+            else:
+                print(f"No match in Lessons modules: looking in Resources for {file_path}")
 
             # The Sakai path contained in the id may not match the Resources tree directly,
             # because of display names and/or changes to folder names made by the Brightspace importer.
-
             for path in media_paths:
                 if path == filename:
-                    # We're at the end, so look for an activity
-                    topic = list(filter(lambda x: x['TypeIdentifier'] == 'ContentService' and x['Title'] == filename, resource_node['Topics']))[0]
-                    media_url = topic['Url']
-                    media_id = media_url.split(':')[-1].split('/')[0]
-                    break
+                    # We're at the end, so look for an activity matching the name
+                    topic_match = list(filter(lambda x: x['TypeIdentifier'] == 'ContentService' and x['Title'] == search_name, resource_node['Topics']))
+                    if topic_match:
+                        media_url = topic_match[0]['Url']
+                        media_id = media_url.split(':')[-1].split('/')[0]
+                        break
+                    else:
+                        raise Exception(f"No Activity found for '{filename}' searching for match with '{search_name}' at path '{path}'")
                 else:
-                    # TODO use the folder display  name
+                    # TODO use the folder display name
                     module_search = list(filter(lambda x: x['Title'] == path, resource_node['Modules']))
 
                     if module_search:
@@ -105,7 +123,7 @@ def get_media_id(content_toc, file_path, displayname):
                     else:
                         # Is it unique at this level?
                         print(f"Checking uniqueness for last time, no match for '{path}'")
-                        topics = jpe_files.find(resource_node)
+                        topics = jpe_resources.find(resource_node)
                         topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
                         if not topic_match:
                             raise Exception(f"Path element '{path}' from '{file_path}' not found in Resources module in ToC")
@@ -159,16 +177,15 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
     # Check that there are placeholders in this site
 
-    site_folder = APP['archive_folder']
-    xml_src = r'{}{}-archive/lessonbuilder.xml'.format(site_folder, SITE_ID)
-    remove_unwanted_characters(xml_src)
-    file_path = os.path.join(site_folder, xml_src)
+    archive_path = f"{APP['archive_folder']}/{SITE_ID}-archive"
+    lessons_src = f"{archive_path}/lessonbuilder.xml"
+    remove_unwanted_characters(lessons_src)
 
     # Find the Lessons items that contain placeholders and/or audio/video links
 
     placeholder_items = []
 
-    with open(file_path, "r", encoding="utf8") as fp:
+    with open(lessons_src, "r", encoding="utf8") as fp:
         soup = BeautifulSoup(fp, 'xml')
         items = soup.find_all('item', attrs={"type": "5"})
         for item in items:
@@ -272,8 +289,11 @@ def run(SITE_ID, APP, import_id, transfer_id):
             sakai_id_enc = placeholder['data-sakai-id']
             sakai_id = base64.b64decode(sakai_id_enc).decode("utf-8").replace(SITE_ID, transfer_id)
 
-            file_display_name = get_content_displayname(f"{site_folder}{SITE_ID}-archive", sakai_id)
+            if not resource_exists(archive_path, sakai_id):
+                # Should always exist because we created a plceholder for it
+                raise Exception("Placeholder id '{sakai_id}' not found in site resources")
 
+            file_display_name = get_content_displayname(archive_path, sakai_id)
             media_id = get_media_id(content_toc, sakai_id, file_display_name)
 
             if media_id and topic_id:
@@ -305,7 +325,14 @@ def run(SITE_ID, APP, import_id, transfer_id):
             if href.startswith("../") and supported_media_type(APP, href):
 
                 sakai_id = f'/group/{transfer_id}/{href[3:]}'
-                file_display_name = get_content_displayname(f"{site_folder}{SITE_ID}-archive", sakai_id)
+
+                # Check that it exists and isn't a broken link
+                if not resource_exists(archive_path, sakai_id):
+                    # TODO replace with a MISSING placeholder
+                    print(f"Link target resource '{sakai_id}' does not exist")
+                    continue
+
+                file_display_name = get_content_displayname(archive_path, sakai_id)
                 media_id = get_media_id(content_toc, sakai_id, file_display_name)
 
                 link_href = f"/d2l/common/dialogs/quickLink/quickLink.d2l?ou={{orgUnitId}}&type=mediaLibrary&contentId={media_id}"
@@ -327,7 +354,13 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
                 if src.startswith("../"):
                     sakai_id = f'/group/{transfer_id}/{src[3:]}'
-                    file_display_name = get_content_displayname(f"{site_folder}{SITE_ID}-archive", sakai_id)
+
+                    if not resource_exists(archive_path, sakai_id):
+                        # TODO replace with a Missing placeholder
+                        print(f"Link target resource '{sakai_id}' does not exist")
+                        continue
+
+                    file_display_name = get_content_displayname(archive_path, sakai_id)
                     media_id = get_media_id(content_toc, sakai_id, file_display_name)
                     print(f"replacing with HTML5 embed for {src}")
 

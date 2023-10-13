@@ -47,6 +47,24 @@ def get_content_owner(site_folder, sakai_id):
 
     return (owner_userid, owner_eid)
 
+def resource_exists(site_folder, sakai_id):
+
+    if sakai_id.startswith("/url/"):
+        # Not a real Sakai ID - used in Lessons
+        return False
+
+    content_src = f'{site_folder}/content.xml'
+    content_tree = ET.parse(content_src)
+    content_root = content_tree.getroot()
+
+    if content_root.find(f".//resource[@id='{sakai_id}']") is not None:
+        return True
+
+    if content_root.find(f".//collection[@id='{sakai_id}']") is not None:
+        return True
+
+    return False
+
 # Return display name for a content item, if available otherwise None
 def get_content_displayname(site_folder, sakai_id):
 
