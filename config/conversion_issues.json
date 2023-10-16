@@ -198,6 +198,19 @@
       }
     },
     {
+      "key": "lessons_folder_list",
+      "active": true,
+      "tool": "sakai.lessonbuildertool",
+      "icon-class": "icon-edit",
+      "description": "Lessons embedded folders",
+      "detail-heading": "Lessons pages",
+      "found": "Some Lessons pages included embedded Resources folders. These have been converted to lists of static links. They will not update automatically in Amathuba.",
+      "not_found": "Good to go! No Vula lessons embedded folders found.",
+      "args": [
+        "lessons_soup"
+      ]
+    },
+    {
       "key": "lessons_missing_content",
       "active": true,
       "tool": "sakai.lessonbuildertool",

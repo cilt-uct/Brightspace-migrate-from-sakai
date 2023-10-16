@@ -198,6 +198,24 @@ def lessons_tools(lessons_soup):
     else:
         return None
 
+# AMA-716 Flag embedded folder lists
+# data-type:folder-list attribute is set by the workflow operation lessonbuilder_merge_items
+def lessons_folder_list(lessons_soup):
+    data = set()
+
+    items = lessons_soup.find_all("item", attrs={"type": "5"})
+    for item in items:
+        parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
+        tool = parsed_html.find("div", attrs={"data-type": "folder-list"})
+        parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
+        if len(parent) > 0 and tool:
+            title = parent[0]['title']
+            data.add(title)
+
+    if len(data) > 0:
+        return sorted(data)
+    else:
+        return None
 
 def lessons_embedded_content(lessons_soup):
     data = set()
