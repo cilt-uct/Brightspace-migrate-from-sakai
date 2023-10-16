@@ -197,6 +197,11 @@ def run(SITE_ID, APP, import_id, transfer_id):
                 placeholder_items.append(item['id'])
                 continue
 
+            # At least one LTI content item
+            if html.find('p', attrs={"data-type": "lti-content"}):
+                placeholder_items.append(item['id'])
+                continue
+
             # Or at least one link to an audio or video file
             for link in html.find_all('a'):
                 href = link.get('href')
@@ -282,33 +287,43 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
         # Replace the placeholders with embed code
         placeholders = soup_html.find_all('p', attrs={"data-type": "placeholder"})
-        for placeholder in placeholders:
+        lti_links = soup_html.find_all('p', attrs={"data-type": "lti-content"})
+
+        for placeholder in (placeholders + lti_links):
 
             # print(f"placeholder: {placeholder.prettify()}")
             placeholder_name = placeholder['data-name']
+            placeholder_type = placeholder['data-type']
             sakai_id_enc = placeholder['data-sakai-id']
             sakai_id = base64.b64decode(sakai_id_enc).decode("utf-8").replace(SITE_ID, transfer_id)
 
-            if not resource_exists(archive_path, sakai_id):
-                # Should always exist because we created a plceholder for it
-                raise Exception("Placeholder id '{sakai_id}' not found in site resources")
+            # Content links (audio, video)
+            if placeholder_type == "placeholder":
 
-            file_display_name = get_content_displayname(archive_path, sakai_id)
-            media_id = get_media_id(content_toc, sakai_id, file_display_name)
+                if not resource_exists(archive_path, sakai_id):
+                    # Should always exist because we created a plceholder for it
+                    raise Exception("Placeholder id '{sakai_id}' not found in site resources")
 
-            if media_id and topic_id:
-                if placeholder['data-item-type'] == ItemType.RESOURCE:
-                    # Link
-                    link_html = f'<p><a href="/d2l/common/dialogs/quickLink/quickLink.d2l?ou={{orgUnitId}}&type=mediaLibrary&contentId={media_id}" target="_blank" rel="noopener">{placeholder_name}</a></p>'
+                file_display_name = get_content_displayname(archive_path, sakai_id)
+                media_id = get_media_id(content_toc, sakai_id, file_display_name)
+
+                if media_id and topic_id:
+                    if placeholder['data-item-type'] == ItemType.RESOURCE:
+                        # Link
+                        link_html = f'<p><a href="/d2l/common/dialogs/quickLink/quickLink.d2l?ou={{orgUnitId}}&type=mediaLibrary&contentId={media_id}" target="_blank" rel="noopener">{placeholder_name}</a></p>'
+                    else:
+                        # Embed
+                        link_html = f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{placeholder_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>'
+
+                    placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
+                    updated = True
                 else:
-                    # Embed
-                    link_html = f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{placeholder_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>'
+                    logging.warning(f"Ignoring {sakai_id} - possibly already run")
+                    # raise Exception(f"Could not get media_id or topic_id for {sakai_id}")
 
-                placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
-                updated = True
-            else:
-                logging.warning(f"Ignoring {sakai_id} - possibly already run")
-                # raise Exception(f"Could not get media_id or topic_id for {sakai_id}")
+            # Content links (audio, video)
+            if placeholder_type == "lti-content":
+                logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}'")
 
         # Replace links
         for link in soup_html.find_all('a'):

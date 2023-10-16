@@ -71,6 +71,15 @@ def run(SITE_ID, APP):
                             logging.info(f'Placeholder for name: {item.attrs["name"]}; type: {item.attrs["html"]}; id: {sakai_id}')
                             html = BeautifulSoup(f'<p style="border-style:solid;" data-type="placeholder" data-item-type="{item["type"]}" data-sakai-id="{sakai_id_enc}" data-name="{link_name}"><span style="font-weight:bold;">PLACEHOLDER</span> [name: {link_name}; type: {content_type}]</p>', 'html.parser')
 
+                if item['type'] == ItemType.BLTI:
+                    # Embedded LTI Content Item launch
+                    sakai_id = item["sakaiid"]
+                    sakai_id_enc = base64.b64encode(sakai_id.encode("utf-8")).decode("utf-8")
+                    link_name = item["name"]
+                    link_desc = item["description"]
+                    logging.info(f'Placeholder for LTI content: "{item["name"]}" id: {sakai_id}')
+                    html = BeautifulSoup(f'<p style="border-style:solid;" data-type="lti-content" data-display="{item["format"]}"data-item-type="{item["type"]}" data-sakai-id="{sakai_id_enc}" data-name="{link_name}"><span style="font-weight:bold;">LTI CONTENT</span> <em>{link_name} ({link_desc})</em></p>', 'html.parser')
+
                 if html:
                     merged.div.append(html)
 
