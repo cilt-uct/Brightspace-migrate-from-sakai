@@ -47,6 +47,8 @@ def populate_issue_details(dom, found_div, items):
         table['id'] = f'table_{issue_item["key"]}'
         table_head = table.find('th', {'id': 'head'})
         table_head['id'] = issue_item['key']
+        if 'icon-class' in issue_item:
+            table_head['class'] = issue_item['icon-class']
         table_head.string = ''
         table_head.append(header)
         table_row = table.find('tr', {'id': 'data-row'})
@@ -226,6 +228,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
             issues_container = dom.find("div", {"id": "issues-container"})
             issues_banner = dom.find("div", {"id": "issues-banner"})
             issues_detail_banner = dom.find("div", {"id": "issues-details-banner"})
+            issues_detail_container = dom.find("div", {"id": "issues-details-container"})
 
             # No issues
             no_issues_banner = dom.find("div", {"id": "no-issues-banner"})
@@ -253,6 +256,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
                 issues_banner.decompose()
                 issues_container.decompose()
                 issues_detail_banner.decompose()
+                issues_detail_container.decompose()
 
                 # Use the no issues banner
                 #issues_desc.string = "Good news! No issues were flagged for attention while converting this site."
