@@ -302,7 +302,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
                 if not resource_exists(archive_path, sakai_id):
                     # Should always exist because we created a plceholder for it
-                    raise Exception("Placeholder id '{sakai_id}' not found in site resources")
+                    raise Exception(f"Placeholder id '{sakai_id}' in Lessons item {itemid} not found in site resources")
 
                 file_display_name = get_content_displayname(archive_path, sakai_id)
                 media_id = get_media_id(content_toc, sakai_id, file_display_name)
