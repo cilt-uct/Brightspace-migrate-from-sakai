@@ -41,7 +41,7 @@ def get_toc(base_url, org_id, session):
 # and then find the video URL in topics
 def get_media_id(content_toc, file_path, displayname):
 
-    print(f"get_media_id for {file_path}")
+    print(f"get_media_id for {file_path} with displayname: {displayname}")
 
     resource_node = list(filter(lambda x: x['Title'] == 'Resources', content_toc['Modules']))[0]
     toplevel_lessons = list(filter(lambda x: x['Title'] not in ('Resources','External Resources'), content_toc['Modules']))
@@ -65,7 +65,8 @@ def get_media_id(content_toc, file_path, displayname):
     media_url = None
 
     # Find the media_id. First try to match on title in Lessons, if it's unique in the site.
-    jpe_cs = f"$..Topics[?(@.Title='{filename}')]"
+    filename_esc = filename.replace('"','\\"')
+    jpe_cs = f'$..Topics[?(@.Title="{filename_esc}")]'
     jpe_lessons = parse(jpe_cs)
 
     topics = jpe_lessons.find(toplevel_lessons)
@@ -86,7 +87,8 @@ def get_media_id(content_toc, file_path, displayname):
                 file_ext = filename.split('.')[-1]
                 search_name += f".{file_ext}"
 
-        jpe_cs = f"$..Topics[?(@.Title='{search_name}')]"
+        search_name_esc = search_name.replace('"','\\"')
+        jpe_cs = f'$..Topics[?(@.Title="{search_name_esc}")]'
         jpe_resources = parse(jpe_cs)
         topics = jpe_resources.find(resource_node)
         topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
@@ -155,7 +157,7 @@ def get_topic_id(content_toc, topic_path):
 
     toplevel_lessons = list(filter(lambda x: x['Title'] not in ('Resources','External Resources'), content_toc['Modules']))
 
-    jpe = f"$..Topics[?(@.Url=='{topic_path}')]"
+    jpe = f'$..Topics[?(@.Url=="{topic_path}")]'
     jsonpath_expression = parse(jpe)
     topic_matches = jsonpath_expression.find(toplevel_lessons)
 
