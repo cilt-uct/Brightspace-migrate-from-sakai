@@ -141,6 +141,18 @@ def update_item_types(APP, SITE_ID, items):
                     item['html'] = html
                     continue
 
+                # We're not sure what to do with this, so just link it
+                if url:
+                    # Generic link with description
+                    if 'description' in item.attrs and item['description']:
+                        desc = item['description']
+                        html = f'<p><a href="{url}">{url}</a><br>{escape(desc)}</p>'
+                    else:
+                        html = f'<p><a href="{url}">{url}</a></p>'
+
+                    item['type'] = ItemType.TEXT
+                    item['html'] = html
+                    continue
 
             # Plain link to internal resource, where we don't want to leave the resource
             # as a separate item because there is no D2L preview support for this type

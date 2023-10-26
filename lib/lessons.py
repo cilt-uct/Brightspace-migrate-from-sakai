@@ -169,7 +169,8 @@ def is_twitter(url):
 
 def is_url_html(url):
 
-    url_head = requests.head(url)
+    # Disable SSL cert validation
+    url_head = requests.head(url, verify=False, allow_redirects=True)
 
     if 'Content-Type' in url_head.headers:
         if url_head.headers['Content-Type'].startswith('text/html'):
