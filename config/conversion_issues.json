@@ -249,7 +249,11 @@
       "not_found": "Good to go! Your Resources folders have 3 levels or less.",
       "args": [
         "site_folder"
-      ]
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.hnyt9uas0ltz",
+        "a": "more info"
+      }
     },
     {
       "key": "b3",
