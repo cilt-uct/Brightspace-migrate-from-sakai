@@ -7,6 +7,9 @@ STEPS:
   # Initial cleanup
   - action: test_and_quiz_fix_xml
 
+  # Resolve short URLs (/x/)
+  - action: site_resolve_shorturls
+
   # Possibly failure cases that raise exceptions
   - action: xml_valid
   - action: content_collisions

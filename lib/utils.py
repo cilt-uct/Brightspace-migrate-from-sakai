@@ -483,3 +483,13 @@ def web_login(login_url, username, password):
     session = requests.Session()
     session.post(login_url, data=values, timeout=30)
     return session
+
+def resolve_redirect(url):
+
+    # Sakai shortened URLs like /x/ are resolved with redirects
+    url_head = requests.head(url)
+
+    if 'Location' in url_head.headers:
+        return url_head.headers['Location']
+
+    return None
