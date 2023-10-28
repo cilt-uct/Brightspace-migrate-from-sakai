@@ -206,12 +206,16 @@ def start_workflow(link_id, site_id, APP):
         update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
 
         if workflow_steps['STEPS'] is not None:
+
             for step in workflow_steps['STEPS']:
                 logging.info("Executing update workflow step: {}".format(step['action']))
                 if 'state' in step:
                     state = step['state']
 
                 failure_type = f"exception:update:{step['action']}"
+
+                # Read record again to get any updates from prior workflow steps
+                record = lib.db.get_record(db_config=DB_AUTH, link_id=link_id, site_id=site_id)
 
                 if not run_workflow_step(step, site_id, log_file, DB_AUTH,
                                          to=record['notification'],

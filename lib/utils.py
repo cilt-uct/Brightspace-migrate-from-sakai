@@ -315,7 +315,7 @@ def rewrite_tool_ref(tool_xml_path, find_id, replace_id):
 def send_template_email(APP, template, to, subj, **kwargs):
     """Sends an email using a template."""
 
-    logging.debug(f"Sending template email {template}")
+    logging.info(f"Sending template email {template} with args: {kwargs}")
 
     subject = Environment().from_string(subj)
 
