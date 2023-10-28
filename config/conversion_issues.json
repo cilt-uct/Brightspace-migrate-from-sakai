@@ -791,7 +791,7 @@
       "actor": ["LD"],
       "icon-class": "icon-settings",
       "description": "Gradebook weighted categories",
-      "found": "Weightedr categories are used in this site's Gradebook. Set these up again in Amathuba.",
+      "found": "Weighted categories are used in this site's Gradebook. Set these up again in Amathuba.",
       "not_found": "Good to go! Gradebook does not use weighted categories",
       "args": [
         "gradebook_soup"
