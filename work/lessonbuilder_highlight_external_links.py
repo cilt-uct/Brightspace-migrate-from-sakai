@@ -51,6 +51,7 @@ def run(SITE_ID, APP):
                 for occurrences_link in occurrences_links:
                     if link in str(occurrences_link):
                         occurrences_link['style'] = 'color: red; font-weight: bold;'
+                        occurrences_link['data-type'] = 'link'
 
                 for rep in occurrences:
                     replacement = r'<span style="color: red; font-weight: bold;" data-type="link">{}</span>'.format(link)

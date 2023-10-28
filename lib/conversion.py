@@ -168,7 +168,7 @@ def lessons_hyperlinks(lessons_soup):
     items = lessons_soup.find_all("item", attrs={"type": "5"})
     for item in items:
         parsed_html = BeautifulSoup(item.attrs['html'], 'html.parser')
-        link = parsed_html.find("span", attrs={"data-type": "link"})
+        link = parsed_html.find(attrs={"data-type": "link"})
         parent = lessons_soup.find_all('page', attrs={'pageid': item['pageId']})
         if len(parent) > 0 and link:
             title = parent[0]['title']
