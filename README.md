@@ -26,8 +26,6 @@ The file `base.sh` define the important folders used in the migration scripts.
 
 -  `OUTPUT_FOLDER` the folder in which the completed zip file (after running the workflow on the archived site) is created and used to upload to Brightspace.
 
--  `WEBDAV_FOLDER` the folder in which we store the altered Resources (reduced for size) if/when we include WebDAV in our workflow.
-
 -  `CONVERSION_REPORT_FOLDER` the folder to store the generated conversion report HTML files so that they can be linked to in Sakai and shown in the migration LTI (see *Apache Setup*)
 
 -  `AUTH_PROPERTIES` refers to the file that contains the authentication and URL information, described in more detail below.

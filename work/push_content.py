@@ -80,7 +80,7 @@ def run(SITE_ID, APP, import_id, transfer_id, title, now_st = None):
 
 def main():
     global APP
-    parser = argparse.ArgumentParser(description="This script will upload files from the webdav folder to the server for the Site and Specified Folder",
+    parser = argparse.ArgumentParser(description="This script will upload files to the server for the Site and Specified Folder",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")
     parser.add_argument("IMPORT_ID", help="The org unit id of the imported site")

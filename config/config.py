@@ -8,7 +8,6 @@ from lib.local_auth import getAuth
 SCRIPT_FOLDER = get_var('SCRIPT_FOLDER')
 ARCHIVE_FOLDER = get_var('ARCHIVE_FOLDER')
 OUTPUT_FOLDER = get_var('OUTPUT_FOLDER')
-WEBDAV_FOLDER = get_var('WEBDAV_FOLDER')
 CONVERSION_REPORT_FOLDER = get_var('CONVERSION_REPORT_FOLDER')
 
 LOG_PATH = Path(SCRIPT_FOLDER) / 'brightspace_migration.log'
@@ -32,7 +31,6 @@ APP = {
     'sakai_db': 'VulaDb',
     'middleware': 'BrightspaceMiddleware',
     'webAuth': 'BrightspaceWeb',
-    'webDAV': 'BrightspaceWebdav'
   },
 
   # In Brightspace the imported site will get this prefix added to their title
@@ -51,7 +49,6 @@ APP = {
 
   'archive_folder': ARCHIVE_FOLDER,
   'output': OUTPUT_FOLDER,
-  'webdav_folder': WEBDAV_FOLDER,
 
   # Only accept True or False
   'debug': False,

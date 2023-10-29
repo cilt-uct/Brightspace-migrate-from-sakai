@@ -9,10 +9,6 @@ echo "-- Archive Folder ---------------"
 du -s $ARCHIVE_FOLDER/$SITE_ID-archive/ 2>/dev/null
 du -sh $ARCHIVE_FOLDER/$SITE_ID-archive/ 2>/dev/null
 echo
-echo "-- WebDav Folder ---------------"
-du -s $ARCHIVE_FOLDER/$SITE_ID-webdav/ 2>/dev/null
-du -sh $ARCHIVE_FOLDER/$SITE_ID-webdav/ 2>/dev/null
-echo
 echo "-- Original Zip -----------------"
 ls -lra $ARCHIVE_FOLDER/$SITE_ID-2*.zip 2>/dev/null | head -1
 ls -lrah $ARCHIVE_FOLDER/$SITE_ID-2*.zip 2>/dev/null | head -1
