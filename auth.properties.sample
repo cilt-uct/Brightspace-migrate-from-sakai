@@ -35,11 +35,6 @@ Brightspace_password=SECRET
 BrightspaceWeb_username=USER
 BrightspaceWeb_password=SECRET
 
-# Brightspace production WebDAV
-BrightspaceWebdav_url=https://CLIENT.webdav.brightspace.com
-BrightspaceWebdav_username=USER
-BrightspaceWebdav_password=SECRET
-
 # Brightspace Bulk Course Import SFTP
 BrightspaceFTP_hostname=HOST
 BrightspaceFTP_username=USER
