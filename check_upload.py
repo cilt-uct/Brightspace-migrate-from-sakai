@@ -48,7 +48,7 @@ def get_state_count(db_config, state):
                 return cursor.fetchone()['CountOfState']
 
     except Exception as e:
-        logging.error(f"Could not retrieve migration record {link_id} : {site_id}")
+        logging.error(f"Could not retrieve state {state}")
         return None
 
 def set_to_state(db_config, link_id, site_id, new_state):
