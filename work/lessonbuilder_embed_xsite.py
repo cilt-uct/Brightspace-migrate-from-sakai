@@ -49,7 +49,7 @@ def run(SITE_ID, APP):
     updating = False
 
     # Cross-site embedded multimedia
-    for item in lb_root.findall(".//item[@type='7']"):
+    for item in lb_root.findall(".//item[@type='7']") + lb_root.findall(".//item[@type='1']"):
 
         itemId = item.get('id')
         sakaiId = item.get('sakaiid')
