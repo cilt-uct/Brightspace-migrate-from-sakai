@@ -10,6 +10,7 @@ import yaml
 import argparse
 import lxml.etree as ET
 import base64
+import validators
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -18,7 +19,7 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-def extensions(xml_src):
+def extensions(base_path, xml_src):
 
     if not os.path.exists(xml_src):
         return
@@ -32,6 +33,8 @@ def extensions(xml_src):
     file_exts = {}
     mimes = {}
 
+    print("\n")
+
     # find each resource with an id that contains that extension
     for item in content_tree.xpath(f".//resource"):
         file_path = item.get('id')
@@ -41,6 +44,14 @@ def extensions(xml_src):
 
         file_name, file_extension = os.path.splitext(file_path)
         mime_type = item.get('content-type')
+
+        if mime_type == 'text/url':
+            body = item.get('body-location')
+            body_path = os.path.join(base_path, body)
+            with open(body_path, 'r') as b:
+                url = b.read()
+                if not validators.url(url):
+                    print(f"INVALID URL: {url} in {file_path}")
 
         # print(f"{file_path} {mime_type} ASCII: {file_path.isascii()}")
         display_names = item.xpath('./properties/property[@name="DAV:displayname"]')
@@ -73,14 +84,14 @@ def run(SITE_ID, APP):
 
     xml_src = os.path.join(src_folder, "content.xml")
     if not os.path.exists(xml_src):
-        print(f"ERROR Site {SITE_ID} not present in archive folder")
+        print(f"ERROR {xml_src} not found")
         return False
 
-    [ext_set, mime_set]  = extensions(xml_src)
+    [ext_set, mime_set]  = extensions(src_folder, xml_src)
     if ext_set:
-        print(f"Content extensions: {sorted(ext_set.keys())}")
+        print(f"\nContent extensions: {sorted(ext_set.keys())}")
     if mime_set:
-        print(f"Content types: {sorted(mime_set.keys())}")
+        print(f"\nContent types: {sorted(mime_set.keys())}")
     else:
         print("No content")
 
@@ -88,7 +99,7 @@ def run(SITE_ID, APP):
 
     if os.path.exists(xml_src):
 
-        [ext_set, mime_set]  = extensions(xml_src)
+        [ext_set, mime_set]  = extensions(src_folder, xml_src)
         if ext_set:
             print(f"Attachment extensions: {sorted(ext_set.keys())}")
         if mime_set:
