@@ -20,7 +20,17 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-def check_resources(src_folder, disallowed, paths_map, collection):
+def has_restricted(name, disallowed):
+
+    for char in disallowed:
+        if char in name:
+            return True
+
+    return False
+
+def check_resources(src_folder, paths_map, collection):
+
+    disallowed_chars = (':', '+', u"\u000B")
 
     xml_src = os.path.join(src_folder, collection)
     if not os.path.isfile(xml_src):
@@ -52,22 +62,36 @@ def check_resources(src_folder, disallowed, paths_map, collection):
         logging.debug(f"checking {file_name}{file_extension} displayname {display_name_value}")
 
         # MP4s with colons in filename
-        if (file_extension == ".mp4" and (':' in file_name or ':' in display_name_value)) or u"\u000B" in display_name_value:
+        if (file_extension == ".mp4" and (has_restricted(file_name, disallowed_chars) or has_restricted(display_name_value, disallowed_chars))):
 
             rewrite = True
             src_id = item.get('id')
+            src_rel_id = item.get('rel-id')
 
-            target_id = src_id.replace(file_name, file_name.replace(":","_"))
+            target_id = src_id
+            target_rel_id = src_rel_id
 
-            logging.info(f"Fixing {file_name}{file_extension}: new id {target_id}")
+            # Fix id
+            for char in disallowed_chars:
+
+                # Replace only the filename element of the full path
+                target_id = target_id.replace(file_name, file_name.replace(char,"_"))
+
+                # Replace in the rel-id which is the relative path only
+                target_rel_id = target_rel_id.replace(char, "_")
+
+                # The display name should not be an issue but seems to be treated as a filename by the D2L importer
+                if display_name_value:
+                    display_name_value = display_name_value.replace(char, "_")
 
             item.set('id', target_id)
             item.set('original-id', src_id)
-            item.set('rel-id', item.get('rel-id').replace(":","_"))
+            item.set('rel-id', target_rel_id)
 
-            # The display name should not be an issue but seems to be treated as a filename by the D2L importer
             if display_name_value:
-                display_name_el.set('value', base64.b64encode(display_name_value.replace(":","_").replace(u"\u000B","").encode('utf-8')))
+                display_name_el.set('value', base64.b64encode(display_name_value.encode('utf-8')))
+
+            logging.info(f"Fixing {file_name}{file_extension}: new id {target_id} new rel-id {target_rel_id} new displayname {display_name_value}")
 
             # If this is an attachment, update the reference from elsewhere
             if collection == "attachment.xml":
@@ -101,6 +125,27 @@ def check_resources(src_folder, disallowed, paths_map, collection):
                     logging.info(f"Updated id {src_id} in {collection} and {tool_xml}")
                     continue
 
+            else:
+
+                # Replace the ID reference in any XML file (including Lessons)
+
+                qti_folder = f"{src_folder}/qti/"
+
+                archive_files = [entry for entry in os.scandir(src_folder) if entry.name.endswith('.xml')]
+                qti_files = [entry for entry in os.scandir(qti_folder) if entry.name.endswith('.xml')]
+
+                xml_files = archive_files + qti_files
+
+                for file in xml_files:
+
+                    with open(f'{file.path}', 'r+', encoding='utf8') as f:
+                        # read and replace content
+                        content = f.read().replace(src_id, target_id)
+                        # reset file cursor and write to file
+                        f.seek(0)
+                        f.write(content)
+                        f.truncate()
+
     if rewrite:
         # Update file
         xml_old = xml_src.replace(".xml",".old")
@@ -112,17 +157,13 @@ def check_resources(src_folder, disallowed, paths_map, collection):
 def run(SITE_ID, APP):
     logging.info('Content: checking unsupported filenames : {}'.format(SITE_ID))
 
-    # restricted extensions
-    restricted_ext = read_yaml(APP['content']['restricted-ext'])
-    disallowed = restricted_ext['RESTRICTED_EXT']
-
     # map of tool attachment path components to tool XML file
     paths_map = APP['attachment']['paths']
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 
-    check_resources(src_folder, disallowed, paths_map, 'attachment.xml')
-    check_resources(src_folder, disallowed, paths_map, 'content.xml')
+    check_resources(src_folder, paths_map, 'attachment.xml')
+    check_resources(src_folder, paths_map, 'content.xml')
 
 def main():
     global APP

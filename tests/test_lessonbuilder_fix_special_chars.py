@@ -76,7 +76,7 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
     def test_unwanted_chars_5(self):
         currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/SCT+with+in+filename+/VIELEN+DANK+.gif'
         prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
-        expected6 ='../SCTwithinfilename/VIELENDANK.gif'
+        expected6 ='../SCT_with_in_filename_/VIELEN_DANK_.gif'
         self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected6)
 
 if __name__ == '__main__':

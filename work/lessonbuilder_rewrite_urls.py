@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 # Rewrite embedded URLs
+# See also fix_restricted_names.py which has special handling for mp4 files
 
 import sys
 import os
@@ -33,7 +34,7 @@ def fix_unwanted_url_chars(currenturl, url_prefix):
         ("%3A", ""),
         ("!", ""),
         (":",""),
-        (re.escape("+"),"")
+        (re.escape("+"),"_")
     ]
 
     for key, value in replacements:
