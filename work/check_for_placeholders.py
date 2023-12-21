@@ -33,7 +33,7 @@ def get_lessons_html(url, session):
 def get_toc(base_url, org_id, session):
     api_url = f"{base_url}/d2l/api/le/{API_VERSION}/{org_id}/content/toc"
     print(f"TOC from: {api_url}")
-    r = session.get(api_url, timeout=30)
+    r = session.get(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
 
 # Get the media ID for a given audio or video path
@@ -164,9 +164,11 @@ def get_topic_id(content_toc, topic_path):
     if not topic_matches:
         # pprint.pprint(toplevel_lessons, indent=3)
         # raise Exception(f"No topic found with URL matching {topic_path}")
-        # TODO
+
+        # Expected where this script is run multiple times and no topics are using this underlying file directly
         return None
 
+    # There could be multiple matches
     for match in topic_matches:
         topic_id = match.value['TopicId']
 
@@ -175,7 +177,7 @@ def get_topic_id(content_toc, topic_path):
 
 def run(SITE_ID, APP, import_id, transfer_id):
 
-    logging.info('Replace placeholders with multimedia links for import_id: {}'.format(import_id))
+    logging.info(f'Replace placeholders with multimedia links for site {SITE_ID} import_id: {import_id}')
 
     # Check that there are placeholders in this site
 
@@ -315,7 +317,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
                         link_html = f'<p><a href="/d2l/common/dialogs/quickLink/quickLink.d2l?ou={{orgUnitId}}&type=mediaLibrary&contentId={media_id}" target="_blank" rel="noopener">{placeholder_name}</a></p>'
                     else:
                         # Embed
-                        link_html = f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{placeholder_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>'
+                        link_html = f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{placeholder_name}" width="700px" style="max-width: 100%; min-height: 340px;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>'
 
                     placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
                     updated = True
@@ -382,11 +384,13 @@ def run(SITE_ID, APP, import_id, transfer_id):
                     print(f"replacing with HTML5 embed for {src}")
 
                     # Use an iframe embed
-                    link_html = f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{file_display_name}" width="700px" style="max-width: 100%; min-height: 340px; aspect-ratio: 700/393;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>'
+                    link_html = f'<p><iframe src="/d2l/wcs/mp/mediaplayer.d2l?ou={org_ou}&amp;entryId={media_id}&amp;captionsEdit=False" title="{file_display_name}" width="700px" style="max-width: 100%; min-height: 340px;" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></p>'
                     link.replace_with(BeautifulSoup(link_html, 'html.parser'))
                     updated = True
 
         if updated:
+            # TODO update only the underlying file, to handle the case where there are multiple topics using the same file
+            # AMA-904 / AMA-910
             new_topic_filename = f"lessonBuilder_{itemid}a.html"
             update_endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['update_html_file'].format(import_id, topic_id))
             json_response = middleware_api(APP, update_endpoint, payload_data={'html': soup_html.html.encode("utf-8"), 'name': new_topic_filename}, method='PUT')

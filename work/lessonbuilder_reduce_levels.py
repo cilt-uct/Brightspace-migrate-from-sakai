@@ -7,7 +7,6 @@ import sys
 import os
 import argparse
 import shutil
-# import xml.etree.ElementTree as ET
 import lxml.etree as ET
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -22,7 +21,7 @@ def update_page(page, level):
     page_id = page.get("pageid")
 
     if debug:
-        print(f"Reading tree page {page_title}({page_id}) level {level}")
+        print(f"Reading tree page title='{page_title}' id={page_id} level={level}")
 
     child_pages = lessonbuilder_root.xpath(f".//page[@parent='{page_id}']")
     child_page_count = len(child_pages)
@@ -67,10 +66,12 @@ def move_down(page, page_title, page_id, child_page):
         item.set("sequence", str(sequence))
         item.set("id", str(new_item_id()))
         name = item.get("name")
+
         if name:
             name = page_title + " - " + name
         else:
             name = page_title + " - " + child_page_title
+
         item.set("name", name)
         page.append(item)
 
@@ -101,7 +102,6 @@ def new_item_id():
 
 def get_top_parent(root):
     pages_with_top_parent = root.xpath(".//page[@topparent]")
-    # pages_with_top_parent = root.xpath(".//page[not(@topparent='0')]")
 
     valid_top_parents = list(filter(lambda x: x.get('topparent') != '0', pages_with_top_parent))
 
@@ -123,14 +123,6 @@ def get_top_parent(root):
 
         return root.xpath(f".//page[@pageid='{top_parent_id}']")[0]
 
-def assert_no_sections(root):
-    items_with_section = root.xpath(".//item[@format='section']")
-    section_count = len(items_with_section)
-    # if section_count > 0:
-    #     sys.exit(f"There are {section_count} section items in lessons, exiting...")
-
-    return section_count
-
 def run(SITE_ID, APP):
     global debug
     debug = APP['debug'] # :p
@@ -147,11 +139,9 @@ def run(SITE_ID, APP):
     global lessonbuilder_root # really a global variable to store the tree ?
     lessonbuilder_root = lessonbuilder_xml.getroot()
 
-    logging.warning("Note: This update accepts that there are no 'sections'!")
-
-    section_count = assert_no_sections(lessonbuilder_root)
+    section_count = len(lessonbuilder_root.xpath(".//item[@format='section']"))
     if section_count > 0:
-        logging.warning("There are {section_count} section items in lessons, exiting...")
+        logging.warning(f"There are {section_count} section items in Lessons, exiting.")
 
     else:
         global lessonbuilder_element
@@ -177,9 +167,9 @@ def run(SITE_ID, APP):
 
                 logging.info('\tDone')
             else:
-                logging.warning('No lesson pages.')
+                logging.info('No Lessons pages with topparent')
         else:
-            logging.warning('No lesson pages.')
+            logging.info('No Lesson pages.')
 
 def main():
     global APP

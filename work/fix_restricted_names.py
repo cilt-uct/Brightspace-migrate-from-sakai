@@ -28,9 +28,13 @@ def has_restricted(name, disallowed):
 
     return False
 
-def check_resources(src_folder, paths_map, collection):
+def check_resources(src_folder, paths_map, collection, restricted_ext):
 
     disallowed_chars = (':', '+', u"\u000B")
+
+    # Video and audio types we expect to be imported into Media Library
+    supported_audio = restricted_ext['SUPPORTED_AUDIO']
+    supported_video = restricted_ext['SUPPORTED_VIDEO']
 
     xml_src = os.path.join(src_folder, collection)
     if not os.path.isfile(xml_src):
@@ -61,8 +65,10 @@ def check_resources(src_folder, paths_map, collection):
 
         logging.debug(f"checking {file_name}{file_extension} displayname {display_name_value}")
 
-        # MP4s with colons in filename
-        if (file_extension == ".mp4" and (has_restricted(file_name, disallowed_chars) or has_restricted(display_name_value, disallowed_chars))):
+        file_extension = file_extension.upper().replace(".","")
+
+        # Audio/video with colons in filename
+        if (((file_extension in supported_audio) or (file_extension in supported_video)) and (has_restricted(file_name, disallowed_chars) or has_restricted(display_name_value, disallowed_chars))):
 
             rewrite = True
             src_id = item.get('id')
@@ -162,8 +168,11 @@ def run(SITE_ID, APP):
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 
-    check_resources(src_folder, paths_map, 'attachment.xml')
-    check_resources(src_folder, paths_map, 'content.xml')
+    # restricted extensions
+    restricted_ext = read_yaml(APP['content']['restricted-ext'])
+
+    check_resources(src_folder, paths_map, 'attachment.xml', restricted_ext)
+    check_resources(src_folder, paths_map, 'content.xml', restricted_ext)
 
 def main():
     global APP

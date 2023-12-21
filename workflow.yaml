@@ -28,6 +28,10 @@ STEPS:
   # Assignments
   - action: assignment_fix_titles
 
+  # Audio and video
+  - action: check_media_metadata
+  - action: transcode_media
+
   # Attachments and Resources
   - action: content_force_mime_types
   - action: fix_zero_byte_files
@@ -36,10 +40,6 @@ STEPS:
   - action: content_remove_files
   - action: fix_restricted_ext
   - action: fix_restricted_names
-
-  # Audio and video
-  - action: check_media_metadata
-  - action: transcode_media
 
   # Site
   - action: site_change_title
