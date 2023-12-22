@@ -15,6 +15,7 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.utils import *
+from lib.lessons import *
 
 def update_page(page, level):
     page_title = page.get("title")
@@ -58,6 +59,9 @@ def move_down(page, page_title, page_id, child_page):
     sequence = highest_sequence(page)
     for item in items:
 
+        item_type = item.get('type')
+        name = item.get("name")
+
         if debug:
             print(f"Moving item {item.get('id')}")
 
@@ -65,14 +69,17 @@ def move_down(page, page_title, page_id, child_page):
         item.set("pageId", page_id)
         item.set("sequence", str(sequence))
         item.set("id", str(new_item_id()))
-        name = item.get("name")
 
-        if name:
-            name = page_title + " - " + name
-        else:
-            name = page_title + " - " + child_page_title
+        # Change the item name for text items only
+        if item_type == ItemType.TEXT:
 
-        item.set("name", name)
+            if name:
+                name = page_title + " - " + name
+            else:
+                name = page_title + " - " + child_page_title
+
+            item.set("name", name)
+
         page.append(item)
 
     lessonbuilder_element.remove(child_page)
