@@ -74,14 +74,8 @@ def run(SITE_ID, APP):
                     page_target_parent = page_target.get('parent')
                     if page_target_parent is None or page_target_parent == "0":
                         logging.info(f"Found page target {page_target.get('title')} parent '{page_target_parent}' updating parent to {page_id}")
-
-                        if page_target_parent is None:
-                            page_target.set("parent", page_id)
-                        else:
-                            page_target['parent'] = page_id
-
+                        page_target['parent'] = page_id
                         update = True
-
 
     if update:
         with open(output, 'w') as f:
