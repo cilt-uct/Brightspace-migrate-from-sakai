@@ -84,7 +84,8 @@ def check_resources(src_folder, paths_map, collection, restricted_ext):
                 target_id = target_id.replace(file_name, file_name.replace(char,"_"))
 
                 # Replace in the rel-id which is the relative path only
-                target_rel_id = target_rel_id.replace(char, "_")
+                if src_rel_id:
+                    target_rel_id = target_rel_id.replace(char, "_")
 
                 # The display name should not be an issue but seems to be treated as a filename by the D2L importer
                 if display_name_value:
@@ -92,7 +93,9 @@ def check_resources(src_folder, paths_map, collection, restricted_ext):
 
             item.set('id', target_id)
             item.set('original-id', src_id)
-            item.set('rel-id', target_rel_id)
+
+            if src_rel_id:
+                item.set('rel-id', target_rel_id)
 
             if display_name_value:
                 display_name_el.set('value', base64.b64encode(display_name_value.encode('utf-8')))
