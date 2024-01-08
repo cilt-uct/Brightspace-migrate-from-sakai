@@ -6,3 +6,4 @@ FILES:
   sm:  "application/binary"
   wxmx: "application/binary"
   pdf: "application/pdf"
+  avif: "image/avif"
