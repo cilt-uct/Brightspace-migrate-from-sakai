@@ -617,7 +617,7 @@
       "actor": ["Lecturer"],
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes multiple choice negative marking",
-      "found": "Enable MCQ negative marking in Amathuba quizzes as needed.",
+      "found": "Enable negative marking in Amathuba quizzes as needed.",
       "not_found": "Good to go! You have not used negative marking in any of your MCQs in Vula.",
       "args": [
         "site_folder",
