@@ -411,19 +411,23 @@
                                    <p>This conversion report identifies any limitations or issues with the conversion to
                                     Amathuba which may need attention: <a href="{{ report_url}}">{{ title }} Conversion Report</a></p>
 
-                                    <p>The next step is to copy the converted content to your new Amathuba site.</p>
+                                    <p>The next step is to import the converted content into your new Amathuba site.</p>
 
-                                    <p>On your new course site:<br/> Manage Course &gt; Course Admin &gt;
 				   {% if target_site_id > 0 %}
+                                    <p>On your new course site:<br/> Manage Course &gt; Course Admin &gt;
 				     <a href="https://amathuba.uct.ac.za/d2l/lms/importExport/import_export.d2l?ou={{ target_site_id }}">Import/Export/Copy components</a>
-				   {% else %}
-				     Import/Export/Copy components
-				   {% endif %}
 				    &gt; Copy Components from another Org Unit &gt; Search for offering</p>
+				   {% else %}
+				     <p>If needed, please
+				     <a href="https://uct.service-now.com/sp?id=sc_cat_item&sys_id=9c505efe8731ad904a0aedb83cbb35df">request a new Amathuba site</a>
+				     on ServiceNow.</p>
+                                    <p>Then, on your new course site, navigate to:<br/>
+				     Manage Course &gt; Course Admin &gt; Import/Export/Copy components &gt; Copy Components from another Org Unit &gt; Search for offering</p>
+				   {% endif %}
 
-                                    <p>and then make the necessary edits as per the conversion report.</p>
+                                    <p>and then make any necessary changes to the imported site content or configuration as suggested in the conversion report.</p>
 
-                                    <p>Also visit the <a href="http://www.cilt.uct.ac.za/cilt/amathuba/staff-resources">Amathuba staff resources</a> page for more help documentation and upcoming training.</p>
+                                    <p>Visit the <a href="http://www.cilt.uct.ac.za/cilt/amathuba/staff-resources">Amathuba staff resources</a> page for more help documentation and upcoming training.</p>
 
                                     <p>For further assistance, contact <a href="mailto:cilt-helpdesk@uct.ac.za">cilt-helpdesk@uct.ac.za</a></p>
 
