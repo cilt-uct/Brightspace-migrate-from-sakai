@@ -127,25 +127,30 @@ def run(SITE_ID, APP, link_id):
     record = get_record(DB_AUTH, link_id, SITE_ID)
     if record:
         try:
-            name = "{} {}".format(record['course'], record['term'])
             course = record['course']
-            dept = record['dept']
             term = record['term']
-            role = 'Lecturer'
-            site_type = 'course'
+            dept = record['dept']
             provider = json.loads(record['provider'])
 
+            # Default naming for a single-roster course
+            name = f"{course} {term}"
+            role = 'Lecturer'
+            site_type = 'course'
+
             if term == 'other':
-                # so we are processing a project or community site
-                name = re.sub("(20\d{2})", "", record['name'])
+                # processing a project or community site
+                # Use the original site title as the new name
+                name = record['name']
+                role = 'Owner'
                 site_type = 'community'
                 course = f'{dept}_{cheap_hash(name)}'
-                role = 'Owner'
-
-            if course == 'other':
-                name = re.sub("(20\d{2})", term, record['name'])
-                course = f'{dept}_{cheap_hash(name)}'
-
+            else:
+                # processing a course site
+                if course == 'other':
+                    # this course has multiple provider IDs (attached rosters)
+                    # Use the original site title for the new name, but replace 20xx with the new year
+                    name = re.sub("(20\d{2})", term, record['name'])
+                    course = f'{dept}_{cheap_hash(name)}'
 
             # optional are:
             #  'course_code': Generated name to re-use in migration checks
@@ -160,6 +165,7 @@ def run(SITE_ID, APP, link_id):
                 'name': name,
                 'course_code': course,
                 'year': term,
+                'active': 'yes', # make course that is created active
                 'role': role
             }
 
