@@ -32,6 +32,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'failure_type': 'failure_type',
             'failure_detail': 'failure_detail',
             'target_site_id': 98765,
+            'target_site_created': 1,
+            'create_course_offering': 1,
             'target_title': 'New site for 2023',
         })
     @patch('work.archive_site.archive_site_retry', return_value=True)
@@ -150,6 +152,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'report_url': 'report.com',
             'started_by': 'cilt1@uct.ac.za',
             'target_site_id': 98765,
+            'target_site_created': 1,
+            'create_course_offering': 1,
             'target_title': 'New site for 2023',
         }
         workflow = run_update.run_workflow_step(step=step, site_id='site_id_12345', log_file='', db_config='',  **kwargs)

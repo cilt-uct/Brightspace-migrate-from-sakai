@@ -173,23 +173,36 @@ def run(SITE_ID, APP, link_id):
             json_response = middleware_api(APP, create_url, payload_data=payload)
 
             if json_response and 'status' in json_response and json_response['status'] == 'success':
-                update_target_site(DB_AUTH, link_id, SITE_ID, json_response['data']['Identifier'], json_response['data']['created'])
-                enroll(SITE_ID, APP, json_response['data']['Identifier'], role)
 
-                # if appropriate (not project site [OTHER]) - copy over content
-                copy_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['copy_url'])
-                copy_payload = {
-                    'org_id': json_response['data']['Identifier'],
-                    'src_org_id': APP['middleware']['course_content_src']
-                }
-                copy_response = middleware_api(APP, copy_url, payload_data=copy_payload)
+                target_site_id = json_response['data']['Identifier']
+                target_site_created = json_response['data']['created']
 
-                if 'status' not in copy_response:
-                    raise Exception(f'Unable to copy content for {SITE_ID}: {json_response}')
-                else:
-                    if json_response['status'] != 'success':
+                update_target_site(DB_AUTH, link_id, SITE_ID, target_site_id, target_site_created)
+
+                # AMA-983 Enroll users only if a new target site was created
+                if target_site_created:
+                    logging.info(f"New target site created for '{name}' with id {target_site_id}")
+
+                    enroll(SITE_ID, APP, json_response['data']['Identifier'], role)
+
+                    # if appropriate (not project site [OTHER]) - copy over content
+                    copy_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['copy_url'])
+                    copy_payload = {
+                        'org_id': json_response['data']['Identifier'],
+                        'src_org_id': APP['middleware']['course_content_src']
+                    }
+                    copy_response = middleware_api(APP, copy_url, payload_data=copy_payload)
+
+                    if 'status' not in copy_response:
                         raise Exception(f'Unable to copy content for {SITE_ID}: {json_response}')
+                    else:
+                        if json_response['status'] != 'success':
+                            raise Exception(f'Unable to copy content for {SITE_ID}: {json_response}')
+                else:
+                    logging.info(f"Target site with title {name} already exists with id {target_site_id}")
+
             else:
+                # Unexpected error
                 raise Exception(f'Unable to create course for {SITE_ID}: {json_response}')
 
         except Exception as err:

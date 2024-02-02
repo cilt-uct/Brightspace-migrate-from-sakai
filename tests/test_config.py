@@ -60,6 +60,8 @@ class QueryTestCase(unittest.TestCase):
         # Parameters used in conditions
         kwargs = {}
         kwargs['target_site_id'] = 0
+        kwargs['create_course_offering'] = 1
+        kwargs['target_site_created'] = 0
 
         for template_file in template_files:
             template = env.get_template(template_file.name)

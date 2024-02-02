@@ -117,6 +117,8 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
                 amathuba_id=kwargs['import_id'],
                 report_url=kwargs['report_url'],
                 target_site_id=kwargs['target_site_id'],
+                target_site_created=kwargs['target_site_created'],
+                create_course_offering=kwargs['create_course_offering'],
                 target_title=kwargs['target_title']
             )
         else:
@@ -226,6 +228,8 @@ def start_workflow(link_id, site_id, APP):
                                          link_id=link_id,
                                          title=record['title'],
                                          target_site_id=record['target_site_id'],
+                                         target_site_created=record['target_site_created'],
+                                         create_course_offering=record['create_course_offering'],
                                          target_title=record['target_title'],
                                          report_url=record['report_url']):
                     # something went wrong while processing this step

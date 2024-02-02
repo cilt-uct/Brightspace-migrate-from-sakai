@@ -403,9 +403,15 @@
 
 				    <p><a href="https://amathuba.uct.ac.za/d2l/home/{{ amathuba_id }}">https://amathuba.uct.ac.za/d2l/home/{{ amathuba_id }}</a></p>
 
-				   {% if target_site_id > 0 %}
-				     <p>You also have a new Amathuba site:</p>
-				     <p><a href="https://amathuba.uct.ac.za/d2l/home/{{ target_site_id }}">{{ target_title }}</a></p>
+				   {% if create_course_offering > 0 %}
+					   {% if target_site_created > 0 %}
+					     <p>You also have a new Amathuba site:</p>
+					     <p><a href="https://amathuba.uct.ac.za/d2l/home/{{ target_site_id }}">{{ target_title }}</a></p>
+					   {% else %}
+					     <p>A site named '{{ target_title }}' already exists on Amathuba, and so a new site has <strong>not</strong> been created. Here is the existing site:</p>
+					     <p><a href="https://amathuba.uct.ac.za/d2l/home/{{ target_site_id }}">{{ target_title }}</a></p>
+					     <p>If this is incorrect, or you do not have access to this site, please contact the CILT Helpdesk for further assistance.</p>
+					   {% endif %}
 				   {% endif %}
 
                                    <p>This conversion report identifies any limitations or issues with the conversion to
