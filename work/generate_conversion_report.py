@@ -251,6 +251,10 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
                     issues_detail_list = dom.find("div", {"id": "issues_details_list"})
                     if issues_detail_list:
                         populate_issue_details(dom, issues_detail_list, found_details)
+                else:
+                    issues_detail_banner.decompose()
+                    issues_detail_container.decompose()
+                    
             else:
                 # Remove the issues banner
                 issues_banner.decompose()
