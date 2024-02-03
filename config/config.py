@@ -50,6 +50,8 @@ APP = {
   'archive_folder': ARCHIVE_FOLDER,
   'output': OUTPUT_FOLDER,
 
+  'courseinfo': '/data/sakai/otherdata/import/courseinfo.csv',
+
   # Only accept True or False
   'debug': False,
   'clean_up': True,

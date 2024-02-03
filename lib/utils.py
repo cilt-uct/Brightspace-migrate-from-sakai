@@ -13,6 +13,7 @@ import logging
 import time
 import requests
 import subprocess
+import csv
 
 from datetime import datetime, timedelta
 from emails.template import JinjaTemplate as T
@@ -493,3 +494,20 @@ def resolve_redirect(url):
         return url_head.headers['Location']
 
     return None
+
+def course_title(APP, course, term):
+
+    import csv
+
+    # AAE2001F,2024,"Special Study Module",AAE,2024-01-02,2024-06-12
+    fieldnames = ['course', 'term', 'title', 'dept', 'start', 'end']
+    csv_src = APP['courseinfo']
+
+    with open(csv_src, newline='') as csvfile:
+        fieldnames = ['course', 'term', 'title', 'dept', 'start', 'end']
+        reader = csv.DictReader(csvfile, fieldnames = fieldnames)
+        for row in reader:
+            if row['course'] == course and row['term'] == term:
+                return row['title']
+
+    return

@@ -95,7 +95,7 @@ def set_site_property(site_id, key, value):
         logging.error("Workflow operation {} = {} ".format('set_site_property', e))
         return False
 
-def update_target_site(db_config, link_id, site_id, org_unit_id, is_created):
+def update_target_site(db_config, link_id, site_id, org_unit_id, is_created, target_title):
     set_site_property(site_id, 'amathuba_course_site_id', org_unit_id)
 
     try:
@@ -104,9 +104,9 @@ def update_target_site(db_config, link_id, site_id, org_unit_id, is_created):
             with connection.cursor() as cursor:
                 # Create a new record
                 sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1,
-                                target_site_id = %s, target_site_created = %s
+                                target_site_id = %s, target_site_created = %s, target_title = %s
                          WHERE `link_id` = %s and site_id = %s;"""
-                cursor.execute(sql, (org_unit_id, is_created, link_id, site_id))
+                cursor.execute(sql, (org_unit_id, is_created, target_title, link_id, site_id))
 
             connection.commit()
             logging.debug("Update ({}-{}) target_site_id {} ".format(link_id, site_id, org_unit_id))
@@ -151,6 +151,13 @@ def run(SITE_ID, APP, link_id):
                     # Use the original site title for the new name, but replace 20xx with the new year
                     name = re.sub("(20\d{2})", term, record['name'])
                     course = f'{dept}_{cheap_hash(name)}'
+                else:
+                    # single course
+                    title = course_title(APP, course, term)
+
+                    # Add the course title
+                    if title:
+                        name = f"{course} {term} | {title}"
 
             # optional are:
             #  'course_code': Generated name to re-use in migration checks
@@ -177,7 +184,7 @@ def run(SITE_ID, APP, link_id):
                 target_site_id = json_response['data']['Identifier']
                 target_site_created = json_response['data']['created']
 
-                update_target_site(DB_AUTH, link_id, SITE_ID, target_site_id, target_site_created)
+                update_target_site(DB_AUTH, link_id, SITE_ID, target_site_id, target_site_created, name)
 
                 # AMA-983 Enroll users only if a new target site was created
                 if target_site_created:
@@ -199,7 +206,7 @@ def run(SITE_ID, APP, link_id):
                         if json_response['status'] != 'success':
                             raise Exception(f'Unable to copy content for {SITE_ID}: {json_response}')
                 else:
-                    logging.info(f"Target site with title {name} already exists with id {target_site_id}")
+                    logging.info(f"Target site with title '{name}' already exists with id {target_site_id}")
 
             else:
                 # Unexpected error
