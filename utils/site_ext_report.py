@@ -39,11 +39,15 @@ def extensions(base_path, xml_src):
     for item in content_tree.xpath(f".//resource"):
         file_path = item.get('id')
 
-        if len(file_path) > 230:
-            print(f" Warning ID {file_path} length {len(file_path)}")
+        #if len(file_path) > 230:
+        #    print(f" Warning ID {file_path} length {len(file_path)}")
 
         file_name, file_extension = os.path.splitext(file_path)
         mime_type = item.get('content-type')
+        file_size = int(item.get('content-length'))
+
+        if file_size > 10*1024*1024:
+            print(f"Large resource: {int(file_size/(1024*1024))} MB {mime_type} {file_path}")
 
         if mime_type == 'text/url':
             body = item.get('body-location')
@@ -82,12 +86,12 @@ def run(SITE_ID, APP):
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 
-    xml_src = os.path.join(src_folder, "content.xml")
-    if not os.path.exists(xml_src):
-        print(f"ERROR {xml_src} not found")
+    content_src = os.path.join(src_folder, "content.xml")
+    if not os.path.exists(content_src):
+        print(f"ERROR {content_src} not found")
         return False
 
-    [ext_set, mime_set]  = extensions(src_folder, xml_src)
+    [ext_set, mime_set]  = extensions(src_folder, content_src)
     if ext_set:
         print(f"\nContent extensions: {sorted(ext_set.keys())}")
     if mime_set:
@@ -95,17 +99,18 @@ def run(SITE_ID, APP):
     else:
         print("No content")
 
-    xml_src = os.path.join(src_folder, "attachment.xml")
+    attach_src = os.path.join(src_folder, "attachment.xml")
 
-    if os.path.exists(xml_src):
+    if os.path.exists(attach_src):
 
-        [ext_set, mime_set]  = extensions(src_folder, xml_src)
+        [ext_set, mime_set]  = extensions(src_folder, attach_src)
         if ext_set:
             print(f"Attachment extensions: {sorted(ext_set.keys())}")
         if mime_set:
             print(f"Attachment types: {sorted(mime_set.keys())}")
         else:
             print("No attachment")
+
     else:
         print("No attachments")
 
