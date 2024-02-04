@@ -405,8 +405,15 @@
 
 				   {% if create_course_offering > 0 %}
 					   {% if target_site_created > 0 %}
-					     <p>You also have a new Amathuba site:</p>
+					     <p>You also have a new empty Amathuba site:</p>
 					     <p><a href="https://amathuba.uct.ac.za/d2l/home/{{ target_site_id }}">{{ target_title }}</a></p>
+					     {% if provider_count > 0 %}
+					       <p>linked to the following course code(s) for {{ target_term }}: {{ provider_list }}</p>
+					       <p>This new site is <strong>inactive</strong> (unpublished): students will not be able to access the site until it is changed to active (published).
+					       To make the site active, go to:<br/> Manage Course &gt; Course Admin &gt;
+						  <a href="https://amathuba.uct.ac.za/d2l/lp/manageCourses/course_offering_info_viewedit.d2l?ou={{ target_site_id }}">Course Offering Information</a>
+						  then tick <em>Course is active</em> and click Save.
+					     {% endif %}
 					   {% else %}
 					     <p>A site named '{{ target_title }}' already exists on Amathuba, and so a new site has <strong>not</strong> been created. Here is the existing site:</p>
 					     <p><a href="https://amathuba.uct.ac.za/d2l/home/{{ target_site_id }}">{{ target_title }}</a></p>

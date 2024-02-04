@@ -104,6 +104,10 @@ def close_jira(site_id):
 
 def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
 
+    provider = json.loads(kwargs['provider'])
+    provider_count = len(provider)
+    provider_list = ' '.join(provider)
+
     if step['action'] == "mail":
         if 'template' in step:
             return send_template_email(
@@ -118,7 +122,10 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
                 report_url=kwargs['report_url'],
                 target_site_id=kwargs['target_site_id'],
                 target_site_created=kwargs['target_site_created'],
+                target_term=kwargs['target_term'],
                 create_course_offering=kwargs['create_course_offering'],
+                provider_count=provider_count,
+                provider_list=provider_list,
                 target_title=kwargs['target_title']
             )
         else:
@@ -229,7 +236,9 @@ def start_workflow(link_id, site_id, APP):
                                          title=record['title'],
                                          target_site_id=record['target_site_id'],
                                          target_site_created=record['target_site_created'],
+                                         target_term=record['target_term'],
                                          create_course_offering=record['create_course_offering'],
+                                         provider=record['provider'],
                                          target_title=record['target_title'],
                                          report_url=record['report_url']):
                     # something went wrong while processing this step

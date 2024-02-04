@@ -159,6 +159,12 @@ def run(SITE_ID, APP, link_id):
                     if title:
                         name = f"{course} {term} | {title}"
 
+            # If there are provider codes attached, publish as inactive
+            if len(provider):
+                active = 'false'
+            else:
+                active = 'true'
+
             # optional are:
             #  'course_code': Generated name to re-use in migration checks
             #       'create': True will create the course even if it already exists
@@ -172,7 +178,7 @@ def run(SITE_ID, APP, link_id):
                 'name': name,
                 'course_code': course,
                 'year': term,
-                'active': 'yes', # make course that is created active
+                'active': active,
                 'role': role
             }
 
@@ -188,7 +194,7 @@ def run(SITE_ID, APP, link_id):
 
                 # AMA-983 Enroll users only if a new target site was created
                 if target_site_created:
-                    logging.info(f"New target site created for '{name}' with id {target_site_id}")
+                    logging.info(f"New target site created for '{name}' with id {target_site_id} active: {active}")
 
                     enroll(SITE_ID, APP, json_response['data']['Identifier'], role)
 

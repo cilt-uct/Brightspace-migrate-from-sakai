@@ -33,8 +33,10 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'failure_detail': 'failure_detail',
             'target_site_id': 98765,
             'target_site_created': 1,
+            'target_term': 2023,
             'create_course_offering': 1,
             'target_title': 'New site for 2023',
+            'provider': '[]'
         })
     @patch('work.archive_site.archive_site_retry', return_value=True)
     @patch('lib.utils.read_yaml', return_value={'STEPS': [{'action': 'mail', 'template': 'finished',
@@ -155,6 +157,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'target_site_created': 1,
             'create_course_offering': 1,
             'target_title': 'New site for 2023',
+            'target_term': 2023,
+            'provider': '[]'
         }
         workflow = run_update.run_workflow_step(step=step, site_id='site_id_12345', log_file='', db_config='',  **kwargs)
         self.assertIsNotNone(workflow)
@@ -184,7 +188,9 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         'failure_type': 'failure_type',
         'failure_detail': 'failure_detail',
         'target_site_id': 98765,
-        'target_title': 'New site for 2023'
+        'target_term': 2023,
+        'target_title': 'New site for 2023',
+        'provider': '[]'
     })
     @patch('run_update.create_jira')
     @patch('run_update.send_template_email')
