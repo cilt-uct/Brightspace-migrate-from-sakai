@@ -101,8 +101,8 @@ APP = {
 
   'middleware': {
           'base_url': brightspace[0],
-          'retries': 5,
-          'retry_delay': 30,
+          'retries': 10,
+          'retry_delay': 180,
           'search_url': '/d2l/api/course',
           'create_url': '/d2l/api/course/new',
           'import_url': '/d2l/api/courses/import_package',
