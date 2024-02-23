@@ -87,7 +87,12 @@ def get_media_id(content_toc, file_path, displayname):
                 file_ext = filename.split('.')[-1]
                 search_name += f".{file_ext}"
 
+            # Replace some special characters to match Brightspace mapping behaviour from displayname to topic name
+            # e.g. "abc / xyz" > "abc _ xyz"
+            search_name = search_name.replace('/','_')
+
         search_name_esc = search_name.replace('"','\\"')
+
         jpe_cs = f'$..Topics[?(@.Title="{search_name_esc}")]'
         jpe_resources = parse(jpe_cs)
         topics = jpe_resources.find(resource_node)
@@ -108,6 +113,8 @@ def get_media_id(content_toc, file_path, displayname):
             for path in media_paths:
                 if path == filename:
                     # We're at the end, so look for an activity matching the name
+                    print(f"Searching for '{search_name}' within the topic")
+
                     topic_match = list(filter(lambda x: x['TypeIdentifier'] == 'ContentService' and x['Title'] == search_name, resource_node['Topics']))
                     if topic_match:
                         media_url = topic_match[0]['Url']
