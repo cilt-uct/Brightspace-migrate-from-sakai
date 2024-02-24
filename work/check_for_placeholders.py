@@ -334,7 +334,22 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
             # Content links (audio, video)
             if placeholder_type == "lti-content":
-                logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}'")
+                launch_url = None
+                if sakai_id.startswith("/blti/"):
+                    lti_id = sakai_id.replace("/blti/", "")
+                    launch_url = get_lti_launch(archive_path, lti_id)
+
+                if launch_url:
+                    logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}' {launch_url}")
+
+                    # TODO Create a new quicklink in the target site
+                    link_html = f'<p style="border-style:solid;" data-type="placeholder" data-item-type="{placeholder_type}" data-sakai-id="{sakai_id}" data-name="{placeholder_name}"><span style="font-weight:bold;">LTI-CONTENT</span> name: {placeholder_name} url: {launch_url}</p>'
+                    placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
+                    updated = True
+
+                else:
+                    logging.warning(f"LTI placeholder: {sakai_id} '{placeholder_name}' unknown target")
+
 
         # Replace links
         for link in soup_html.find_all('a'):

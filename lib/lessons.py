@@ -244,3 +244,20 @@ def folder_list_embed(archive_path, collection_id, path_prefix):
     html = html + '</ul><hr></div>'
 
     return html
+
+# Get the LTI launch URL from basiclti.xml for a content item
+
+def get_lti_launch(archive_path, lti_content_id):
+
+    with open(f"{archive_path}/basiclti.xml", "r", encoding="utf8") as blti:
+        lti_soup = BeautifulSoup(blti, 'xml')
+
+        # Find the collection
+        lti_content = lti_soup.find("LTIContent", id=lti_content_id)
+        if lti_content:
+            lti_launch = lti_content.find("launch")
+            if lti_launch:
+                return lti_launch.get_text()
+
+    # No launch URL found
+    return
