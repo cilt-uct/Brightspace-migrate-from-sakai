@@ -85,6 +85,12 @@ def run(SITE_ID, APP, **kwargs):
             os.remove(zipfile)
             logging.info(f" - removed {zipfile}")
 
+        # FTP logs
+        ftp_log = f"{APP['ftp']['log_output']}/{SITE_ID}_ftp.log"
+        if os.path.exists(ftp_log):
+            os.remove(ftp_log)
+            logging.info(f" - removed {ftp_log}")
+
         # SFTP inbox and outbox
         tries = 1
         max_tries = 5

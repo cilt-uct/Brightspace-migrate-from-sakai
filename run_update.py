@@ -284,6 +284,10 @@ def start_workflow(link_id, site_id, APP):
 
         set_site_property(site_id, 'amathuba_conversion_status', state)
 
+        # Clean up log file
+        os.remove(log_file)
+
+
 def main():
     global APP
     parser = argparse.ArgumentParser(description="This script runs the workflow for a site",
