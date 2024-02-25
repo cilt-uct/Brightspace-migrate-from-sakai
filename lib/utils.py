@@ -511,3 +511,13 @@ def course_title(APP, course, term):
                 return row['title']
 
     return
+
+def site_has_tool(APP, SITE_ID, tool_id):
+
+    site_folder = os.path.join(APP['archive_folder'], f"{SITE_ID}-archive/")
+    site_soup = init__soup(site_folder, "site.xml")
+
+    if site_soup.find("tool", {"toolId": tool_id}):
+        return True
+
+    return False

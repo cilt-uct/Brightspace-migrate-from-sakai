@@ -890,20 +890,4 @@ def supported_media_types(content_soup, attachment_soup, restricted_ext):
 
     # Not necessary to check attachments as these don't cause failures
 
-
-def detect(soup, tool_id):
-    items = soup.find_all("site")
-    # site.xml seems to have only 1 site element within the main site element
-    site = items[1]
-    # print('site', site)
-    items = soup.find_all("page")
-    # iterate through all assessment items
-    for page in items:
-        # print('page', page)
-        tools = page.find_all("tool")
-        for tool in tools:
-            # print('tool', tool)
-            toolId = tool.get('toolId')
-            # toolId = "sakai.syllabus"
-            if toolId == tool_id:
-                return True
+    return

@@ -26,7 +26,7 @@ STEPS:
     use_import_id: 1
     state: 'updating'
 
-  # Create a new empty site if selected
+  # Create a new empty site if selected and enroll users
   - action: create_course_offering
     use_link_id: 1
 

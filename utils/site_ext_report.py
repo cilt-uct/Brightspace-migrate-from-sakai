@@ -80,6 +80,9 @@ def extensions(base_path, xml_src):
 def run(SITE_ID, APP):
     logging.info('Content: identify extensions : {}'.format(SITE_ID))
 
+    # Adhoc
+    logging.info(f"Opencast Series tool: {site_has_tool(APP, SITE_ID, 'sakai.opencast.series')}")
+
     # restricted extensions
     restricted_ext = read_yaml(APP['content']['restricted-ext'])
     disallowed = restricted_ext['RESTRICTED_EXT']

@@ -33,10 +33,6 @@ def enroll(SITE_ID, APP, import_id, role):
     site_xml_src = f'{dir}/site.xml'
     user_xml_src = f'{dir}/user.xml'
 
-    # it would be beter to split this out into the original workflow and
-    # create a column entry for this field so that even if the archive folder disapears
-    # it can still be processed
-
     if os.path.exists(site_xml_src) and os.path.exists(user_xml_src):
         site_tree = ET.parse(site_xml_src)
         user_tree = ET.parse(user_xml_src)
@@ -196,12 +192,14 @@ def run(SITE_ID, APP, link_id):
                 if target_site_created:
                     logging.info(f"New target site created for '{name}' with id {target_site_id} active: {active}")
 
+                    # 1: Enroll users
                     enroll(SITE_ID, APP, json_response['data']['Identifier'], role)
+                    logging.info(f"- enrolled site owners in {target_site_id}")
 
-                    # if appropriate (not project site [OTHER]) - copy over content
+                    # 2: Copy default site content if appropriate (not project site [OTHER])
                     copy_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['copy_url'])
                     copy_payload = {
-                        'org_id': json_response['data']['Identifier'],
+                        'org_id': target_site_id,
                         'src_org_id': APP['middleware']['course_content_src']
                     }
                     copy_response = middleware_api(APP, copy_url, payload_data=copy_payload)
@@ -211,6 +209,30 @@ def run(SITE_ID, APP, link_id):
                     else:
                         if json_response['status'] != 'success':
                             raise Exception(f'Unable to copy content for {SITE_ID}: {json_response}')
+
+                    logging.info(f"- copied default course content into {target_site_id}")
+
+                    # 3: Create an Opencast series and LTI tool if the source site had one
+                    # https://github.com/cilt-uct/Brightspace-Middleware/blob/main/d2l/services/web/project/api/routes.py#L2369
+                    # params: org_id, force
+                    if site_has_tool(APP, SITE_ID, "sakai.opencast.series"):
+                        # print(f"Site has Opencast LTI tool")
+                        payload = {
+                            'org_id': target_site_id,
+                            'force': 0
+                        }
+
+                        add_opencast_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['add_opencast_url'])
+                        # print(f"Calling endpoint: {add_opencast_url} with payload {payload}")
+                        json_response = middleware_api(APP, add_opencast_url, payload_data=payload, method='POST')
+
+                        if json_response and 'status' in json_response and json_response['status'] == 'success':
+                            logging.info(f"- added Opencast Lecture Videos tool to {target_site_id}")
+                        else:
+                            logging.warning(f"- error adding Opencast Lecture Videos tool to {target_site_id}: {json_response}")
+                    else:
+                        print(f"Site does not have Opencast LTI tool")
+
                 else:
                     logging.info(f"Target site with title '{name}' already exists with id {target_site_id}")
 
