@@ -1,6 +1,7 @@
 import pymysql
 import pymysql.cursors
 import config.logging_config
+from pymysql.cursors import DictCursor
 
 def get_records(db_config, expiry_minutes: int = 0, state: str = None, order_by_zip: bool = False):
     try:
@@ -57,3 +58,17 @@ def query(where: str, ordered_by: str = None, limit: int = 0, expiry_minutes: in
                ifnull((SELECT site_id FROM migration_site B WHERE B.link_id = A.link_id AND B.state='admin'), A.site_id) AS url,
                (SELECT email FROM lti_user C WHERE C.user_id = A.started_by) AS started_by_email
                FROM migration_site A WHERE {where} {order_sql} {limit_sql}""".rstrip() + ";"
+
+def get_state_count(db_config, state):
+    try:
+        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+
+                sql = """SELECT COUNT(state) as CountOfState FROM migration_site WHERE state = %s;"""
+                cursor.execute(sql, (state))
+                return cursor.fetchone()['CountOfState']
+
+    except Exception as e:
+        config.logging_config.logging.error(f"Could not retrieve state {state}: {e}")
+        return None

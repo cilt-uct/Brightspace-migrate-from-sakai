@@ -90,7 +90,24 @@ def check_migrations(APP):
         start_time = time.time()
 
         want_to_migrate = lib.db.get_records(db_config=DB_AUTH, state='starting')
+        active_exports = lib.db.get_state_count(db_config=DB_AUTH, state='exporting')
+        active_workflows = lib.db.get_state_count(db_config=DB_AUTH, state='running')
+
+        max_jobs = APP['export']['max_jobs']
+
+        logging.info(f"{len(want_to_migrate)} sites pending, {active_exports} sites exporting (limit {max_jobs}), {active_workflows} workflows running")
+
+        if (active_exports >= max_jobs):
+            return
+
+        started = 0
+
         for site in want_to_migrate:
+
+            if (active_exports + started) >= max_jobs:
+                break
+
+            started += 1
             site_id = site['site_id']
             link_id = site['link_id']
             site_url = site['url']
@@ -98,6 +115,7 @@ def check_migrations(APP):
             failure_type = site['failure_type']
             failure_detail = site['failure_detail']
             started_by = site['started_by_email']
+
             try:
 
                 if (not another_running(DB_AUTH, link_id, site_id)):

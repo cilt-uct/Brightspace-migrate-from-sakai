@@ -37,20 +37,6 @@ from lib.local_auth import *
 # output path for the log file of this script
 LOG_FILE = 'brightspace_uploading_list.log'
 
-def get_state_count(db_config, state):
-    try:
-        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
-        with connection:
-            with connection.cursor() as cursor:
-
-                sql = """SELECT COUNT(state) as CountOfState FROM migration_site WHERE state = %s;"""
-                cursor.execute(sql, (state))
-                return cursor.fetchone()['CountOfState']
-
-    except Exception as e:
-        logging.error(f"Could not retrieve state {state}")
-        return None
-
 def set_to_state(db_config, link_id, site_id, new_state):
 
     try:
@@ -96,8 +82,8 @@ def check_upload(APP):
 
     # Max permitted import jobs
     max_jobs = APP['import']['max_jobs']
-    active_imports = get_state_count(DB_AUTH, 'importing')
-    active_uploads = get_state_count(DB_AUTH, 'uploading')
+    active_imports = lib.db.get_state_count(DB_AUTH, 'importing')
+    active_uploads = lib.db.get_state_count(DB_AUTH, 'uploading')
 
     # datetime object containing current date and time that the workflow was started
     now = datetime.now()
@@ -114,8 +100,8 @@ def check_upload(APP):
 
     for site in want_to_process:
 
-        active_imports = get_state_count(DB_AUTH, 'importing')
-        active_uploads = get_state_count(DB_AUTH, 'uploading')
+        active_imports = lib.db.get_state_count(DB_AUTH, 'importing')
+        active_uploads = lib.db.get_state_count(DB_AUTH, 'uploading')
 
         if (active_imports + active_uploads) >= max_jobs:
             break
