@@ -166,7 +166,7 @@ def remove_unwanted_characters_tq(file):
     fin.close()
 
     # weird characters
-    data = data.replace('&#11;','')
+    data = data.replace('&#11;','').replace(u"\u000B",'')
 
     fin = open(file, "wt")
     fin.write(data)
