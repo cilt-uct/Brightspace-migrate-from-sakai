@@ -95,7 +95,8 @@ def check_migrations(APP):
 
         max_jobs = APP['export']['max_jobs']
 
-        logging.info(f"{len(want_to_migrate)} sites pending, {active_exports} sites exporting (limit {max_jobs}), {active_workflows} workflows running")
+        if (len(want_to_migrate) + active_exports + active_workflows) > 0:
+            logging.info(f"{len(want_to_migrate)} sites pending, {active_exports} sites exporting (limit {max_jobs}), {active_workflows} workflows running")
 
         if (active_exports >= max_jobs):
             return

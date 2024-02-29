@@ -93,7 +93,7 @@ def run(SITE_ID, APP, **kwargs):
 
         # SFTP inbox and outbox
         tries = 1
-        max_tries = 5
+        max_tries = 15
         sleeptime = 60
         while tries <= max_tries:
             if cleanup_sftp(APP['ftp']['outbox'], SITE_ID):

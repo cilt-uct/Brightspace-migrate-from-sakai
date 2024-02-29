@@ -64,8 +64,8 @@ APP = {
   # Execution
   'scan_interval' : {
     'workflow' : 5,
-    'upload' : 5,
-    'import' : 60
+    'upload' : 10,
+    'import' : 30
   },
 
   'exit_flag' : {
@@ -132,11 +132,11 @@ APP = {
   },
 
   # Max jobs to allow in uploading and import states  before uploading new jobs,
-  # import expiry time in minutes after upload (360 = 6 hours, 1080 = 18 hours)
+  # import expiry time in minutes after upload (360 = 6 hours, 1440 = 24 hours)
   # limit for zip file size for package uploads in update workflow
   'import': {
       'max_jobs' : 10,
-      'expiry' : 1080,
+      'expiry' : 1440,
       'limit' : 2147483648,
       'manifest' : {
           'rubrics' : Path(SCRIPT_FOLDER) / 'templates' / 'manifests' / 'rubrics-import.xml',
