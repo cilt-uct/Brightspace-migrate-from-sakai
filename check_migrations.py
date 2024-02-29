@@ -94,11 +94,19 @@ def check_migrations(APP):
         active_workflows = lib.db.get_state_count(db_config=DB_AUTH, state='running')
 
         max_jobs = APP['export']['max_jobs']
+        max_workflows = APP['workflow']['max_jobs']
 
         if (len(want_to_migrate) + active_exports + active_workflows) > 0:
-            logging.info(f"{len(want_to_migrate)} sites pending, {active_exports} sites exporting (limit {max_jobs}), {active_workflows} workflows running")
+            logging.info(f"{len(want_to_migrate)} sites pending, {active_exports} / {max_jobs} sites exporting, {active_workflows} / {max_workflows} workflows running")
 
         if (active_exports >= max_jobs):
+            logging.debug("Too many exports running - pausing")
+            time.sleep(30)
+            return
+
+        if (active_workflows >= max_workflows):
+            logging.debug("Too many workflows running - pausing")
+            time.sleep(30)
             return
 
         started = 0
@@ -106,6 +114,9 @@ def check_migrations(APP):
         for site in want_to_migrate:
 
             if (active_exports + started) >= max_jobs:
+                break
+
+            if (active_workflows + started) >= max_workflows:
                 break
 
             started += 1

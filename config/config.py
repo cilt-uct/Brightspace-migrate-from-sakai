@@ -124,6 +124,11 @@ APP = {
     'enroll_user_role': 'Owner',
   },
 
+  # Max workflows to run concurrently
+  'workflow': {
+        'max_jobs': 30,
+  },
+
   # Max jobs to run concurrently for site archiving
   # Max size of Resources collection
   'export': {
