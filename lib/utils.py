@@ -159,6 +159,11 @@ def remove_unwanted_characters(file):
     fin.write(data)
     fin.close()
 
+def remove_unwanted_characters_html(data):
+
+    data = data.replace('&#x2;','').replace('&#xb;','')
+    return data
+
 def remove_unwanted_characters_tq(file):
 
     fin = open(file, "rt")

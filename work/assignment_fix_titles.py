@@ -17,7 +17,7 @@ from config.logging_config import *
 from lib.utils import *
 
 def run(SITE_ID, APP):
-    logging.info('Assignment: fix empty titles : {}'.format(SITE_ID))
+    logging.info('Assignment: fix empty titles and sanitise instruction text: {}'.format(SITE_ID))
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
     xml_src = r'{}/assignment.xml'.format(src_folder)
@@ -37,6 +37,13 @@ def run(SITE_ID, APP):
         ua += 1
         rewrite = True
 
+    # Find all Assignment instruction elements
+    for asn in asn_tree.xpath(f"//Assignment/instructions"):
+        asn_html = remove_unwanted_characters_html(asn.text)
+        if asn_html != asn.text:
+            asn.text = asn_html
+            rewrite = True
+
     if rewrite:
         xml_old = r'{}/assignment.old'.format(src_folder)
         shutil.copyfile(xml_src, xml_old)
@@ -44,7 +51,7 @@ def run(SITE_ID, APP):
 
 def main():
     global APP
-    parser = argparse.ArgumentParser(description="Fix empty Assignment titles",
+    parser = argparse.ArgumentParser(description="Fix empty Assignment titles and sanitise instruction text",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
