@@ -39,10 +39,11 @@ def run(SITE_ID, APP):
 
     # Find all Assignment instruction elements
     for asn in asn_tree.xpath(f"//Assignment/instructions"):
-        asn_html = remove_unwanted_characters_html(asn.text)
-        if asn_html != asn.text:
-            asn.text = asn_html
-            rewrite = True
+        if asn.text:
+            asn_html = remove_unwanted_characters_html(asn.text)
+            if asn_html != asn.text:
+                asn.text = asn_html
+                rewrite = True
 
     if rewrite:
         xml_old = r'{}/assignment.old'.format(src_folder)
