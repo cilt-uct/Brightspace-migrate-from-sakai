@@ -67,6 +67,16 @@ def check_resources(src_folder, paths_map, collection, restricted_ext):
 
         file_extension = file_extension.upper().replace(".","")
 
+        # Display names with HTML entity names
+        # Fix some HTML entities in display name. There are lots of these, but fix the ones we run into.
+        # https://www.w3.org/wiki/Common_HTML_entities_used_for_typography
+        # The Brightspace importer converts these into numeric refs like &#8211; which causes lookup mismatches
+        # for the media handling code later (check_for_placeholders).
+        if display_name_value and '&' in display_name_value:
+            display_name_value = display_name_value.replace("&ndash;","-").replace("&mdash;","-")
+            display_name_el.set('value', base64.b64encode(display_name_value.encode('utf-8')))
+            rewrite = True
+
         # Audio/video with colons in filename
         if (((file_extension in supported_audio) or (file_extension in supported_video)) and (has_restricted(file_name, disallowed_chars) or has_restricted(display_name_value, disallowed_chars))):
 
