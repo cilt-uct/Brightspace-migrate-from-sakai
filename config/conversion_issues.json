@@ -375,7 +375,7 @@
       "tool": "sakai.assignment.grades",
       "actor": ["Lecturer"],
       "description": "Assignment released to groups",
-      "found": "One or more assignments are only visible to certain groups on your site. Update assignments in Amathuba for groups as needed..",
+      "found": "One or more assignments are only visible to certain groups on your site. Update assignments in Amathuba for groups as needed.",
       "not_found": "Good to go! Assignments are not group-scoped",
       "args": [
         "assignment_soup"
@@ -654,7 +654,7 @@
       "actor": ["Lecturer"],
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes Numeric Response question",
-      "found": "These are translated into Amathuba Short Answer questions, which don't support numeric ranges. Recreate these as Significant Figures questions if needed.",
+      "found": "These are translated into Amathuba Short Answer questions, which don't support numeric ranges. Reformat these questions following the guidance provided.",
       "not_found": "Good to go! You have not used a numeric response question in Vula.",
       "args": [
         "site_folder",
@@ -937,7 +937,7 @@
       "active": true,
       "tool": "sakai.resources",
       "actor": ["LD"],
-      "description": "Files with restricted extensions",
+      "description": "Media file format converted",
       "found": "Some audio or video files in Resources are in formats not supported by Amathuba and have been converted for import",
       "not_found": "Good to go!",
       "args": [
