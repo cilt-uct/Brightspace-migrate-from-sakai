@@ -654,7 +654,7 @@
       "actor": ["Lecturer"],
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes Numeric Response question",
-      "found": "These are translated into Amathuba Fill in the Blank questions, which don't support numeric ranges. Recreate these as Significant Figures questions if needed.",
+      "found": "These are translated into Amathuba Short Answer questions, which don't support numeric ranges. Recreate these as Significant Figures questions if needed.",
       "not_found": "Good to go! You have not used a numeric response question in Vula.",
       "args": [
         "site_folder",
