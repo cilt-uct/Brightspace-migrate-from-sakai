@@ -39,7 +39,14 @@ def update_item_types(APP, SITE_ID, items):
             item['name'] = alt_text
 
             img_path = urllib.parse.quote(content_path)
-            item['html'] = f'<p><img style=\"max-width: 100%\" alt=\"{alt_text}\" src=\"{content_path_prefix}{img_path}\"></p>'
+
+            if 'description' in item.attrs and item['description']:
+                desc = item['description']
+                desc_html = f"<br>{escape(desc)}"
+            else:
+                desc_html = ""
+
+            item['html'] = f'<p><img style=\"max-width: 100%\" alt=\"{alt_text}\" src=\"{content_path_prefix}{img_path}\">{desc_html}</p>'
             continue
 
         # Page breaks
