@@ -158,7 +158,6 @@ def move_attachments(SITE_ID, site_folder, collection, move_list):
         if attach_item is not None:
             # Move it to content
 
-            print(f"move it")
             content_item = copy.deepcopy(attach_item)
 
             new_id = move_list[attach_id]

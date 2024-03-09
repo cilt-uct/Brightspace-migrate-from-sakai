@@ -20,10 +20,11 @@ from config.logging_config import *
 from lib.utils import *
 from lib.resources import *
 
-def fix_images(APP, SITE_ID, collection, move_list, assessment):
+def fix_images(APP, SITE_ID, collection, move_list, xml_src):
+
+    print(f"Fixing images: {xml_src}")
 
     sakai_url = APP['sakai_url']
-    xml_src = '{}{}-archive/qti/{}'.format(APP['archive_folder'], SITE_ID, assessment)
 
     # TODO check that the assessment refs exist
     # get_resource_ids
@@ -45,9 +46,20 @@ def fix_images(APP, SITE_ID, collection, move_list, assessment):
                         html = BeautifulSoup(item.text, 'html.parser')
                         update_item = False
 
+                        # Find all the image tags
                         for el in html.findAll("img"):
                             img_src = el.get('src')
-                            if img_src and img_src.startswith(f"{sakai_url}/access/content/attachment/"):
+
+                            if not img_src:
+                                # Unlikely
+                                continue
+
+                            # URLs to Resources in this site - nothing to do
+                            if img_src.startswith(f"{sakai_url}/access/content/group/{SITE_ID}/"):
+                                continue
+
+                            # Attachments and cross-site resources included in this site's attachment archive
+                            if img_src.startswith(f"{sakai_url}/access/content/"):
 
                                 # Drop the space in the attachment path AMA-120
                                 img_src = img_src.replace("/Tests _ Quizzes/","/Tests_Quizzes/")
@@ -58,11 +70,10 @@ def fix_images(APP, SITE_ID, collection, move_list, assessment):
                                 # Move this item from Attachments to Resources
                                 # ID in attachment.xml
                                 #   /attachment/eae4b5a5-614b-4d4a-a987-00666530af3b/Tests_Quizzes/80be4545-5832-413f-a13c-5b8407fed61b/ACB_fig1.png
-                                # Target id:
-                                #   "/group/quiz_images/eae4b5a5-614b-4d4a-a987-00666530af3b/"
+                                #   /group/9148b87f-a73a-42e0-bb23-18b1d76a0165/ACB_fig1.png
 
                                 shorthash = hashlib.shake_256(attach_id.encode()).hexdigest(3)
-                                filename = attach_id.split("/")[5]
+                                filename = attach_id.split("/")[-1]
                                 new_id = f"/group/{SITE_ID}/{collection}/{shorthash}/{filename}"
 
                                 move_list[attach_id] = new_id
@@ -74,7 +85,6 @@ def fix_images(APP, SITE_ID, collection, move_list, assessment):
                                 update_item = True
                                 update_file = True
 
-                        # print(html)
                         if update_item:
                             item.text = '<![CDATA[' + str(html) + ']]>'
                             # print(f"New text: {item.text}")
@@ -92,12 +102,16 @@ def run(SITE_ID, APP):
     collection = "quiz_images"
     move_list = {}
 
-    site_folder = f"{APP['archive_folder']}{SITE_ID}-archive/"
+    site_folder = f"{APP['archive_folder']}{SITE_ID}-archive"
     qti_path = f"{site_folder}/qti"
-    dir_list = os.listdir(qti_path)
 
-    for assessment in dir_list:
-        fix_images(APP, SITE_ID, collection, move_list, assessment)
+    for qti in os.scandir(qti_path):
+        if qti.is_file():
+            fix_images(APP, SITE_ID, collection, move_list, qti.path)
+
+    qp = f"{site_folder}/samigo_question_pools.xml"
+    if os.path.exists(qp):
+        fix_images(APP, SITE_ID, collection, move_list, qp)
 
     move_attachments(SITE_ID, site_folder, collection, move_list)
 
