@@ -81,6 +81,9 @@ def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list,
                             img_src = img_src.replace("/Tests _ Quizzes/","/Tests_Quizzes/")
                             attach_id = unquote(img_src.replace(f"{sakai_url}/access/content",""))
 
+                            if attach_id in content_ids:
+                                continue
+
                             if not attach_id in attachment_ids:
                                 raise Exception(f"Missing attachment: {attach_id} in {xml_src}")
 
@@ -113,7 +116,7 @@ def run(SITE_ID, APP):
 
     logging.info('T&Q: Inline images : {}'.format(SITE_ID))
 
-    collection = "quiz_images"
+    collection = APP['quizzes']['image_collection']
     move_list = {}
 
     site_folder = f"{APP['archive_folder']}{SITE_ID}-archive"
@@ -133,7 +136,7 @@ def run(SITE_ID, APP):
     if os.path.exists(qp):
         fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list, qp)
 
-    print(f"\nMoving attachments")
+    print(f"\nMoving attachments to {collection}")
     move_attachments(SITE_ID, site_folder, collection, move_list)
 
     print(f"\nmove list: {move_list}")

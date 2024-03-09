@@ -168,6 +168,11 @@ APP = {
     'content' : 'content_'
   },
 
+  # Name of the collection used for T&Q inline images (attachments and cross-site)
+  'quizzes': {
+        'image_collection' : 'quiz_images'
+  },
+
   'lessons': {
       'styles': Path(SCRIPT_FOLDER) / 'config' / 'lesson_styles.json',
       'replace_strings': {

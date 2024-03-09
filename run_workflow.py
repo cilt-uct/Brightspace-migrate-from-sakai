@@ -331,10 +331,17 @@ def start_workflow(link_id, site_id, APP):
                     if 'state' in step:
                         state = step['state']
 
-                    if run_workflow_step(step=step, site_id=site_id, log_file=log_file, db_config=DB_AUTH,
-                                             to=record['notification'], started_by=record['started_by_email'],
-                                             now_st=now_st, new_id=new_id, amathuba_id=record['imported_site_id'],
-                                             link_id=link_id, title=site_title):
+                    if run_workflow_step(step=step,
+                            site_id=site_id,
+                            log_file=log_file,
+                            db_config=DB_AUTH,
+                            to=record['notification'],
+                            started_by=record['started_by_email'],
+                            now_st=now_st,
+                            new_id=new_id,
+                            amathuba_id=record['imported_site_id'],
+                            link_id=link_id,
+                            title=site_title):
                         logging.info("Completed workflow step: {}".format(step['action']))
                     else:
                         # something went wrong while processing this step
