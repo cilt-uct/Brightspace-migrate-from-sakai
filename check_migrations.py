@@ -158,7 +158,7 @@ def check_migrations(APP):
                 raise e
 
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
         create_jira(APP=APP, url=site_url, site_id=site_id, site_title=site_title, jira_log=[str(e)],
                     jira_state='error', failure_type=failure_type, failure_detail=failure_detail, user=started_by)
 

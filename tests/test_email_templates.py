@@ -241,6 +241,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
 
     # This tests the import failure case where the D2L import job has Failed status
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
+    @patch('lib.db.get_state_count', return_value=0)
     @patch('lib.db.get_records', return_value=[{
         'link_id': 'link_id_12345',
         'notification': 'cilt1@uct.ac.za',
