@@ -1,6 +1,7 @@
 # Classes and functions for Resources
 
 import lxml.etree as ET
+import copy
 import base64
 
 # Return a set of resource IDs in the site
@@ -92,3 +93,91 @@ def get_content_displayname(site_folder, sakai_id):
 
     displayname = str(base64.b64decode(displayprop.get("value")).decode('utf-8'))
     return displayname
+
+# Add a property subnode
+def add_prop(props, prop_name, prop_val):
+
+    prop_item = ET.Element("property")
+    prop_item.set('enc', 'BASE64')
+    prop_item.set('name', prop_name)
+    prop_item.set('value', base64.b64encode(prop_val.encode('utf-8')))
+    props.append(prop_item)
+
+    return
+
+# Move from attachment.xml to content.xml
+def move_attachments(SITE_ID, site_folder, collection, move_list):
+
+    content_src = f'{site_folder}/content.xml'
+    content_tree = ET.parse(content_src)
+    content_root = content_tree.getroot()
+
+    attach_src = f'{site_folder}/attachment.xml'
+    attach_tree = ET.parse(attach_src)
+    attach_root = attach_tree.getroot()
+
+    content_container = content_root.find("org.sakaiproject.content.api.ContentHostingService")
+    attach_container = attach_root.find("org.sakaiproject.content.api.ContentHostingService")
+
+    collection_id = f"/group/{SITE_ID}/{collection}/"
+
+    rewrite = False
+
+    if content_root.find(f".//collection[@id='{collection_id}']") is not None:
+        print(f"Got collection {collection}")
+    else:
+        # Create the target collection under <org.sakaiproject.content.api.ContentHostingService>
+        print(f"CREATE collection {collection_id}")
+
+        collection_el = ET.Element("collection")
+        collection_el.set('id', collection_id)
+        collection_el.set('rel-id', collection)
+        collection_el.set('resource-type', 'org.sakaiproject.content.types.folder')
+        #collection_el.set('sakai:access_mode', 'inherited')
+        #collection_el.set('sakai:hidden', 'false')
+
+        props = ET.Element("properties")
+        add_prop(props, "CHEF:creator", "admin")
+        add_prop(props, "DAV:displayname", collection)
+        add_prop(props, "CHEF:modifiedby", "admin")
+        add_prop(props, "CHEF:description", "")
+        add_prop(props, "CHEF:is-collection", "true")
+        add_prop(props, "DAV:getlastmodified", "20240309112237083")
+        add_prop(props, "SAKAI:conditionalrelease", "false")
+        add_prop(props, "DAV:creationdate", "20240309112237081")
+        add_prop(props, "SAKAI:conditionalNotificationId", "")
+
+        collection_el.append(props)
+        content_container.append(collection_el)
+
+    # Iterate
+    for attach_id in move_list:
+        print(f"Moving {attach_id} to {move_list[attach_id]})")
+
+        attach_item = attach_root.find(f".//resource[@id='{attach_id}']")
+        if attach_item is not None:
+            # Move it to content
+
+            print(f"move it")
+            content_item = copy.deepcopy(attach_item)
+
+            new_id = move_list[attach_id]
+            rel_id = new_id.replace(f"/group/{SITE_ID}/","")
+
+            content_item.set('id', new_id)
+            content_item.set('rel-id', rel_id)
+
+            # Add it to content, remove it from attachment
+            content_container.append(content_item)
+            attach_container.remove(attach_item)
+
+            rewrite = True
+        else:
+            raise Exception(f"not found! {attach_id}")
+
+    # Rewrite both
+    if rewrite:
+        content_tree.write(content_src, encoding='utf-8', xml_declaration=True)
+        attach_tree.write(attach_src, encoding='utf-8', xml_declaration=True)
+
+    return
