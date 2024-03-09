@@ -30,6 +30,7 @@ def update_item_types(APP, SITE_ID, items):
         content_path = item['sakaiid']
 
         item_html = item['html'] if 'html' in item.attrs else None
+        desc = item['description'] if 'description' in item.attrs else None
 
         # Inline images
         if item['type'] == ItemType.MULTIMEDIA and is_image(content_path, item_html):
@@ -40,12 +41,7 @@ def update_item_types(APP, SITE_ID, items):
 
             img_path = urllib.parse.quote(content_path)
 
-            if 'description' in item.attrs and item['description']:
-                desc = item['description']
-                desc_html = f"<br>{escape(desc)}"
-            else:
-                desc_html = ""
-
+            desc_html = f"<br>{escape(desc)}" if desc else ""
             item['html'] = f'<p><img style=\"max-width: 100%\" alt=\"{alt_text}\" src=\"{content_path_prefix}{img_path}\">{desc_html}</p>'
             continue
 
@@ -67,11 +63,13 @@ def update_item_types(APP, SITE_ID, items):
             # Links that are not embeds
             if 'multimediaUrl' in attributes and 'multimediaDisplayType' not in attributes:
                 url = attributes['multimediaUrl']
-                desc = item['description']
                 name = item['name']
 
-                if item['type'] == ItemType.MULTIMEDIA and desc:
-                    link_html = f'<p><a href="{url}" target="_blank" rel="noopener">{url}</a><br>{desc}</p>'
+                if item['type'] == ItemType.MULTIMEDIA:
+                    if desc:
+                        link_html = f'<p><a href="{url}" target="_blank" rel="noopener">{url}</a><br>{escape(desc)}</p>'
+                    else:
+                        link_html = f'<p><a href="{url}" target="_blank" rel="noopener">{url}</a></p>'
                 else:
                     link_html = f'<p><a href="{url}" target="_blank" rel="noopener">{name}</a></p>'
 
@@ -83,7 +81,7 @@ def update_item_types(APP, SITE_ID, items):
             # Generic embed code
             if 'multimediaEmbedCode' in attributes:
                 item['type'] = ItemType.TEXT
-                item['html'] = generic_embed(attributes['multimediaEmbedCode'])
+                item['html'] = generic_embed(attributes['multimediaEmbedCode'], desc)
                 attr.decompose()
                 continue
 
@@ -98,12 +96,12 @@ def update_item_types(APP, SITE_ID, items):
 
                     logging.info(f"Embedding youtube video {youtube_id}")
                     item['type'] = ItemType.TEXT
-                    item['html'] = youtube_embed(youtube_id, start_time, name)
+                    item['html'] = youtube_embed(youtube_id, start_time, name, desc)
                     attr.decompose()
                     continue
 
                 if is_twitter(url):
-                    embed = twitter_embed(url)
+                    embed = twitter_embed(url, desc)
                     if embed:
                         logging.info(f"Embedding twitter URL {url}")
                         item['type'] = ItemType.TEXT
@@ -114,7 +112,7 @@ def update_item_types(APP, SITE_ID, items):
                 if url and mmdt == '4':
                     # Generic embed: iframe it if the url returns text/html content type
                     if is_url_html(url):
-                        embed = generic_iframe(url)
+                        embed = generic_iframe(url, desc)
                         if embed:
                             logging.info(f"Embedding multimedia URL with iframe: {url}")
                             item['type'] = ItemType.TEXT
@@ -124,8 +122,7 @@ def update_item_types(APP, SITE_ID, items):
 
                 if url and mmdt == '3':
                     # Generic link with description
-                    if 'description' in item.attrs and item['description']:
-                        desc = item['description']
+                    if desc:
                         html = f'<p><a href="{url}">{url}</a><br>{escape(desc)}</p>'
                     else:
                         html = f'<p><a href="{url}">{url}</a></p>'
@@ -136,8 +133,7 @@ def update_item_types(APP, SITE_ID, items):
 
                 if url and mmdt == '2' and is_audio_url(url):
                     # Embed audio
-                    desc = item['description'] if 'description' in item.attrs else None
-                    embed = audio_embed(url, desc if None else "")
+                    embed = audio_embed(url, desc if desc is not None else "")
                     logging.info(f"Embedding audio URL with <audio>: {url}")
                     if desc:
                         html = f'<p>{embed}<br>{escape(desc)}</p>'
@@ -151,8 +147,7 @@ def update_item_types(APP, SITE_ID, items):
                 # We're not sure what to do with this, so just link it
                 if url:
                     # Generic link with description
-                    if 'description' in item.attrs and item['description']:
-                        desc = item['description']
+                    if desc:
                         html = f'<p><a href="{url}">{url}</a><br>{escape(desc)}</p>'
                     else:
                         html = f'<p><a href="{url}">{url}</a></p>'
@@ -170,8 +165,7 @@ def update_item_types(APP, SITE_ID, items):
 
                 if not link_item(APP, content_type, content_path) and not is_audio_video(APP, content_type, content_path):
                     href = f'{APP["sakai_url"]}/access/content{content_path}'
-                    if 'description' in item.attrs and item['description']:
-                        desc = item['description']
+                    if desc:
                         html = f'<p><a href="{href}">{item.attrs["name"]}</a><br>{escape(desc)}</p>'
                     else:
                         html = f'<p><a href="{href}">{item.attrs["name"]}</a></p>'
@@ -190,7 +184,7 @@ def update_item_types(APP, SITE_ID, items):
                 directory = attributes.get('dataDirectory').replace('//', '/')
 
                 if directory:
-                    html = folder_list_embed(archive_path, directory, content_path_prefix)
+                    html = folder_list_embed(archive_path, directory, content_path_prefix, desc)
                     if html:
                         item['type'] = ItemType.TEXT
                         item['html'] = html

@@ -100,7 +100,7 @@ def supported_media_type(APP, file_path):
     return False
 
 # Embed HTML for a youtube video with the given id
-def youtube_embed(youtube_id, start_timestamp, title):
+def youtube_embed(youtube_id, start_timestamp, title, desc):
 
     # These dimensions are slightly larger than the "Embed stuff" in Brightspace,
     # but match the Lessons sizing and are still within the RT editor width in Brightspace
@@ -115,14 +115,15 @@ def youtube_embed(youtube_id, start_timestamp, title):
 
     allow_options = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     embed_iframe = f'<iframe width="{width}" height="{height}" src="{src_url}" frameborder="0" allow="{allow_options}" allowfullscreen="allowfullscreen" title="{title}"></iframe>'
+    desc_html = f"<br>{escape(desc)}" if desc else ""
 
-    return f'<p><span style="font-size: 19px;">{embed_iframe}</span></p>'
+    return f'<p><span style="font-size: 19px;">{embed_iframe}</span>{desc_html}</p>'
 
 def audio_embed(url, title):
 
     return f'<audio title="{escape(title)}" controls="controls"><source src="{url}"></audio>'
 
-def twitter_embed(url):
+def twitter_embed(url, desc):
 
     consumer = oembed.OEmbedConsumer()
     endpoint = oembed.OEmbedEndpoint('https://publish.twitter.com/oembed', ['https://twitter.com/*'])
@@ -132,11 +133,14 @@ def twitter_embed(url):
     if response:
         embedJson = response.getData()
         if embedJson and 'html' in embedJson:
-            return embedJson['html']
+            embed_html = embedJson['html']
+            if desc:
+                embed_html += f"<p>{escape(desc)}</p>"
+            return embed_html
 
     return None
 
-def generic_iframe(url):
+def generic_iframe(url, desc):
 
     width = "640"
     height = "360"
@@ -150,9 +154,9 @@ def generic_iframe(url):
 
     allow_options = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     embed_iframe = f'<iframe width="{width}" height="{height}" src="{url}" frameborder="0" allow="{allow_options}" allowfullscreen="allowfullscreen" title="{title}"></iframe>'
+    desc_html = f"<br>{escape(desc)}" if desc else ""
 
-    return f"{embed_link}{embed_iframe}"
-
+    return f"{embed_link}{embed_iframe}{desc_html}"
 
 def is_youtube(url):
 
@@ -195,7 +199,7 @@ def parse_youtube(url):
     return (youtube_id, start_time)
 
 # Embed a generic html fragment with some special handling
-def generic_embed(html):
+def generic_embed(html, desc):
 
     embed_html = html
 
@@ -203,10 +207,13 @@ def generic_embed(html):
     if html.startswith('<blockquote class="twitter-tweet">'):
         embed_html += '<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
 
+    if desc:
+        embed_html += f"<p>{escape(desc)}</p>"
+
     return embed_html
 
 # Embed a list of files in a Resources folder
-def folder_list_embed(archive_path, collection_id, path_prefix):
+def folder_list_embed(archive_path, collection_id, path_prefix, desc):
 
     with open(f"{archive_path}/content.xml", "r", encoding="utf8") as cp:
         content_soup = BeautifulSoup(cp, 'xml')
@@ -241,7 +248,10 @@ def folder_list_embed(archive_path, collection_id, path_prefix):
                     a_tag = f'<li><a href="{href}">{file_name}</a></li>'
                     html = html + a_tag
 
-    html = html + '</ul><hr></div>'
+    if desc:
+        html = html + f'</ul><hr><br>{escape(desc)}</div>'
+    else:
+        html = html + '</ul><hr></div>'
 
     return html
 
