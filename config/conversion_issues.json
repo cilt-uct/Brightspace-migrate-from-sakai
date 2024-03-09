@@ -3,7 +3,7 @@
   "issues": [
     {
       "key": "a1",
-      "active": true,
+      "active": false,
       "tool": "sakai.lessonbuildertool",
       "actor": ["LD"],
       "icon-class": "icon-list",
