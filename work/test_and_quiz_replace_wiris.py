@@ -48,7 +48,7 @@ def work_on_TQ(xml_src):
                             el.replace_with(math_ml)
 
                         # print(html)
-                        item.text = '<![CDATA[' + str(html) + ']]>'
+                        item.text = ET.CDATA(str(html))
 
             tree.write(xml_src)
     except Exception as e:

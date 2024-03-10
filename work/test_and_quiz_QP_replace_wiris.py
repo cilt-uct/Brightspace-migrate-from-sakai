@@ -53,7 +53,7 @@ def run(SITE_ID, APP):
                         el.replace_with(math_ml)
 
                     # print(html.prettify())
-                    item.text = '<![CDATA[' + str(html) + ']]>'
+                    item.text = ET.CDATA(str(html))
 
         tree.write(xml_src)
 
