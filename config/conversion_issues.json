@@ -527,6 +527,7 @@
       "actor": ["Lecturer"],
       "icon-class": "icon-settings",
       "description": "Tests & Quizzes inline images",
+      "detail-heading": "Assessments",
       "found": "Update Quiz or Question Library items that contain inline images with Vula URLs.",
       "args": [
         "site_folder",

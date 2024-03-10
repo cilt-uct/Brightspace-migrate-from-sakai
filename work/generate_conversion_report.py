@@ -54,7 +54,7 @@ def populate_issue_details(dom, found_div, items):
         table_row = table.find('tr', {'id': 'data-row'})
         table_data = table.find('td', {'id': 'data'})
         page = dom.new_tag('b')
-        page.string = issue_item['detail-heading']
+        page.string = issue_item['detail-heading'] if 'detail-heading' in issue_item else "Item"
         row = copy.copy(table_row)
         data = copy.copy(table_data)
         data['id'] = f'page_{issue_item["key"]}'
@@ -254,7 +254,7 @@ def html(site_folder, output_file, output_url, config, SITE_ID):
                 else:
                     issues_detail_banner.decompose()
                     issues_detail_container.decompose()
-                    
+
             else:
                 # Remove the issues banner
                 issues_banner.decompose()

@@ -1,9 +1,17 @@
 import os
+import sys
 import base64
 import json
+import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
-import xml.etree.ElementTree as ET
+from urllib.parse import urlparse, quote, unquote
+
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+from lib.resources import *
 
 # A1 Lessons pages more than 3 levels
 #  in: site_folder
@@ -458,34 +466,60 @@ def c7b(site_folder, samigo_soup):
                     if qtim.find("fieldlabel").text == "ATTACHMENT" and qtim.find("fieldentry").text:
                         return True
 
+# AMA-121 Inline images in T&Q questions that aren't in this site's Resources
+# Attachments should already have been processed and moved into content
 def c8(site_folder, samigo_soup, sakai_url):
-        # Questions
-        items = samigo_soup.find_all("assessment")
-        for collection in items:
-            file_path = os.path.join(site_folder, 'qti', 'assessment' + collection.get('id') + '.xml')
-            tree = ET.parse(file_path)
-            root = tree.getroot()
-            for item in root.findall(".//mattext[@texttype='text/plain']"):
-                # could be plain text so check that it at least contains an image tag
-                if item.text and "<img" in item.text:
-                    html = BeautifulSoup(item.text, 'html.parser')
-                    for el in html.findAll("img"):
-                        if el.get('src') and el.get('src').startswith(sakai_url):
-                            return True
+    data = set()
 
-        # Question Pools
-        file = "samigo_question_pools.xml"
-        file_path = os.path.join(site_folder, file)
-        if os.path.isfile(file_path):
-            tree = ET.parse(file_path)
-            root = tree.getroot()
-            for item in root.findall(".//mattext"):
+    content_src = f'{site_folder}/content.xml'
+    content_ids = get_resource_ids(content_src)
+
+    # Questions
+    items = samigo_soup.find_all("assessment")
+    for collection in items:
+        file_path = os.path.join(site_folder, 'qti', 'assessment' + collection.get('id') + '.xml')
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+
+        # <questestinterop><assessment ident="160024" title="Case 10 Urinary System Histology quiz">
+        title = root.find(".//assessment").get("title")
+
+        for item in root.findall(".//mattext[@texttype='text/plain']"):
+            # could be plain text so check that it at least contains an image tag
+            if item.text and "<img" in item.text:
+                html = BeautifulSoup(item.text, 'html.parser')
+                for el in html.findAll("img"):
+                    img_src = el.get('src')
+                    if img_src and img_src.startswith(f"{sakai_url}/access/content/"):
+                        img_id = unquote(img_src.replace(f"{sakai_url}/access/content",""))
+                        if img_id not in content_ids:
+                            print(f"{img_id} not found in content")
+                            data.add(title)
+
+    # Question Pools
+    file = "samigo_question_pools.xml"
+    file_path = os.path.join(site_folder, file)
+    if os.path.isfile(file_path):
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+        for qp in root.findall(".//QuestionPool"):
+            qp_title = qp.get("title")
+            # <QuestionPool id="11771" ownerId="d21166da-9b65-4457-9cca-148f4c5e4ee9" sourcebank_ref="11771::Yr 2 July Immunology mcq" title="Yr 2 July Immunology mcq">
+            for item in qp.findall(".//mattext"):
                 if item.text and "<img" in item.text:
                     html = BeautifulSoup(item.text.replace("<![CDATA[", "").replace("]]>", ""), 'html.parser')
                     for el in html.findAll("img"):
-                        if el.get('src') and el.get('src').startswith(sakai_url):
-                            return True
+                        img_src = el.get('src')
+                        if img_src and img_src.startswith(f"{sakai_url}/access/content/"):
+                            img_id = unquote(img_src.replace(f"{sakai_url}/access/content",""))
+                            if img_id not in content_ids:
+                                print(f"{img_id} not found in content")
+                                data.add(f"Question Pool: {qp_title}")
 
+    if len(data) > 0:
+        return sorted(data)
+    else:
+        return None
 
 # C9 Question pools
 #  in: site_folder

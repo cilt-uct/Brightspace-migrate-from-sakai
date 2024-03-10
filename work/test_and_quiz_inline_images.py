@@ -23,7 +23,7 @@ from lib.resources import *
 
 def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list, xml_src):
 
-    print(f"Fixing images: {xml_src}")
+    #print(f"Fixing images: {xml_src}")
 
     sakai_url = APP['sakai_url']
 
@@ -85,7 +85,8 @@ def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list,
                                 continue
 
                             if not attach_id in attachment_ids:
-                                raise Exception(f"Missing attachment: {attach_id} in {xml_src}")
+                                logging.warning(f"Missing image: {attach_id} in {xml_src} URL {img_src}")
+                                continue
 
                             # Move this item from Attachments to Resources
                             # ID in attachment.xml
@@ -107,8 +108,9 @@ def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list,
                         item.text = ET.CDATA(str(html))
                         # print(f"New text: {item.text}")
 
-            if update_file:
-                tree.write(xml_src)
+    if update_file:
+        print(f"Fixing images: {xml_src}")
+        tree.write(xml_src)
 
     return
 
@@ -136,10 +138,9 @@ def run(SITE_ID, APP):
     if os.path.exists(qp):
         fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list, qp)
 
-    print(f"\nMoving attachments to {collection}")
-    move_attachments(SITE_ID, site_folder, collection, move_list)
-
-    print(f"\nmove list: {move_list}")
+    if len(move_list):
+        print(f"\nMoving attachments to {collection}:\n{move_list}")
+        move_attachments(SITE_ID, site_folder, collection, move_list)
 
 def main():
     global APP
