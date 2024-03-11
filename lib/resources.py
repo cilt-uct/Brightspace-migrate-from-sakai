@@ -1,15 +1,19 @@
 # Classes and functions for Resources
 
+import os
 import lxml.etree as ET
 import copy
 import base64
 
 # Return a set of resource IDs in the site
 def get_resource_ids(xml_src):
-    tree = ET.parse(xml_src)
-    root = tree.getroot()
-    ids = [x.get('id') for x in root.findall(".//resource")]
-    return ids
+    if os.path.exists(xml_src):
+        tree = ET.parse(xml_src)
+        root = tree.getroot()
+        ids = [x.get('id') for x in root.findall(".//resource")]
+        return ids
+    else:
+        return []
 
 # Get the userid and if available EID (username) of the user who owns this content ID
 # 1. From content.xml, get resource with id=sakai_id
