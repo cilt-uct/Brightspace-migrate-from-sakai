@@ -526,9 +526,9 @@
       "tool": "sakai.samigo",
       "actor": ["Lecturer"],
       "icon-class": "icon-settings",
-      "description": "Tests & Quizzes inline images",
+      "description": "Tests & Quizzes missing images",
       "detail-heading": "Assessments",
-      "found": "Update Quiz or Question Library items that contain inline images with Vula URLs.",
+      "found": "Update Quiz or Question Library items that contain missing images.",
       "args": [
         "site_folder",
         "samigo_soup",

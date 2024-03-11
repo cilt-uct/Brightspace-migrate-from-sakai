@@ -53,9 +53,8 @@ def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list,
                         update_item = True
                         update_file = True
 
-                        del el['width']
-                        del el['height']
-                        el['style'] = "max-width: 100%;"
+                        # Make wide images scale correctly in the editor and preview
+                        el['style'] = "max-width: 100%; height: auto;"
 
                         img_src = el.get('src')
 
