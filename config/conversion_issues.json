@@ -79,7 +79,7 @@
     },
     {
       "key": "a6",
-      "active": true,
+      "active": false,
       "tool": "sakai.lessonbuildertool",
       "actor": ["Lecturer"],
       "icon-class": "icon-edit",
