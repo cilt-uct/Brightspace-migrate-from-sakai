@@ -103,7 +103,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
 
     start_time = time.time()
 
-    dest = r'/incoming/CourseMigration/Inbox/{}'.format(os.path.basename(src))
+    dest = r'{}/{}'.format(APP['ftp']['inbox'], os.path.basename(src))
     tmp_dest = re.sub('(zip)$', 'tmp', dest)
 
     tmp = getAuth('BrightspaceFTP')
