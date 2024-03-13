@@ -35,16 +35,22 @@ def check_resources(src_folder, collection):
         for item in content_tree.xpath(".//resource[@content-length='0']"):
             resource_id = item.get('id')
             resource_body = item.get('body-location')
-            resource_type = item.get('content-type')
+            content_type = item.get('content-type')
 
             # Ignore text/url files which are redirects
-            if resource_type != 'text/url':
-                file_body_path = os.path.join(src_folder, resource_body)
-                with open(file_body_path, 'wb') as binfile:
-                        binfile.write(b'\x00')
-                item.set('content-length', '1')
-                rewrite = True
-                logging.info(f"Replaced zero-byte {resource_id} body {resource_body} with single-byte file")
+            if content_type == 'text/url':
+                continue
+
+            # Ignore media files (let them be removed later)
+            if content_type.startswith('audio/') or content_type.startswith('video/'):
+                continue
+
+            file_body_path = os.path.join(src_folder, resource_body)
+            with open(file_body_path, 'wb') as binfile:
+                    binfile.write(b'\x00')
+            item.set('content-length', '1')
+            rewrite = True
+            logging.info(f"Replaced zero-byte {resource_id} body {resource_body} with single-byte file")
 
     if rewrite:
         # Update file

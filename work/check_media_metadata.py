@@ -35,6 +35,11 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
 
         content_type = item.get('content-type')
         src_id = item.get('id')
+        file_size = item.get('content-length')
+
+        if file_size == '0':
+            # Definitely no content - ignore (it will be removed later)
+            continue
 
         if content_type == "audio/x-mpegurl":
             # AMA-604 M3U files are plain text collections of resource identifiers
