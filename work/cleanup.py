@@ -80,6 +80,12 @@ def run(SITE_ID, APP, **kwargs):
             shutil.rmtree(content_folder)
             logging.info(f" - removed {content_folder}")
 
+        # rubrics output folder
+        rubrics_folder = r'{}{}-rubrics/'.format(APP['output'], SITE_ID)
+        if os.path.isdir(rubrics_folder):
+            shutil.rmtree(rubrics_folder)
+            logging.info(f" - removed {rubrics_folder}")
+
         # Zipfiles
         for zipfile in glob.glob('{}/*{}*.zip'.format(APP['output'], SITE_ID)):
             os.remove(zipfile)
