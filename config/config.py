@@ -156,9 +156,8 @@ APP = {
     'show_progress': False,
     'log': True,
     'log_output' : Path(SCRIPT_FOLDER) / 'log',
-    # this should need to change
-    'outbox': '/incoming/CourseMigration/Outbox',
-    'inbox': '/incoming/CourseMigration/Inbox'
+    'inbox': '/incoming/BulkCourseImport/Inbox',
+    'outbox': '/incoming/BulkCourseImport/Outbox'
   },
 
   # to differentiate zip files (added to front)
