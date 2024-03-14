@@ -9,7 +9,7 @@ import shutil
 import copy
 import argparse
 import hashlib
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, quote, unquote
 
@@ -105,7 +105,6 @@ def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list,
 
                     if update_item:
                         item.text = ET.CDATA(str(html))
-                        # print(f"New text: {item.text}")
 
     if update_file:
         print(f"Fixing images: {xml_src}")
