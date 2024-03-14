@@ -109,11 +109,16 @@ def check_upload(APP):
         site_id = site['site_id']
         site_title = site['title']
         try:
-            logging.info(f"Upload for '{site_title}' {site_id}")
+
+            if APP['import']['hold_test_conversions'] and site['test_conversion']:
+                logging.info(f"Skipping {site_id} {site_title} - test conversion")
+                continue
 
             if not site['files'] or not site['workflow']:
                 logging.warning(f"Skipping {site_id} {site_title} - missing files and/or workflow")
                 continue
+
+            logging.info(f"Upload for '{site_title}' {site_id}")
 
             # run upload workflow
             upload(DB_AUTH, site['link_id'], site_id, site_title)
