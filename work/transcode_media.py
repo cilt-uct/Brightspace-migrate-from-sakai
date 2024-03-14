@@ -86,6 +86,10 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
             # AMA-604 M3U files are plain text collections of resource identifiers
             continue
 
+        if item.get('content-length') == '0':
+            # ignore it, because nothing to do and it will get removed later
+            continue
+
         if (content_type.startswith('audio/') and file_extension not in supported_audio) or \
            (content_type.startswith('video/') and file_extension not in supported_video):
 
