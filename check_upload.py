@@ -92,9 +92,10 @@ def check_upload(APP):
     # Jobs pending
     want_to_process = lib.db.get_records(db_config=DB_AUTH, state='queued', order_by_zip=True)
 
-    if want_to_process:
+    if (active_uploads + len(want_to_process)) > 0:
         logging.info(f"{len(want_to_process)} site(s) queued, {active_uploads} site(s) uploading, {active_imports} site(s) importing out of maximum {max_jobs}")
-    else:
+
+    if len(want_to_process) == 0:
         logging.debug("----- No sites to upload")
         return
 
@@ -160,7 +161,7 @@ def main():
     scan_interval = APP['scan_interval']['upload']
     exit_flag_file = APP['exit_flag']['upload']
 
-    logging.info(f"Scanning for new uploads every {scan_interval} seconds until {exit_flag_file} exists")
+    logging.info(f"Scanning for new uploads every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
 
     while not os.path.exists(exit_flag_file):
         check_upload(APP)

@@ -5,6 +5,7 @@ from pathlib import Path
 from lib.utils import get_var
 from lib.local_auth import getAuth
 
+# See base.sh
 SCRIPT_FOLDER = get_var('SCRIPT_FOLDER')
 ARCHIVE_FOLDER = get_var('ARCHIVE_FOLDER')
 OUTPUT_FOLDER = get_var('OUTPUT_FOLDER')
@@ -141,6 +142,7 @@ APP = {
   # limit for zip file size for package uploads in update workflow
   'import': {
       'max_jobs' : 10,
+      'hold_test_conversions' : False,
       'expiry' : 1440,
       'limit' : 2147483648,
       'manifest' : {

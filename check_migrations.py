@@ -193,7 +193,7 @@ def main():
     scan_interval = APP['scan_interval']['workflow']
     exit_flag_file = APP['exit_flag']['workflow']
 
-    logging.info(f"Scanning for new migrations every {scan_interval} seconds until {exit_flag_file} exists")
+    logging.info(f"Scanning for new migrations every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
 
     while not os.path.exists(exit_flag_file):
         check_migrations(APP)

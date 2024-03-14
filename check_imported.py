@@ -218,7 +218,7 @@ def check_for_amathuba_id(search_site_id):
 
 def check_for_update(APP, db_config, link_id, site_id, started_by, notification, search_site_id, amathuba_id, expired, files, log, title, url, import_status):
 
-    logging.info(f"check_for_update {site_id} amathuba id {amathuba_id} import status {import_status}")
+    logging.info(f": check_for_update {site_id} amathuba id {amathuba_id} import status {import_status}")
 
     try:
 
@@ -341,7 +341,7 @@ def check_imported(APP):
         import_status_set = get_import_status_collection(brightspace_url, WEB_AUTH, amathuba_ids)
         logging.info(f"Import status: {import_status_set}")
     else:
-        logging.info("No sites yet with amathuba ids")
+        logging.debug("No sites yet with amathuba ids")
 
     # Now decide what to do with each site
     for site in want_to_process:
@@ -439,7 +439,7 @@ def main():
     scan_interval = APP['scan_interval']['import']
     exit_flag_file = APP['exit_flag']['import']
 
-    logging.info(f"Scanning for new imports every {scan_interval} seconds until {exit_flag_file} exists")
+    logging.info(f"Scanning for new imports every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
 
     while not os.path.exists(exit_flag_file):
         check_imported(APP)
