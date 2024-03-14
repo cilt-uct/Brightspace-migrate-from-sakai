@@ -153,6 +153,7 @@ def migration_site_failed(APP, db_config, link_id, site_id, started_by, notifica
     # Create MIG JIRA
     create_jira(APP=APP, url=url, site_id=site_id, site_title=title, jira_state='failed', jira_log=log, failure_type="import-error", user=started_by)
 
+# Unused
 def sftp_file_list(sftp, remotedir):
 
     filelist = dict()
@@ -164,6 +165,7 @@ def sftp_file_list(sftp, remotedir):
 
     return filelist
 
+# Unused
 def check_sftp(inbox, outbox):
 
     ftpAuth = getAuth('BrightspaceFTP')
@@ -174,6 +176,9 @@ def check_sftp(inbox, outbox):
 
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
+
+    logging.debug(f"Checking sftp {SFTP['host']}:{inbox}:{outbox}")
 
     try:
         ssh_client.connect(SFTP['host'], 22, SFTP['username'], SFTP['password'])
@@ -186,6 +191,8 @@ def check_sftp(inbox, outbox):
 
     except paramiko.SSHException:
         raise Exception(f'sftp connection error checking for files in {inbox} and {outbox}')
+
+    logging.info(f"{SFTP['host']} has size inbox={len(inbox_files)} outbox={len(outbox_files)}")
 
     return (inbox_files, outbox_files)
 
@@ -209,7 +216,7 @@ def check_for_amathuba_id(search_site_id):
     # Error or not found
     return 0
 
-def check_for_update(APP, db_config, link_id, site_id, started_by, notification, search_site_id, amathuba_id, expired, files, log, title, url, inbox_files, outbox_files, import_status):
+def check_for_update(APP, db_config, link_id, site_id, started_by, notification, search_site_id, amathuba_id, expired, files, log, title, url, import_status):
 
     logging.info(f"check_for_update {site_id} amathuba id {amathuba_id} import status {import_status}")
 
@@ -222,17 +229,7 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
             migration_site_expired(APP, db_config, link_id, site_id, started_by, notification, log, title, url)
             return False
 
-        file_exists = {'outbox': 0, 'inbox': 0, 'filename': ''}
-
-        if 'file-fixed-zip' in files:
-            shortname = Path(files['file-fixed-zip']).name
-            file_exists['filename'] = shortname
-            if shortname in inbox_files:
-                file_exists['inbox'] = 1;
-            if shortname in outbox_files:
-                file_exists['outbox'] = 1;
-
-        # if file in outbox and we have an amathuba_id then let's run the rest of the update workflow
+        # if we have an amathuba_id and import is complete then let's run the rest of the update workflow
         if (amathuba_id > 0) and ('status' in import_status) and (import_status['status'] == "Complete"):
             set_to_updating(db_config, link_id, site_id)
 
@@ -346,10 +343,6 @@ def check_imported(APP):
     else:
         logging.info("No sites yet with amathuba ids")
 
-    # Check SFTP inbox
-    (inbox_files, outbox_files) = check_sftp(APP['ftp']['inbox'], APP['ftp']['outbox'])
-    logging.info("sftp has size inbox={} outbox={}".format(len(inbox_files), len(outbox_files)))
-
     # Now decide what to do with each site
     for site in want_to_process:
         site_id = site['site_id']
@@ -381,7 +374,6 @@ def check_imported(APP):
                                     json.loads(site['files']),
                                     json.loads(site['workflow']),
                                     site['title'], site['url'],
-                                    inbox_files, outbox_files,
                                     import_status)
 
         except Exception as e:
