@@ -120,6 +120,7 @@ def migration_site_expired(APP, db_config, link_id, site_id, started_by, notific
 
     # Create MIG JIRA
     failure_type = 'expired'
+    log = f"Import timed out after {APP['import']['expiry']} minutes"
     create_jira(APP=APP, url=url, site_id=site_id, site_title=title, jira_state='expire', failure_type=failure_type, jira_log=log, user=started_by)
 
 def migration_site_failed(APP, db_config, link_id, site_id, started_by, notification, log, title, url):

@@ -36,6 +36,7 @@ def cleanup_sftp(sftp_folder, site_id):
 
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
 
     try:
         ssh_client.connect(SFTP['host'], 22, SFTP['username'], SFTP['password'])
