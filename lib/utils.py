@@ -29,6 +29,12 @@ sys.path.append(parent)
 from lib.jira_rest import MyJira
 from lib.local_auth import getAuth
 
+# D2L API versions
+# See https://docs.valence.desire2learn.com/about.html#principal-version-table
+
+D2L_API_LE_VERSION="1.74"
+D2L_API_LP_VERSION="1.45"
+
 class myFile(object):
     def __init__(self, filename):
         self.f = open(filename)

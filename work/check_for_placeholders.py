@@ -16,8 +16,6 @@ from lib.local_auth import *
 from lib.lessons import *
 from lib.resources import *
 
-API_VERSION="1.67"
-
 # See https://docs.valence.desire2learn.com/res/content.html
 
 # Get an HTML page directly from Brightspace
@@ -31,7 +29,7 @@ def get_lessons_html(url, session):
 
 # Returns ToC as JSON: https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
 def get_toc(base_url, org_id, session):
-    api_url = f"{base_url}/d2l/api/le/{API_VERSION}/{org_id}/content/toc"
+    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/toc"
     print(f"TOC from: {api_url}")
     r = session.get(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
@@ -276,7 +274,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
             print(f"Topic for {topic_path} not found: possibly already updated")
             continue
 
-        topic_url = f"{brightspace_url}/d2l/api/le/{API_VERSION}/{import_id}/content/topics/{topic_id}/file"
+        topic_url = f"{brightspace_url}/d2l/api/le/{D2L_API_LE_VERSION}/{import_id}/content/topics/{topic_id}/file"
 
         print(f"Contents from: {topic_url}")
         page_html = get_lessons_html(topic_url, brightspace_session)

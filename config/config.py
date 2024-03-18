@@ -115,6 +115,7 @@ APP = {
           'add_opencast_url': '/d2l/api/series/',
           'course_content_src': 9944,
           'update_html_file': '/d2l/api/content/{}/topics/{}/file',
+          'course_info_url': '/d2l/api/course/{}',
   },
 
   'course': {

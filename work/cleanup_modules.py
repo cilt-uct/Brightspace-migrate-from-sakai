@@ -16,13 +16,11 @@ from lib.local_auth import *
 from lib.lessons import *
 from lib.resources import *
 
-API_VERSION="1.67"
-
 # Returns ToC as JSON
 # See https://docs.valence.desire2learn.com/res/content.html
 # https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
 def get_toc(base_url, org_id, session):
-    api_url = f"{base_url}/d2l/api/le/{API_VERSION}/{org_id}/content/toc"
+    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/toc"
     print(f"TOC from: {api_url}")
     r = session.get(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
@@ -31,7 +29,7 @@ def get_toc(base_url, org_id, session):
 # https://docs.valence.desire2learn.com/res/content.html#delete--d2l-api-le-(version)-(orgUnitId)-content-modules-(moduleId)
 # DELETE /d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)¶
 def delete_module(base_url, org_id, module_id, session):
-    api_url = f"{base_url}/d2l/api/le/{API_VERSION}/{org_id}/content/modules/{module_id}"
+    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/modules/{module_id}"
     print(f"Deleting {api_url}")
     r = session.delete(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
