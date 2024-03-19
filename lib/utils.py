@@ -14,6 +14,7 @@ import time
 import requests
 import subprocess
 import csv
+import socket
 
 from datetime import datetime, timedelta
 from emails.template import JinjaTemplate as T
@@ -377,7 +378,7 @@ def stripspace(orig):
     return new
 
 # Call middleware API and return JSON response with optional retries
-def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None, method = None):
+def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None, method = None, headers = None):
 
     tmp = getAuth(APP['auth']['middleware'])
     if (tmp is not None):
@@ -397,16 +398,23 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
     json_response = None
     last_status = None
 
+    _headers = {'X-Host': f'{socket.gethostname()}.uct.ac.za'}
+    if headers:
+        _headers.update(headers)
+
+    if "Content-Type" not in _headers:
+        _headers["Content-Type"] = "application/json"
+
     while (retry <= retries):
 
         try:
             if payload_data is not None:
                 if method == 'PUT':
-                    response = requests.put(url, data=payload_data, auth=(AUTH['user'], AUTH['password']))
+                    response = requests.put(url, json=payload_data, auth=(AUTH['user'], AUTH['password']), headers=_headers)
                 else:
-                    response = requests.post(url, data=payload_data, auth=(AUTH['user'], AUTH['password']))
+                    response = requests.post(url, json=payload_data, auth=(AUTH['user'], AUTH['password']), headers=_headers)
             else:
-                response = requests.get(url, auth=(AUTH['user'], AUTH['password']))
+                response = requests.get(url, auth=(AUTH['user'], AUTH['password']), headers=headers)
 
             last_status = response.status_code
 
@@ -436,7 +444,6 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
 
     logging.error(f"API call {url} failed: {last_status} {json_response}")
     return None
-
 
 def enroll_in_site(APP, eid, import_id, role):
 

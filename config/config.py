@@ -100,6 +100,14 @@ APP = {
     'path' : Path(SCRIPT_FOLDER) / 'templates' / 'emails',
   },
 
+  'brightspace_api': {
+      'base_url' : 'https://amathuba.uct.ac.za/d2l/api/',
+      'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74/',
+      'lp_url' : 'https://amathuba.uct.ac.za/d2l/api/lp/1.46/',
+      'lp': '1.46',
+      'le': '1.74'
+  },
+
   'middleware': {
           'base_url': brightspace[0],
           'retries': 10,
