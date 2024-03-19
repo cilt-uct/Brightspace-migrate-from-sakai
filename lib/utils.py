@@ -404,6 +404,7 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
     json_response = None
     last_status = None
 
+    # TODO: drop this header - it's not required
     _headers = {'X-Host': f'{socket.gethostname()}.uct.ac.za'}
     if headers:
         _headers.update(headers)
@@ -545,3 +546,20 @@ def site_has_tool(APP, SITE_ID, tool_id):
         return True
 
     return False
+
+# Gets course info
+# See https://docs.valence.desire2learn.com/res/course.html
+def get_course_info(APP, org_id):
+
+    info_url_template = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['course_info_url'])
+    info_url = info_url_template.format(org_id)
+
+    json_response = middleware_api(APP, info_url)
+
+    if 'status' not in json_response:
+        raise Exception(f'Unable to get org unit info: {json_response}')
+    else:
+        if json_response['status'] != 'success':
+            raise Exception(f'Unable to get org unit info: {json_response}')
+
+    return json_response['data']

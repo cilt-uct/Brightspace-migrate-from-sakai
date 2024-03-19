@@ -14,6 +14,7 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.utils import *
+from lib.resources import *
 
 # def run(SITE_ID, APP):
 def run(SITE_ID, APP):
@@ -34,7 +35,8 @@ def run(SITE_ID, APP):
         if not os.path.exists(output_folder):
             os.mkdir(output_folder)
 
-        output_file = os.path.join(output_folder, "qna.html")
+        site_folder = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
+        output_file = f'{site_folder}/qna.html'
 
         dom = ET.parse(xml_src)
         root = dom.getroot()
@@ -51,6 +53,11 @@ def run(SITE_ID, APP):
         f = open(output_file, "wb")
         f.write(ET.tostring(newdom, pretty_print=True))
         f.close()
+
+        #def add_resource(SITE_ID, site_folder, file_path, content_type, collection, file_name):
+
+        collection = APP['qna']['collection']
+        add_resource(SITE_ID, site_folder, output_file, "text/html", collection)
 
         logging.info(f'\tDone: QNA output in {output_file}')
 

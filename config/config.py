@@ -212,7 +212,8 @@ APP = {
   },
 
   'qna': {
-      'xsl': Path(SCRIPT_FOLDER) / 'templates' / 'qna.xsl'
+      'xsl': Path(SCRIPT_FOLDER) / 'templates' / 'qna.xsl',
+      'collection': 'qna'
   },
 
   'attachment': {

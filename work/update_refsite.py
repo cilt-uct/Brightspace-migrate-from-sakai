@@ -16,23 +16,6 @@ from lib.local_auth import *
 from lib.lessons import *
 from lib.resources import *
 
-# Gets course info
-# See https://docs.valence.desire2learn.com/res/course.html
-def get_course_info(APP, org_id):
-
-    info_url_template = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['course_info_url'])
-    info_url = info_url_template.format(org_id)
-
-    json_response = middleware_api(APP, info_url)
-
-    if 'status' not in json_response:
-        raise Exception(f'Unable to get org unit info: {json_response}')
-    else:
-        if json_response['status'] != 'success':
-            raise Exception(f'Unable to get org unit info: {json_response}')
-
-    return json_response['data']
-
 # Updates course info
 # PUT /d2l/api/lp/(version)/courses/(orgUnitId)
 def update_course_info(APP, org_id, new_info):

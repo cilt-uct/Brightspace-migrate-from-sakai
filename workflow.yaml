@@ -87,6 +87,9 @@ STEPS:
   # - action: content_sort_units
   #   use_link_id: 1
 
+  # Q&A
+  - action: generate_qna_html
+
   # Site
   - action: site_change_id
     use_new_id: 1

@@ -4,6 +4,7 @@ import os
 import lxml.etree as ET
 import copy
 import base64
+from pathlib import Path
 
 # Return a set of resource IDs in the site
 def get_resource_ids(xml_src):
@@ -137,8 +138,6 @@ def move_attachments(SITE_ID, site_folder, collection, move_list):
         collection_el.set('id', collection_id)
         collection_el.set('rel-id', collection)
         collection_el.set('resource-type', 'org.sakaiproject.content.types.folder')
-        #collection_el.set('sakai:access_mode', 'inherited')
-        #collection_el.set('sakai:hidden', 'false')
 
         props = ET.Element("properties")
         add_prop(props, "CHEF:creator", "admin")
@@ -182,5 +181,65 @@ def move_attachments(SITE_ID, site_folder, collection, move_list):
     if rewrite:
         content_tree.write(content_src, encoding='utf-8', xml_declaration=True)
         attach_tree.write(attach_src, encoding='utf-8', xml_declaration=True)
+
+    return
+
+# Add a file to content.xml
+# The file should already be in site_folder
+def add_resource(SITE_ID, site_folder, file_path, content_type, collection):
+
+    if not collection.endswith("/"):
+        collection += "/"
+
+    file_name = Path(file_path).name
+    content_src = f'{site_folder}/content.xml'
+    content_tree = ET.parse(content_src)
+    content_root = content_tree.getroot()
+    content_container = content_root.find("org.sakaiproject.content.api.ContentHostingService")
+    collection_id = f"/group/{SITE_ID}/{collection}"
+
+    if content_root.find(f".//collection[@id='{collection_id}']") is None:
+        # Create the target collection under <org.sakaiproject.content.api.ContentHostingService>
+        print(f"CREATE collection {collection_id}")
+
+        collection_el = ET.Element("collection")
+        collection_el.set('id', collection_id)
+        collection_el.set('rel-id', collection)
+        collection_el.set('resource-type', 'org.sakaiproject.content.types.folder')
+
+        props = ET.Element("properties")
+        add_prop(props, "CHEF:creator", "admin")
+        add_prop(props, "CHEF:modifiedby", "admin")
+        add_prop(props, "DAV:displayname", collection.replace("/",""))
+        add_prop(props, "CHEF:description", "")
+        add_prop(props, "CHEF:is-collection", "true")
+        add_prop(props, "DAV:getlastmodified", "20240309112237083")
+        add_prop(props, "SAKAI:conditionalrelease", "false")
+        add_prop(props, "DAV:creationdate", "20240309112237081")
+
+        collection_el.append(props)
+        content_container.insert(1, collection_el)
+
+    # Copy the file
+
+    content_item = ET.Element('resource')
+    content_item.set('id', f'/group/{SITE_ID}/{collection}{file_name}')
+    content_item.set('rel-id', f'{collection}{file_name}')
+    content_item.set('content-type', content_type)
+    content_item.set('filePath', '/migration/')
+    content_item.set('resource-type', 'org.sakaiproject.content.types.fileUpload')
+    content_item.set('content-length', str(os.path.getsize(file_path)))
+    content_item.set('body-location', file_name)
+
+    props = ET.Element("properties")
+    add_prop(props, "CHEF:creator", "admin")
+    add_prop(props, "DAV:displayname", file_name)
+    add_prop(props, "CHEF:modifiedby", "admin")
+    add_prop(props, "CHEF:description", "")
+    add_prop(props, "DAV:getlastmodified", "20240309112237083")
+
+    content_item.append(props)
+    content_container.append(content_item)
+    content_tree.write(content_src, encoding='utf-8', xml_declaration=True)
 
     return

@@ -15,12 +15,16 @@ STEPS:
   - action: update_refsite
     use_import_id: 1
 
+  # Creata a Q&A module and topic
+  - action: push_qna_topic
+    use_import_id: 1
+
   # Updated embedded media identifiers
   - action: check_for_placeholders
     use_import_id: 1
     use_transfer_id: 1
 
-  # Remove quiz attachment module
+  # Remove modules that we added to content
   - action: cleanup_modules
     use_import_id: 1
 

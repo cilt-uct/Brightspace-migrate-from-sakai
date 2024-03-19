@@ -75,9 +75,14 @@ def run(SITE_ID, APP, import_id):
     # Quiz Images
     module_title = APP['quizzes']['image_collection']
     module_id = get_module_id(content_toc, module_title)
-
     print(f"ModuleID for {module_title}: {module_id}")
+    if module_id:
+        delete_module(brightspace_url, import_id, module_id, brightspace_session)
 
+    # QNA
+    module_title = APP['qna']['collection']
+    module_id = get_module_id(content_toc, module_title)
+    print(f"ModuleID for {module_title}: {module_id}")
     if module_id:
         delete_module(brightspace_url, import_id, module_id, brightspace_session)
 
