@@ -377,6 +377,12 @@ def stripspace(orig):
 
     return new
 
+# Call a D2L endpoint via middleware proxy
+def middleware_d2l_api(APP, payload_data = None, retries = None, retry_delay = None, headers = None):
+
+    api_proxy_url = f"{APP['middleware']['base_url']}{APP['middleware']['api_proxy_url']}"
+    return middleware_api(APP, api_proxy_url, method='POST', payload_data = payload_data, retries = retries, retry_delay = retry_delay, headers = headers)
+
 # Call middleware API and return JSON response with optional retries
 def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None, method = None, headers = None):
 

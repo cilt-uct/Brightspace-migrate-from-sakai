@@ -11,10 +11,16 @@ STEPS:
   #  use_title: 1
   #  use_date: 1
 
+  # Set the reference site to inactive
+  - action: update_refsite
+    use_import_id: 1
+
+  # Updated embedded media identifiers
   - action: check_for_placeholders
     use_import_id: 1
     use_transfer_id: 1
 
+  # Remove quiz attachment module
   - action: cleanup_modules
     use_import_id: 1
 
@@ -27,7 +33,6 @@ STEPS:
   # Add users to the reference site
   - action: enroll_users
     use_import_id: 1
-    state: 'updating'
 
   # Create a new empty site if selected and enroll users
   - action: create_course_offering

@@ -15,7 +15,8 @@ LOG_PATH = Path(SCRIPT_FOLDER) / 'brightspace_migration.log'
 LOG_IN_CONSOLE = True
 LOG_IN_FILE = True
 
-brightspace = getAuth('BrightspaceMiddleware')
+middleware = getAuth('BrightspaceMiddleware')
+
 APP = {
   'sakai_url' : 'https://vula.uct.ac.za',
   'sakai_name' : 'Vula',
@@ -34,10 +35,12 @@ APP = {
     'webAuth': 'BrightspaceWeb',
   },
 
-  # In Brightspace the imported site will get this prefix added to their title
+  # In Brightspace the imported site will get this prefix added to their title,
+  # and the Semester set to the org unit id provided here
   'site': {
     'prefix': 'Vula reference site: ',
-    'test_prefix': 'Vula test conversion: '
+    'test_prefix': 'Vula test conversion: ',
+    'semester' : 6653
   },
 
   'log_folder' : Path(SCRIPT_FOLDER) / 'log',
@@ -100,18 +103,19 @@ APP = {
     'path' : Path(SCRIPT_FOLDER) / 'templates' / 'emails',
   },
 
+  # D2L Brightspace Valence APIs
   'brightspace_api': {
-      'base_url' : 'https://amathuba.uct.ac.za/d2l/api/',
-      'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74/',
-      'lp_url' : 'https://amathuba.uct.ac.za/d2l/api/lp/1.45/',
+      'base_url' : 'https://amathuba.uct.ac.za/d2l/api',
+      'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74',
+      'lp_url' : 'https://amathuba.uct.ac.za/d2l/api/lp/1.45',
       'lp': '1.45',
       'le': '1.74'
   },
 
+  # Local middleware
   'middleware': {
-          'base_url': brightspace[0],
-          'retries': 10,
-          'retry_delay': 180,
+          'base_url': middleware[0],
+          'api_proxy_url': '/d2l/api/call',
           'search_url': '/d2l/api/course',
           'create_url': '/d2l/api/course/new',
           'import_url': '/d2l/api/courses/import_package',
@@ -121,9 +125,11 @@ APP = {
           'course_info_order_url': '/d2l/api/content/order/course_info',
           'course_outline_order_url': '/d2l/api/content/order/course_outline',
           'add_opencast_url': '/d2l/api/series/',
-          'course_content_src': 9944,
           'update_html_file': '/d2l/api/content/{}/topics/{}/file',
           'course_info_url': '/d2l/api/course/{}',
+          'course_content_src': 9944,
+          'retries': 10,
+          'retry_delay': 180,
   },
 
   'course': {
