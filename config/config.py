@@ -103,8 +103,8 @@ APP = {
   'brightspace_api': {
       'base_url' : 'https://amathuba.uct.ac.za/d2l/api/',
       'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74/',
-      'lp_url' : 'https://amathuba.uct.ac.za/d2l/api/lp/1.46/',
-      'lp': '1.46',
+      'lp_url' : 'https://amathuba.uct.ac.za/d2l/api/lp/1.45/',
+      'lp': '1.45',
       'le': '1.74'
   },
 
