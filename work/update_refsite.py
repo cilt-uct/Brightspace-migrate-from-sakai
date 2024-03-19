@@ -93,16 +93,14 @@ def add_semester_to_course(APP, org_id, semester_id):
 
 def run(SITE_ID, APP, import_id):
 
-    logging.info(f'Updating site status for Brightspace reference site {import_id}')
+    semester_id = APP['site']['semester']
+
+    logging.info(f'Updating site status for Brightspace reference site {import_id}: semester {semester_id}')
 
     # Get the course offering info
     site_data = get_course_info(APP, import_id)
 
-    # TODO - the API endpoint used here does not actually update the Semester
-    #course_info['Semester'] = { "Identifier": "6653", "Name": "Converted", "Code": "sem_converted" }
-
-    semester_id = APP['site']['semester']
-
+    # The API accepts these fields only
     new_course_info = {
         "IsActive": False,
         "Name": site_data['Name'],
