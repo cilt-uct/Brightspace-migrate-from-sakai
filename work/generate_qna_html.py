@@ -7,14 +7,18 @@ import sys
 import os
 import argparse
 import lxml.etree as ET
+import hashlib
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+from bs4 import BeautifulSoup
 from config.logging_config import *
 from lib.utils import *
 from lib.resources import *
+from pathlib import Path
+from urllib.parse import urlparse, quote, unquote
 
 # def run(SITE_ID, APP):
 def run(SITE_ID, APP):
@@ -36,7 +40,7 @@ def run(SITE_ID, APP):
             os.mkdir(output_folder)
 
         site_folder = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
-        output_file = f'{site_folder}/qna.html'
+        output_file = f'{site_folder}qna.html'
 
         dom = ET.parse(xml_src)
         root = dom.getroot()
@@ -50,14 +54,34 @@ def run(SITE_ID, APP):
         transform = ET.XSLT(xslt)
         newdom = transform(dom)
 
-        f = open(output_file, "wb")
-        f.write(ET.tostring(newdom, pretty_print=True))
-        f.close()
-
-        #def add_resource(SITE_ID, site_folder, file_path, content_type, collection, file_name):
+        # Adjust attachment refs
+        html = BeautifulSoup(ET.tostring(newdom), 'html.parser')
 
         collection = APP['qna']['collection']
+        move_list = {}
+
+        for el in html.body.find_all("a", {"data-qna" : "attachment"}):
+            attach_id = el.get('href')
+            filename = attach_id.split("/")[-1]
+            shorthash = hashlib.shake_256(attach_id.encode()).hexdigest(3)
+            new_id = f"/group/{SITE_ID}/{collection}/{shorthash}/{filename}"
+            new_url = f"{shorthash}/{quote(filename)}"
+
+            move_list[attach_id] = new_id
+            el['href'] = new_url
+            el['target'] = "_blank"
+            el.string = filename
+
+        # Write html
+        html_updated_bytes = html.encode('utf-8')
+        with open(output_file, "wb") as file:
+            file.write(html_updated_bytes)
+
+        # Add qna.html itself
         add_resource(SITE_ID, site_folder, output_file, "text/html", collection)
+
+        # Move any attachments
+        move_attachments(SITE_ID, site_folder, collection, move_list)
 
         logging.info(f'\tDone: QNA output in {output_file}')
 

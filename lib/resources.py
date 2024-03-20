@@ -113,6 +113,10 @@ def add_prop(props, prop_name, prop_val):
 # Move from attachment.xml to content.xml
 def move_attachments(SITE_ID, site_folder, collection, move_list):
 
+    if len(move_list) == 0:
+        # Nothing to do
+        return
+
     content_src = f'{site_folder}/content.xml'
     content_tree = ET.parse(content_src)
     content_root = content_tree.getroot()

@@ -38,7 +38,7 @@ PvNiekerk
                      <div class="attachments mb-3">
                      <xsl:for-each select="attachment">
                         <div class="attachment">
-                            <a href="{@attachmentId}" class="badge badge-secondary"><xsl:value-of select="@id" /></a>
+                            <a href="{@attachmentId}" data-qna="attachment" class="badge badge-secondary"><xsl:value-of select="@id" /></a>
                         </div>
                     </xsl:for-each>
                     </div>
