@@ -967,6 +967,7 @@
       "key": "sakai.announcements",
       "name": "Announcements",
       "class": "equivalent",
+      "found": "Delete old announcements migrated from Vula.",
       "info": {
         "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1fpbeqzgruu7",
         "a": "more info"
@@ -1080,7 +1081,11 @@
     {
       "key": "sakai.gradebookng",
       "name": "Gradebook",
-      "class": "equivalent"
+      "class": "equivalent",
+      "info": {
+        "url":"https://cilt.uct.ac.za/sites/default/files/media/documents/ched_uct_ac_za/1429/Grades.pdf",
+        "a": "more info"
+      }
     },
     {
       "key": "sakai.groupmanager",
@@ -1105,7 +1110,11 @@
       "key": "sakai.lessonbuildertool",
       "name": "Lessons",
       "found": "Content in Amathuba",
-      "class": "equivalent"
+      "class": "equivalent",
+      "info": {
+        "url":"https://cilt.uct.ac.za/sites/default/files/media/documents/ched_uct_ac_za/1429/Using%20the%20Content%20Tool.pdf",
+        "a": "more info"
+      }
      },
     {
       "key": "sakai.messages",
@@ -1120,7 +1129,11 @@
       "key": "sakai.site.roster",
       "name": "Participants",
       "class": "equivalent",
-      "found": "Course Info / Classlist in Amathuba"
+      "found": "Course Info / Classlist in Amathuba",
+      "info": {
+        "url": "https://cilt.uct.ac.za/sites/default/files/media/documents/ched_uct_ac_za/1429/Classlist.pdf",
+        "a": "more info"
+      }
     },
     {
       "key": "sakai.podcasts",
@@ -1147,7 +1160,7 @@
     {
       "key": "sakai.qna",
       "name": "Q&A",
-      "found": "Use Forums, Content pages or a recommended alternative.",
+      "found": "Use Discussions, Content pages or a recommended alternative.",
       "info": {
         "a": "more info",
         "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ss3bpy1m7pdj"
@@ -1160,7 +1173,7 @@
       "found": "Manage Files in Amathuba presented through Content",
        "info": {
         "a": "more info",
-        "url": "https://bit.ly/amathuba-manage-files"
+        "url": "https://cilt.uct.ac.za/sites/default/files/media/documents/ched_uct_ac_za/1429/Using%20the%20Content%20Tool.pdf"
        }
     },
     {
@@ -1199,7 +1212,11 @@
     {
       "key": "sakai.iframe.site",
       "name": "Overview",
-      "found": "Content page in Amathuba"
+      "found": "Content page in Amathuba - in the Content tool / Resources unit"
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1yvfep88z3to",
+        "a": "more info"
+      }
     },
     {
       "key": "sakai.sitestats",
@@ -1249,7 +1266,7 @@
       "name": "Web Content",
       "found": "Weblinks in the Content tool",
        "info": {
-        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.fhhwasuwgxc4",
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.ki0a3c3b1zy",
         "a": "more info"
       }
     },
