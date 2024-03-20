@@ -55,7 +55,7 @@ def add_semester_to_course(APP, org_id, semester_id):
             for parent in parents['data']:
 
                 # if it is not the one we want to add
-                if parent['Identifier'] != semester_id:
+                if int(parent['Identifier']) != int(semester_id):
                     payload = {
                         'url': f"{APP['brightspace_api']['lp_url']}/orgstructure/{org_id}/parents/{parent['Identifier']}",
                         'method': 'DELETE',

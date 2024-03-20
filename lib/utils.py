@@ -404,8 +404,7 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
     json_response = None
     last_status = None
 
-    # TODO: drop this header - it's not required
-    _headers = {'X-Host': f'{socket.gethostname()}.uct.ac.za'}
+    _headers = {}
     if headers:
         _headers.update(headers)
 
