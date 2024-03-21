@@ -417,7 +417,7 @@ def run(SITE_ID, APP, issue_key = None, link_id = None, now_st = None):
 
 def main():
     global APP
-    parser = argparse.ArgumentParser(description="This script takes as input samigo_question_pools.xml and replace all the wiris math components with something Brightspace can use",
+    parser = argparse.ArgumentParser(description="This script generates a site conversion report",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument("ISSUE_KEY", nargs='?', help="The ISSUE_KEY")  # optional arg

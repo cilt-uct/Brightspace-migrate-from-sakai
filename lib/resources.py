@@ -132,9 +132,7 @@ def move_attachments(SITE_ID, site_folder, collection, move_list):
 
     rewrite = False
 
-    if content_root.find(f".//collection[@id='{collection_id}']") is not None:
-        print(f"Got collection {collection}")
-    else:
+    if content_root.find(f".//collection[@id='{collection_id}']") is None:
         # Create the target collection under <org.sakaiproject.content.api.ContentHostingService>
         print(f"CREATE collection {collection_id}")
 
@@ -159,7 +157,7 @@ def move_attachments(SITE_ID, site_folder, collection, move_list):
 
     # Iterate
     for attach_id in move_list:
-        print(f"Moving {attach_id} to {move_list[attach_id]})")
+        # print(f"Moving {attach_id} to {move_list[attach_id]})")
 
         attach_item = attach_root.find(f".//resource[@id='{attach_id}']")
         if attach_item is not None:

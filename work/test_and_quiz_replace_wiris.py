@@ -20,8 +20,6 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-regex_wiris = re.compile('.*data-mathml.*')
-
 def work_on_TQ(xml_src):
 
     # logging.info('SRC : {}'.format(xml_src))
@@ -38,17 +36,7 @@ def work_on_TQ(xml_src):
             for item in root.findall(".//mattext[@texttype='text/plain']"):
                 if item.text:
                     if item.text.find('data-mathml') > 0:
-                        # print(item.text)
-
-                        html = BeautifulSoup(item.text, 'html.parser')
-
-                        for el in html.findAll("img", {"class" : "Wirisformula"}):
-                            math_ml_raw = el['data-mathml'].replace("«", "<").replace("»", ">").replace("¨", "\"").replace("§", "&")
-                            math_ml = BeautifulSoup(math_ml_raw,'html.parser')
-                            el.replace_with(math_ml)
-
-                        # print(html)
-                        item.text = ET.CDATA(str(html))
+                        item.text = ET.CDATA(replace_wiris(item.text))
 
             tree.write(xml_src)
     except Exception as e:

@@ -562,3 +562,29 @@ def get_course_info(APP, org_id):
             raise Exception(f'Unable to get org unit info: {json_response}')
 
     return json_response['data']
+
+# Replace wiris with markup in an HTML blob
+# Used in Lessons, T&Q, Q&A
+# «math xmlns=¨http://www.w3.org/1998/Math/MathML¨»
+#     «msqrt»
+#         «mn»33«/mn»
+#     «/msqrt»
+# «/math»"
+# <math title="" xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+#     <semantics>
+#         <mstyle>
+#             <msqrt><mn>33</mn></msqrt>
+#         </mstyle>
+#     </semantics>
+# </math>
+
+def replace_wiris(html_str):
+
+    html = BeautifulSoup(html_str, 'html.parser')
+
+    for el in html.findAll("img", {"class" : "Wirisformula"}):
+        math_ml_raw = el['data-mathml'].replace("«", "<").replace("»", ">").replace("¨", "\"").replace("§", "&")
+        math_ml = BeautifulSoup(math_ml_raw,'html.parser')
+        el.replace_with(math_ml)
+
+    return str(html)

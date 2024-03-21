@@ -35,30 +35,7 @@ def run(SITE_ID, APP):
     if root.tag == 'archive':
 
         for item in root.findall(".//item[@type='5']"):
-            html = BeautifulSoup(item.attrib['html'], 'html.parser')
-            html = make_well_formed(html)
-
-            for el in html.body.findAll("img", {"class" : "Wirisformula"}):
-                math_ml_raw = el['data-mathml'].replace("«", "<").replace("»", ">").replace("¨", "\"").replace("§", "&")
-                math_ml = BeautifulSoup(math_ml_raw,'html.parser')
-                el.replace_with(math_ml)
-
-                # «math xmlns=¨http://www.w3.org/1998/Math/MathML¨»
-                #     «msqrt»
-                #         «mn»33«/mn»
-                #     «/msqrt»
-                # «/math»"
-                # <math title="" xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
-                #     <semantics>
-                #         <mstyle>
-                #             <msqrt><mn>33</mn></msqrt>
-                #         </mstyle>
-                #     </semantics>
-                # </math>
-
-            # write_test_case(html)
-            item.set('html', str(html))
-            # print(ET.tostring(item))
+            item.set('html', replace_wiris(item.attrib['html']))
 
         tree.write(xml_src)
 

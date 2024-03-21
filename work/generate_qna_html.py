@@ -50,6 +50,13 @@ def run(SITE_ID, APP):
                 logging.info(f'\tNothing to do')
                 return
 
+        # Replace wiris content
+        for item in root.xpath(".//question | .//answer"):
+            if item.text:
+                if item.text.find('data-mathml') > 0:
+                    html_str = item.text.replace("<![CDATA[", "").replace("]]>", "")
+                    item.text = ET.CDATA(replace_wiris(html_str))
+
         xslt = ET.parse(xsl_src)
         transform = ET.XSLT(xslt)
         newdom = transform(dom)
@@ -71,6 +78,11 @@ def run(SITE_ID, APP):
             el['href'] = new_url
             el['target'] = "_blank"
             el.string = filename
+
+        # Drop empty paras
+        for el in html.body.find_all("p"):
+            if not el.findChildren() and (el.get_text() is None or el.get_text().strip() == ""):
+                el.decompose()
 
         # Write html
         html_updated_bytes = html.encode('utf-8')

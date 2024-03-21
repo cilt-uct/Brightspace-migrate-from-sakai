@@ -20,8 +20,6 @@ sys.path.append(parent)
 from config.logging_config import *
 from lib.utils import *
 
-regex_wiris = re.compile('.*data-mathml.*')
-
 def run(SITE_ID, APP):
 
     qpfile = '{}{}-archive/samigo_question_pools.xml'.format(APP['archive_folder'], SITE_ID)
@@ -44,19 +42,9 @@ def run(SITE_ID, APP):
         for item in root.findall(".//mattext"):
             if item.text:
                 if item.text.find('data-mathml') > 0:
-                    html = BeautifulSoup(item.text.replace("<![CDATA[", "").replace("]]>", ""), 'html.parser')
-                    # print(html.prettify())
-                    # print('-------------------------------------------------')
-                    for el in html.findAll("img", {"class" : "Wirisformula"}):
-                        math_ml_raw = el['data-mathml'].replace("«", "<").replace("»", ">").replace("¨", "\"").replace("§", "&")
-                        math_ml = BeautifulSoup(math_ml_raw,'html.parser')
-                        el.replace_with(math_ml)
-
-                    # print(html.prettify())
-                    item.text = ET.CDATA(str(html))
+                    item.text = ET.CDATA(replace_wiris(item.text.replace("<![CDATA[", "").replace("]]>", "")))
 
         tree.write(xml_src)
-
 
 def main():
     global APP

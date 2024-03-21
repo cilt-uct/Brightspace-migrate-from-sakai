@@ -63,7 +63,7 @@ def run(SITE_ID, APP):
 
 def main():
     global APP
-    parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replace all the wiris math components with something Brightspace can use",
+    parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file and replaces custom formatting",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
