@@ -315,6 +315,9 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     # restricted extensions
     restricted_ext = lib.utils.read_yaml(APP['content']['restricted-ext'])
 
+    # ignored collections
+    ignored_collections = ["attachment", APP['quizzes']['image_collection'], APP['qna']['collection']]
+
     # run through all the tools and see
     for k in conf['tools']:
         k['is_found'] = True if site_soup.find("tool", {"toolId": k['key']}) else False
@@ -344,6 +347,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
                                         lessons_soup = lessons_soup,
                                         gradebook_soup = gradebook_soup,
                                         restricted_ext = restricted_ext,
+                                        ignored_collections = ignored_collections,
                                         sakai_url = sakai_url)
 
             result = k['is_found']

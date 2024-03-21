@@ -888,7 +888,8 @@
         "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.a1x7v5d350zi"
       },
       "args": [
-        "content_soup"
+        "content_soup",
+        "ignored_collections"
       ]
     },
     {

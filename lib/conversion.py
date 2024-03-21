@@ -846,14 +846,18 @@ def use_of_groups(site_folder):
             return True
 
 # AMA-363 displaynames in files
-def content_displayname_files(content_soup):
+def content_displayname_files(content_soup, ignored_collections):
     contents = content_soup.find_all("resource")
     for content in contents:
         filepath, filename = os.path.split(content.get("rel-id"))
+        top_folder = filepath.split("/")[0]
+        # Skip attachments in designated collections that we create
+        if top_folder in ignored_collections:
+            continue
         displayprop = content.find("property", attrs={"name": "DAV:displayname"})
         displayname = str(base64.b64decode(displayprop.get("value")).decode('utf-8'))
         if filename != "Site Information.html" and filename != displayname:
-            # print(f"filename {filename} displays as {displayname}")
+            print(f"filename {filename} displays as {displayname}")
             return True
 
 # AMA-363 displaynames in folders
