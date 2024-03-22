@@ -202,17 +202,28 @@ def check_for_amathuba_id(search_site_id):
     # We want to swallow exceptions and failures here because if we can't search successfully,
     # it's not a workflow failure, we just retry again later.
 
+    # GET /d2l/api/lp/(version)/orgstructure/?orgUnitCode={search_site_id}
+
+    payload = {
+        'url': f"{APP['brightspace_api']['lp_url']}/orgstructure/?orgUnitCode={search_site_id}",
+        'method': 'GET'
+    }
+
     try:
-        endpoint = "{}{}?code={}".format(APP['middleware']['base_url'], APP['middleware']['search_url'], search_site_id)
-        json_response = middleware_api(APP, endpoint)
+
+        json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
         if 'status' in json_response:
             if (json_response['status'] == 'success'):
-                return int(json_response['data']['Identifier'])
+                # We expect this to be unique, so take the first result
+                return int(json_response['data']['Items'][0]['Identifier'])
+            if (json_response['status'] == "ERR"):
+                logging.warning(f"Unexpected response {json_response} checking for {search_site_id}")
         else:
             logging.warning(f"Unexpected response {json_response} checking for {search_site_id}")
 
     except Exception as err:
-        logging.warning(f"Unexpected {err} in fetch_course_info for {search_site_id}")
+        logging.exception(f"Exception in fetch_course_info for {search_site_id}")
 
     # Error or not found
     return 0
