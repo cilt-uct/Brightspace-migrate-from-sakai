@@ -216,7 +216,10 @@ def check_for_amathuba_id(search_site_id):
         if 'status' in json_response:
             if (json_response['status'] == 'success'):
                 # We expect this to be unique, so take the first result
-                return int(json_response['data']['Items'][0]['Identifier'])
+                if len(json_response['data']['Items']) == 1:
+                    return int(json_response['data']['Items'][0]['Identifier'])
+                else:
+                    logging.debug(f"No results for search on {search_site_id}")
             if (json_response['status'] == "ERR"):
                 logging.warning(f"Unexpected response {json_response} checking for {search_site_id}")
         else:

@@ -21,7 +21,6 @@ from lib.resources import *
 # https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
 def get_toc(base_url, org_id, session):
     api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/toc"
-    print(f"TOC from: {api_url}")
     r = session.get(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
 
@@ -30,7 +29,6 @@ def get_toc(base_url, org_id, session):
 # DELETE /d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)¶
 def delete_module(base_url, org_id, module_id, session):
     api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/modules/{module_id}"
-    print(f"Deleting {api_url}")
     r = session.delete(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
 
@@ -75,14 +73,12 @@ def run(SITE_ID, APP, import_id):
     # Quiz Images
     module_title = APP['quizzes']['image_collection']
     module_id = get_module_id(content_toc, module_title)
-    print(f"ModuleID for {module_title}: {module_id}")
     if module_id:
         delete_module(brightspace_url, import_id, module_id, brightspace_session)
 
     # QNA
     module_title = APP['qna']['collection']
     module_id = get_module_id(content_toc, module_title)
-    print(f"ModuleID for {module_title}: {module_id}")
     if module_id:
         delete_module(brightspace_url, import_id, module_id, brightspace_session)
 

@@ -425,7 +425,7 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
             last_status = response.status_code
 
             if last_status == 401:
-                logging.error(f"API call {url} is Unauthorized")
+                logging.error(f"API call {url} is 401 Unauthorized (username {AUTH['user']}")
                 return {'status': 'ERR', 'data': 'Unauthorized'}
 
             if (last_status < 500) and '{' in response.text and '}' in response.text:

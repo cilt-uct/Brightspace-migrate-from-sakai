@@ -110,6 +110,26 @@ def update_target_site(db_config, link_id, site_id, org_unit_id, is_created, tar
     except Exception as e:
         raise Exception(f'Could not update target_site_id for {link_id} : {site_id}') from e
 
+# https://docs.valence.desire2learn.com/res/course.html#post--d2l-api-le-(version)-import-(orgUnitId)-copy-
+# POST /d2l/api/le/(version)/import/(orgUnitId)/copy/
+def copy_default_content(APP, target_site_id):
+
+    src_org_unit = APP['middleware']['course_content_src']
+
+    copy_payload = {
+       "SourceOrgUnitId": src_org_unit,
+       "Components": ["Checklists", "Content", "CourseFiles", "Dropbox", "Grades", "Quizzes", "Rubrics"],
+    }
+
+    payload = {
+        'url': f"{APP['brightspace_api']['le_url']}/import/{target_site_id}/copy/",
+        'method': 'POST',
+        'payload': json.dumps(copy_payload)
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+    return json_response
+
 def run(SITE_ID, APP, link_id):
     logging.info(f'Create Course Template and Offering for {link_id} {SITE_ID}')
 
@@ -197,14 +217,9 @@ def run(SITE_ID, APP, link_id):
                     logging.info(f"- enrolled site owners in {target_site_id}")
 
                     # 2: Copy default site content if appropriate (not project site [OTHER])
-                    copy_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['copy_url'])
-                    copy_payload = {
-                        'org_id': target_site_id,
-                        'src_org_id': APP['middleware']['course_content_src']
-                    }
-                    copy_response = middleware_api(APP, copy_url, payload_data=copy_payload)
+                    json_response = copy_default_content(APP, target_site_id)
 
-                    if 'status' not in copy_response:
+                    if 'status' not in json_response:
                         raise Exception(f'Unable to copy content for {SITE_ID}: {json_response}')
                     else:
                         if json_response['status'] != 'success':
@@ -231,7 +246,7 @@ def run(SITE_ID, APP, link_id):
                         else:
                             logging.warning(f"- error adding Opencast Lecture Videos tool to {target_site_id}: {json_response}")
                     else:
-                        print(f"Site does not have Opencast LTI tool")
+                        logging.debug(f"Site {SITE_ID} does not have Opencast LTI tool")
 
                 else:
                     logging.info(f"Target site with title '{name}' already exists with id {target_site_id}")
