@@ -7,7 +7,7 @@ The entire process is tied to the **Migrate to Brightspace [LTI] (tsugi-migrate-
 The LTI tool contains the database (see [Database Schema](#database-schema)) that is used to store the state of the conversion process.
 
 ## Workflow
-The workflows are divided into 3 parts (matching with the task):
+The workflows defined in the `config` folder are divided into 3 parts (matching with the task):
 
  1. `workflow.yaml` - after archiving of Sakai site this is run.
  2. `upload.yaml` - uploading steps, this manages the retry, upload, delays, and file moves related to Brightspace import process that reads a FTP folder.
