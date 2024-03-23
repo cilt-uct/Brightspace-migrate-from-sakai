@@ -38,7 +38,7 @@ import work.archive_site
 import work.get_site_title
 from lib.jira_rest import MyJira
 
-WORKFLOW_FILE = f'{SCRIPT_FOLDER}/workflow.yaml'
+WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/workflow.yaml'
 
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")
 

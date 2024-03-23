@@ -36,7 +36,7 @@ from work.archive_site import *
 import work.archive_site
 from lib.jira_rest import MyJira
 
-WORKFLOW_FILE = f'{SCRIPT_FOLDER}/upload.yaml'
+WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/upload.yaml'
 
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")
 

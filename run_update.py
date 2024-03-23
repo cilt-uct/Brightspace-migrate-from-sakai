@@ -35,7 +35,7 @@ import lib.local_auth
 import lib.db
 from lib.jira_rest import MyJira
 
-WORKFLOW_FILE = f'{SCRIPT_FOLDER}/update.yaml'
+WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/update.yaml'
 
 def update_record(db_config, link_id, site_id, state, log):
     try:
