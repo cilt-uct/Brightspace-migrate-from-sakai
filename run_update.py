@@ -118,7 +118,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
                 subj=step['subject'],
                 title=kwargs['title'],
                 site_id=site_id,
-                amathuba_id=kwargs['import_id'],
+                import_id=kwargs['import_id'],
                 report_url=kwargs['report_url'],
                 target_site_id=kwargs['target_site_id'],
                 target_site_created=kwargs['target_site_created'],
@@ -160,9 +160,9 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             if 'use_title' in step:
                 new_kwargs['title'] = kwargs['title']
 
-            if 'amathuba_conversion_success' in step:
-                new_kwargs['amathuba_conversion_success'] = kwargs['now_st']
-                new_kwargs['amathuba_conversion_status'] = 'completed'
+            if 'conversion_success' in step:
+                new_kwargs['conversion_success'] = kwargs['now_st']
+                new_kwargs['conversion_status'] = 'completed'
 
             func(**new_kwargs)  # this runs the steps - and writes to log file
             return True
@@ -282,7 +282,7 @@ def start_workflow(link_id, site_id, APP):
         logging.info("Emailing job log for site {}".format(site_id))
         send_email(APP['helpdesk-email'], APP['admin_emails'], f"update_run : {site_title} {state}", '\n<br/>'.join(BODY))
 
-        set_site_property(site_id, 'amathuba_conversion_status', state)
+        set_site_property(site_id, 'brightspace_conversion_status', state)
 
         # Clean up log file
         os.remove(log_file)

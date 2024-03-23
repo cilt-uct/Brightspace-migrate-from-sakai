@@ -197,7 +197,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
                 subj=step['subject'],
                 title=kwargs['title'],
                 site_id=site_id,
-                amathuba_id=kwargs['amathuba_id']
+                import_id=kwargs['import_id']
             )
 
     elif step['action'] == "get_files":
@@ -301,7 +301,7 @@ def start_workflow(link_id, site_id, APP):
         new_id = '{}_{}'.format(site_id, now.strftime("%Y%m%d_%H%M"))
         update_record_ref_site_id(DB_AUTH, link_id, site_id, new_id)
 
-        set_site_property(site_id, 'amathuba_conversion_date', now.strftime("%Y-%m-%d %H:%M:%S"))
+        set_site_property(site_id, 'brightspace_conversion_date', now.strftime("%Y-%m-%d %H:%M:%S"))
 
         # Get the site title
         site_title = work.get_site_title.get_site_title(site_id, APP)
@@ -339,7 +339,7 @@ def start_workflow(link_id, site_id, APP):
                             started_by=record['started_by_email'],
                             now_st=now_st,
                             new_id=new_id,
-                            amathuba_id=record['imported_site_id'],
+                            import_id=record['imported_site_id'],
                             link_id=link_id,
                             title=site_title):
                         logging.info("Completed workflow step: {}".format(step['action']))
@@ -390,7 +390,7 @@ def start_workflow(link_id, site_id, APP):
         logging.info("Emailing job log for site {}".format(site_id))
         send_email(APP['helpdesk-email'], APP['admin_emails'], f"workflow_run : {site_title} {state}", '\n<br/>'.join(BODY))
 
-        set_site_property(site_id, 'amathuba_conversion_status', state)
+        set_site_property(site_id, 'brightspace_conversion_status', state)
 
 def main():
     global APP

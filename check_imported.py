@@ -73,7 +73,7 @@ def set_to_updating(db_config, link_id, site_id):
 
 def update_import_id(db_config, link_id, site_id, org_unit_id, log):
 
-    set_site_property(site_id, 'amathuba_imported_site_id', org_unit_id)
+    set_site_property(site_id, 'brightspace_imported_site_id', org_unit_id)
 
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
@@ -197,7 +197,7 @@ def check_sftp(inbox, outbox):
 
     return (inbox_files, outbox_files)
 
-def check_for_amathuba_id(search_site_id):
+def check_for_brightspace_id(search_site_id):
 
     # We want to swallow exceptions and failures here because if we can't search successfully,
     # it's not a workflow failure, we just retry again later.
@@ -231,9 +231,9 @@ def check_for_amathuba_id(search_site_id):
     # Error or not found
     return 0
 
-def check_for_update(APP, db_config, link_id, site_id, started_by, notification, search_site_id, amathuba_id, expired, files, log, title, url, import_status):
+def check_for_update(APP, db_config, link_id, site_id, started_by, notification, search_site_id, refsite_id, expired, files, log, title, url, import_status):
 
-    logging.info(f": check_for_update {site_id} amathuba id {amathuba_id} import status {import_status}")
+    logging.info(f": check_for_update {site_id} brightspace id {refsite_id} import status {import_status}")
 
     try:
 
@@ -244,8 +244,8 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
             migration_site_expired(APP, db_config, link_id, site_id, started_by, notification, log, title, url)
             return False
 
-        # if we have an amathuba_id and import is complete then let's run the rest of the update workflow
-        if (amathuba_id > 0) and ('status' in import_status) and (import_status['status'] == "Complete"):
+        # if we have an refsite_id and import is complete then let's run the rest of the update workflow
+        if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Complete"):
             set_to_updating(db_config, link_id, site_id)
 
             cmd = "python3 {}/run_update.py {} {}".format(SCRIPT_FOLDER, link_id, site_id).split()
@@ -257,7 +257,7 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
             logging.info("Import completed: starting PID[{}] for {} : {} ({})".format(p.pid, link_id, site_id, title))
             return True
 
-        if (amathuba_id > 0) and ('status' in import_status) and (import_status['status'] == "Failed"):
+        if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Failed"):
             migration_site_failed(APP, db_config, link_id, site_id, started_by, notification, import_status, title, url)
             return False
 
@@ -282,16 +282,16 @@ def get_first_import_job_log(content):
 
 def get_import_status_collection(brightspace_url, WEB_AUTH, orgunit_ids):
 
-    global amathuba_last_login, amathuba_session
+    global brightspace_last_login, brightspace_session
 
-    if (amathuba_last_login is None) or ((datetime.now() - amathuba_last_login).total_seconds() > 1800):
+    if (brightspace_last_login is None) or ((datetime.now() - brightspace_last_login).total_seconds() > 1800):
         login_url = f"{brightspace_url}/d2l/lp/auth/login/login.d2l"
-        amathuba_session = web_login(login_url, WEB_AUTH['username'], WEB_AUTH['password'])
-        amathuba_last_login = datetime.now()
+        brightspace_session = web_login(login_url, WEB_AUTH['username'], WEB_AUTH['password'])
+        brightspace_last_login = datetime.now()
 
     status_list = { }
     for orgunit_id in orgunit_ids:
-        content = get_import_history(brightspace_url, orgunit_id, amathuba_session)
+        content = get_import_history(brightspace_url, orgunit_id, brightspace_session)
         status_list[orgunit_id] = {
                 'status': get_first_import_status(content),
                 'job_id': get_first_import_job_log(content)
@@ -325,38 +325,38 @@ def check_imported(APP):
         logging.debug("----- No sites to check")
         return
 
-    amathuba_sites = len(list(filter(lambda x: x['imported_site_id'] > 0, want_to_process)))
+    imported_sites = len(list(filter(lambda x: x['imported_site_id'] > 0, want_to_process)))
 
     logging.info(f"##### Started (expiry={expiry_minutes} minutes)")
-    logging.info("Checking import status for {} site(s) including {} with amathuba id(s)".format(len(want_to_process), amathuba_sites))
+    logging.info("Checking import status for {} site(s) including {} with Brightspace id(s)".format(len(want_to_process), imported_sites))
 
-    # Check for new amathuba IDs
-    amathuba_ids = []
+    # Check for new Brightspace IDs
+    refsite_ids = []
     for site in want_to_process:
 
         site_id = site['site_id']
-        amathuba_id = site['imported_site_id']
+        refsite_id = site['imported_site_id']
         new_id = False
 
         # Check to see if a site has been created
-        if amathuba_id == 0:
-            amathuba_id = check_for_amathuba_id(site['transfer_site_id'])
-            if amathuba_id > 0:
-                logging.info(f"Site {site_id} has new Brightspace Id {amathuba_id}")
-                update_import_id(DB_AUTH, site['link_id'], site_id, amathuba_id, json.loads(site['workflow']))
-                site['imported_site_id'] = amathuba_id
+        if refsite_id == 0:
+            refsite_id = check_for_brightspace_id(site['transfer_site_id'])
+            if refsite_id > 0:
+                logging.info(f"Site {site_id} has new Brightspace Id {refsite_id}")
+                update_import_id(DB_AUTH, site['link_id'], site_id, refsite_id, json.loads(site['workflow']))
+                site['imported_site_id'] = refsite_id
 
-        # If we have an amathuba site, add to the import status check list
-        if amathuba_id > 0:
-            amathuba_ids.append(amathuba_id)
+        # If we have a Brightspace site, add to the import status check list
+        if refsite_id > 0:
+            refsite_ids.append(refsite_id)
 
-    # Check import status collection for sites with amathuba ids
+    # Check import status collection for sites with Brightspace ids
     import_status_set = {}
-    if amathuba_ids:
-        import_status_set = get_import_status_collection(brightspace_url, WEB_AUTH, amathuba_ids)
+    if refsite_ids:
+        import_status_set = get_import_status_collection(brightspace_url, WEB_AUTH, refsite_ids)
         logging.info(f"Import status: {import_status_set}")
     else:
-        logging.debug("No sites yet with amathuba ids")
+        logging.debug("No sites yet with Brightspace ids")
 
     # Now decide what to do with each site
     for site in want_to_process:
@@ -447,9 +447,9 @@ def main():
         sh.setFormatter(formatter)
         logger.addHandler(sh)
 
-    global amathuba_last_login, amathuba_session
-    amathuba_last_login = None
-    amathuba_session = None
+    global brightspace_last_login, brightspace_session
+    brightspace_last_login = None
+    brightspace_session = None
 
     scan_interval = APP['scan_interval']['import']
     exit_flag_file = APP['exit_flag']['import']

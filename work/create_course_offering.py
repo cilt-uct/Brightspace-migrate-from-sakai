@@ -92,7 +92,7 @@ def set_site_property(site_id, key, value):
         return False
 
 def update_target_site(db_config, link_id, site_id, org_unit_id, is_created, target_title):
-    set_site_property(site_id, 'amathuba_course_site_id', org_unit_id)
+    set_site_property(site_id, 'brightspace_course_site_id', org_unit_id)
 
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)

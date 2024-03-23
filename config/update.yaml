@@ -3,14 +3,6 @@ STEPS:
   # LTI Quicklinks
   # - action: create_lti_quicklinks
 
-  # Create and import a D2L import package for html content
-  # Used for Q&A
-  #- action: push_content
-  #  use_import_id: 1
-  #  use_transfer_id: 1
-  #  use_title: 1
-  #  use_date: 1
-
   # Set the reference site to inactive
   - action: update_refsite
     use_import_id: 1
@@ -49,8 +41,8 @@ STEPS:
     state: 'completed'
 
   - action: set_site_property
-    amathuba_conversion_success: 1
-    amathuba_conversion_status: 'success'
+    conversion_success: 1
+    conversion_status: 'success'
 
   # Remove working files
   - action: cleanup

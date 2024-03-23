@@ -59,7 +59,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertTrue(mock_render.called)
         self.assertEqual('test_title', mock_render.call_args.kwargs['title'])
         self.assertEqual('site_id_12345', mock_render.call_args.kwargs['site_id'])
-        self.assertEqual('imported_site_id_12345', mock_render.call_args.kwargs['amathuba_id'])
+        self.assertEqual('imported_site_id_12345', mock_render.call_args.kwargs['import_id'])
         self.assertEqual('report.com', mock_render.call_args.kwargs['report_url'])
 
     @patch('jinja2.environment.Template.render')
@@ -69,7 +69,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'subject': 'test',
             'site_id': 'site_id_12345',
             'title': 'title',
-            'amathuba_id': 'imported_site_id_12345',
+            'import_id': 'imported_site_id_12345',
             'report_url': 'report.com',
             'started_by': 'cilt1@uct.ac.za'
         }
@@ -79,7 +79,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertTrue(mock_render.called)
         self.assertEqual('title', mock_render.call_args.kwargs['title'])
         self.assertEqual('site_id_12345', mock_render.call_args.kwargs['site_id'])
-        self.assertEqual('imported_site_id_12345', mock_render.call_args.kwargs['amathuba_id'])
+        self.assertEqual('imported_site_id_12345', mock_render.call_args.kwargs['import_id'])
         self.assertEqual('report.com', mock_render.call_args.kwargs['report_url'])
 
     @patch('jinja2.environment.Template.render')
@@ -89,7 +89,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'subject': 'test',
             'site_id': 'site_id_12345',
             'title': 'title',
-            'amathuba_id': 'imported_site_id_12345',
+            'import_id': 'imported_site_id_12345',
             'report_url': 'report.com',
             'started_by': 'cilt1@uct.ac.za',
             'target_site_id': 98765,
@@ -101,7 +101,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertTrue(mock_render.called)
         self.assertEqual('title', mock_render.call_args.kwargs['title'])
         self.assertEqual('site_id_12345', mock_render.call_args.kwargs['site_id'])
-        self.assertEqual('imported_site_id_12345', mock_render.call_args.kwargs['amathuba_id'])
+        self.assertEqual('imported_site_id_12345', mock_render.call_args.kwargs['import_id'])
 
     @patch('lib.utils.send_email')
     @patch('jinja2.environment.Environment.get_template')
@@ -110,7 +110,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'subject': 'test',
             'site_id': 'site_id_12345',
             'title': 'title',
-            'amathuba_id': 'imported_site_id_12345',
+            'import_id': 'imported_site_id_12345',
             'report_url': 'report.com',
             'started_by': 'cilt@uct.ac.za'
         }
@@ -127,7 +127,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'subject': 'test',
             'site_id': 'site_id_12345',
             'title': 'title',
-            'amathuba_id': 'imported_site_id_12345',
+            'import_id': 'imported_site_id_12345',
             'report_url': 'report.com',
             'started_by': 'cilt@uct.ac.za'
         }
@@ -165,7 +165,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertTrue(mock_render.called)
         self.assertEqual('title', mock_render.call_args.kwargs['title'])
         self.assertEqual('site_id_12345', mock_render.call_args.kwargs['site_id'])
-        self.assertEqual('imported_site_id_12345', mock_render.call_args.kwargs['amathuba_id'])
+        self.assertEqual('imported_site_id_12345', mock_render.call_args.kwargs['import_id'])
         self.assertEqual('report.com', mock_render.call_args.kwargs['report_url'])
 
     # Test an exception in the update workflow

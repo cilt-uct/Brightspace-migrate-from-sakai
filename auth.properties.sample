@@ -27,10 +27,6 @@ BrightspaceMiddleware_url=https://middleware.some.domain
 BrightspaceMiddleware_username=script
 BrightspaceMiddleware_password=SECRET
 
-# Brightspace production instance
-Brightspace_username=USER
-Brightspace_password=SECRET
-
 # Brightspace production UI login
 BrightspaceWeb_username=USER
 BrightspaceWeb_password=SECRET

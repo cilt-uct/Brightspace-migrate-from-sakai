@@ -167,7 +167,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
                 subj=step['subject'],
                 title=kwargs['title'],
                 site_id=site_id,
-                amathuba_id=kwargs['amathuba_id']
+                import_id=kwargs['import_id']
             )
 
     elif step['action'] == "get_files":
@@ -273,7 +273,7 @@ def start_workflow(link_id, site_id, APP):
 
                 if run_workflow_step(step=step, site_id=site_id, log_file=log_file, db_config=DB_AUTH,
                                          to=record['notification'], started_by=record['started_by_email'],
-                                         now_st=now_st, new_id=new_id, amathuba_id=record['imported_site_id'],
+                                         now_st=now_st, new_id=new_id, import_id=record['imported_site_id'],
                                          link_id=link_id, title=site_title, zip_file=files['file-fixed-zip']):
                     logging.info("Completed workflow step: {}".format(step['action']))
                 else:

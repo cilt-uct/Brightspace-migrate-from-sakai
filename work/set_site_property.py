@@ -24,7 +24,7 @@ from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
 
-VALID = ['amathuba_conversion_success', 'amathuba_conversion_date', 'amathuba_conversion_status', 'amathuba_imported_site_id']
+VALID = ['brightspace_conversion_success', 'brightspace_conversion_date', 'brightspace_conversion_status', 'brightspace_imported_site_id']
 
 def run(SITE_ID, APP, **kwargs):
     succeeded = True
@@ -58,7 +58,6 @@ def run(SITE_ID, APP, **kwargs):
 
             if k in VALID:
                 succeeded = sakai_client.service.setSiteProperty(session_details[0], SITE_ID, k, kwargs[k]) == "success"
-                # print(succeeded)
 
         # logout
         logout = login_client.service.logout(session_details[0])

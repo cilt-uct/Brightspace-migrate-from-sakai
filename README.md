@@ -49,7 +49,7 @@ APP = {
 	'helpdesk-email' : ('Help Desk','helpdesk@your.url.com'),
 	...
 	'report': {
-		'url' : 'https://[Sakai URL]/amathuba/conversion/',
+		'url' : 'https://[Sakai URL]/brightspace/conversion/',
 		...
 	}
 }
@@ -65,7 +65,7 @@ Require all granted
 DirectoryIndex index.html
 </Directory>
 
-Alias /amathuba/conversion/ /data/sakai/otherdata/conversion-reports/
+Alias /brightspace/conversion/ /data/sakai/otherdata/conversion-reports/
 ```
 
 ## Database Schema
@@ -120,7 +120,7 @@ https://github.com/sakaiproject/sakai/pull/11441/commits/18de2e623b2ad7f4a68cf90
 https://sakaiproject.atlassian.net/browse/SAK-47948
 https://github.com/sakaiproject/sakai/pull/11506
 
-## SAK-47901 Use ISO8601 for archive date formats 
+## SAK-47901 Use ISO8601 for archive date formats
 https://sakaiproject.atlassian.net/browse/SAK-47901
 https://github.com/sakaiproject/sakai/pull/11443
 
@@ -128,7 +128,7 @@ https://github.com/sakaiproject/sakai/pull/11443
 https://sakaiproject.atlassian.net/browse/SAK-49164
 https://github.com/sakaiproject/sakai/pull/11816
 
-## SAK-49813 Use XML 1.1 serialization 
+## SAK-49813 Use XML 1.1 serialization
 https://sakaiproject.atlassian.net/browse/SAK-49813
 https://github.com/sakaiproject/sakai/pull/12417
 
