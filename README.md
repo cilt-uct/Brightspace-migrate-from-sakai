@@ -4,7 +4,7 @@ This repo exports a site from Sakai (https://www.sakailms.org/), runs a set of w
 
 The entire process is tied to the **Migrate to Brightspace [LTI] (tsugi-migrate-to-brightspace)** tool defined here: https://github.com/cilt-uct/tsugi-migrate-to-brightspace
 
-The LTI tool contains the database (see [Database Schema](README.md#database_schema)) that is used to store the state of the conversion process.
+The LTI tool contains the database (see [Database Schema](#database-schema)) that is used to store the state of the conversion process.
 
 ## Workflow
 The workflows are divided into 3 parts (matching with the task):
@@ -20,7 +20,7 @@ The workflow steps are defined in the `work` folder with the corresponding file 
 ### Directories
 The file `base.sh` define the important folders used in the migration scripts.
 
--  `ARCHIVE_FOLDER` this folder is *exactly* the same as `archive.storage.path` (see [Sakai Configuration Settings](README.md#sakai-configuration-settings)).
+-  `ARCHIVE_FOLDER` this folder is *exactly* the same as `archive.storage.path` (see [Sakai Configuration Settings](#sakai-configuration-settings)).
 
 -  `OUTPUT_FOLDER` the folder in which the completed zip file (after running the workflow on the archived site) is created and used to upload to Brightspace.
 
