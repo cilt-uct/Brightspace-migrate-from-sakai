@@ -9,8 +9,8 @@ import os
 import argparse
 import pymysql
 import shutil
-
-from xml.etree import ElementTree
+import unicodedata
+import lxml.etree as ElementTree
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -21,8 +21,8 @@ from lib.utils import *
 from lib.local_auth import *
 
 # Basic field limit & field name mapping mechanism
-dictionary = {'rubric':
-                  {'id': 'id', 'title': 'name'},
+field_map = {'rubric':
+                  {'title': 'name'},
               'criteria_groups':
                   {'title': 'name', 'order_index': 'sort_order'},
               'criterion':
@@ -33,6 +33,19 @@ dictionary = {'rubric':
                   {'ratings_id': 'level_id'}
               }
 
+def remove_control_characters(s):
+    return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
+
+# Sanitize free-form text fields
+def sanitize(txt):
+    orig_txt = txt
+    txt = txt.replace("’", "").replace("\u2019", "'")
+    txt = remove_control_characters(txt)
+
+    if txt != orig_txt:
+        print(f"Sanitized string: {txt}")
+
+    return txt
 
 def find_element_key(li, key):
     # this function finds & returns elements in a dictionary
@@ -107,10 +120,10 @@ def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria):
         RowFeedback = ElementTree.SubElement(Row, "feedback")
 
         if row[4] is not None:
-            text = str(row[4]).strip().replace("’", "").replace("\u2019", "&rsquo;")
-            fb = str(row[10]).strip().replace("’", "").replace("\u2019", "&rsquo;")
-            ElementTree.SubElement(RowDesc, 'text').text = '<p>' + text + '</p>'
-            ElementTree.SubElement(RowFeedback, 'text').text = '<p><strong>' + fb + '</strong></p>'
+            text = str(row[4]).strip()
+            fb = str(row[10]).strip()
+            ElementTree.SubElement(RowDesc, 'text').text = f'<p>{sanitize(text)}</p>'
+            ElementTree.SubElement(RowFeedback, 'text').text = f'<p><strong>{sanitize(fb)}</strong></p>'
 
         RowDesc.set('text_type', 'text/html')
         RowFeedback.set('text_type', 'text/html')
@@ -137,7 +150,7 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
             if data is None:
                 data = ''
             data = str(data).replace('&', '\&')
-            li = dictionary['level']
+            li = field_map['level']
             fieldName = find_element_key(li, column)
             if fieldName != None:
                 Row.set(fieldName, data.strip().replace("’", "").replace("\u2019", "&rsquo;"))
@@ -167,6 +180,8 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
     # create rubric XML export document
     xmlDoc = ElementTree.Element("rubrics")
     xmlDoc.set('schemaversion', 'v2011')
+    export_rubric_id = 0
+
     try:
         for row in allRows:
             Row = ElementTree.SubElement(xmlDoc, "rubric")
@@ -178,7 +193,7 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
                     data = ''
 
                 data = str(data).replace('&', '\&')
-                li = dictionary['rubric']
+                li = field_map['rubric']
                 fieldName = find_element_key(li, column)
                 if fieldName != None:
                     Row.set(fieldName, data)
@@ -186,7 +201,8 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
                 columnNumber += 1
 
             # required fields not found in VR
-            Row.set('resource_code', '35D32CCE-0F88-4787-B38F-467A98F7D70D-847')
+            export_rubric_id +=1
+            Row.set('id', f'{export_rubric_id}')
             Row.set('type', '1')
             Row.set('scoring_method', '2')
             Row.set('display_levels_in_des_order', 'True')
@@ -212,7 +228,7 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
 
             fetchCriterions(db, row[0], RowCriteria_Group)
 
-        xmlstr = ElementTree.tostring(xmlDoc, encoding='unicode', method='xml')
+        xmlstr = ElementTree.tostring(xmlDoc, encoding='unicode', method='xml', pretty_print=True)
 
         # print(xmlstr)
         with open(rubrics_file, "w") as f:
