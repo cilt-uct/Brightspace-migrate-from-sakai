@@ -359,11 +359,19 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     # general conversion report document
     html(site_folder, output_file, output_url, conf, SITE_ID)
 
-    # copy the report into the output folder for D2L content import
+    # copy the report into the output folder for D2L content import (optional)
     output_folder = "{}/{}-content".format(APP['output'], SITE_ID)
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
-    shutil.copy(output_file, os.path.join(output_folder, "conversion_report.html"))
+    report_content_file = os.path.join(output_folder, "conversion_report.html")
+
+    if APP['report']['upload']:
+        # Copy it
+        shutil.copy(output_file, report_content_file)
+    else:
+        # Remove it
+        if os.path.exists(report_content_file):
+            os.remove(report_content_file)
 
     # update properties in db
     tmp = lib.local_auth.getAuth(APP['auth']['db'])

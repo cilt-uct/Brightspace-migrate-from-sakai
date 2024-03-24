@@ -92,6 +92,7 @@ APP = {
     'json' : Path(SCRIPT_FOLDER) / 'config' / 'conversion_issues.json',
     'template': Path(SCRIPT_FOLDER) / 'templates' / 'conversion_report.html',
     'dev_template': Path(SCRIPT_FOLDER) / 'templates' / 'dev_report.html',
+    'upload' : False,
   },
 
   'content': {

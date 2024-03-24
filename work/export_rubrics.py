@@ -38,14 +38,8 @@ def remove_control_characters(s):
 
 # Sanitize free-form text fields
 def sanitize(txt):
-    orig_txt = txt
     txt = txt.replace("’", "").replace("\u2019", "'")
-    txt = remove_control_characters(txt)
-
-    if txt != orig_txt:
-        print(f"Sanitized string: {txt}")
-
-    return txt
+    return remove_control_characters(txt)
 
 def find_element_key(li, key):
     # this function finds & returns elements in a dictionary

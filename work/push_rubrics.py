@@ -22,7 +22,7 @@ from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
 
-def run(SITE_ID, APP, import_id, transfer_id, title, now_st = None):
+def run(SITE_ID, APP, import_id, transfer_id, title):
 
     tmp = getAuth(APP['auth']['middleware'])
     if (tmp is not None):
@@ -43,11 +43,7 @@ def run(SITE_ID, APP, import_id, transfer_id, title, now_st = None):
         return
 
     # Output zip file
-    if now_st:
-        file_name = r'{}{}_{}.zip'.format(APP['zip']['rubrics'], SITE_ID, now_st)
-    else:
-        file_name = r'{}{}.zip'.format(APP['zip']['rubrics'], SITE_ID)
-
+    file_name = r'{}{}.zip'.format(APP['zip']['rubrics'], SITE_ID)
     zip_file = r'{}{}'.format(APP['output'], file_name)
 
     logging.info(f"Rubrics package zip is {zip_file}")
@@ -71,10 +67,7 @@ def run(SITE_ID, APP, import_id, transfer_id, title, now_st = None):
     # Zip it
     max_size = APP['import']['limit']
 
-    if now_st is None:
-        now_st = "latest"
-
-    file_name = r'{}{}_{}.zip'.format(APP['zip']['rubrics'], SITE_ID, now_st)
+    file_name = r'{}{}.zip'.format(APP['zip']['rubrics'], SITE_ID)
     zip_file = r'{}{}'.format(APP['output'], file_name)
 
     if (zipfolder(zip_file, output_folder)):
