@@ -70,26 +70,39 @@ def run(SITE_ID, APP, import_id, transfer_id, title):
     file_name = r'{}{}.zip'.format(APP['zip']['rubrics'], SITE_ID)
     zip_file = r'{}{}'.format(APP['output'], file_name)
 
-    if (zipfolder(zip_file, output_folder)):
-        zip_size = get_size(zip_file)
+    zipfolder(zip_file, output_folder)
 
-        # created file gets logged so it can be used in workflow
-        logging.info("\tfile-rubrics-zip: {}".format(zip_file))
-        logging.info("\t     rubrics-size: {}".format(format_bytes(zip_size)))
+    if not os.path.exists(zip_file):
+        raise Exception(f"Error creating rubrics zip {zip_file} from {output_folder}")
 
-        # check allowed size
-        max_size = APP['import']['limit']
-        if zip_size > max_size:
-            raise Exception(f"Zip size {format_bytes(zip_size)} exceeds maximum {format_bytes(max_size)}")
+    zip_size = get_size(zip_file)
 
-        # Push it via API for import
-        payload = {'org_id': import_id}
-        files = [('file', (file_name, open(zip_file, 'rb'), 'application/zip'))]
-        response = requests.post("{}{}".format(APP['middleware']['base_url'], APP['middleware']['import_url']),
-                                 data=payload, files=files, auth=(AUTH['user'], AUTH['password']))
-        response.raise_for_status()
+    # created file gets logged so it can be used in workflow
+    logging.info("\tfile-rubrics-zip: {}".format(zip_file))
+    logging.info("\t     rubrics-size: {}".format(format_bytes(zip_size)))
+
+    # check allowed size
+    max_size = APP['import']['limit']
+    if zip_size > max_size:
+        raise Exception(f"Zip size {format_bytes(zip_size)} exceeds maximum {format_bytes(max_size)}")
+
+    # Push it via API for import
+    # TODO replace with middleware_api method after extending that to support files
+    payload = {'org_id': import_id}
+    files = [('file', (file_name, open(zip_file, 'rb'), 'application/zip'))]
+    response = requests.post("{}{}".format(APP['middleware']['base_url'], APP['middleware']['import_url']),
+                             data=payload, files=files, auth=(AUTH['user'], AUTH['password']))
+
+    response.raise_for_status()
+    response_json = response.json()
+    job_token = response_json['data']['JobToken']
+
+    logging.info(f"Importing rubrics with job {job_token}")
+
+    if wait_for_job(APP, import_id, job_token):
+        logging.info(f"Rubric import {job_token} successful")
     else:
-        logging.warning("No rubrics zip file created, nothing to do")
+        raise Exception(f"Rubric import {job_token} failed")
 
     return
 

@@ -47,16 +47,20 @@ def run(SITE_ID, APP, now_st = None):
     for py in glob.glob('{}/*{}_fixed*.zip'.format(APP['output'], SITE_ID)):
         os.remove(py)
 
-    if (zipfolder(zip_file, src_folder)):
-        zip_size = get_size(zip_file)
+    zipfolder(zip_file, src_folder)
 
-        # created file gets logged so it can be used in workflow
-        logging.info("\tfile-fixed-zip: {}".format(zip_file))
-        logging.info("\t     fixed-size: {}".format(format_bytes(zip_size)))
+    if not os.path.exists(zip_file):
+        raise Exception(f"Error creating zip file {zip_file}")
 
-        # check allowed size
-        if zip_size > max_size:
-            raise Exception(f"Zip size {format_bytes(zip_size)} exceeds maximum {format_bytes(max_size)}")
+    zip_size = get_size(zip_file)
+
+    # created file gets logged so it can be used in workflow
+    logging.info("\tfile-fixed-zip: {}".format(zip_file))
+    logging.info("\t     fixed-size: {}".format(format_bytes(zip_size)))
+
+    # check allowed size
+    if zip_size > max_size:
+        raise Exception(f"Zip size {format_bytes(zip_size)} exceeds maximum {format_bytes(max_size)}")
 
 def main():
     global APP

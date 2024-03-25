@@ -588,3 +588,43 @@ def replace_wiris(html_str):
         el.replace_with(math_ml)
 
     return str(html)
+
+# GET /d2l/api/le/(version)/import/(orgUnitId)/imports/(jobToken)
+# Status = UPLOADING | IMPORTING | IMPORTFAILED | COMPLETED
+def wait_for_job(APP, org_id, job_token, initial_delay = 3, delay = 10, max_tries = 12):
+
+    time.sleep(initial_delay)
+
+    tries = 0
+
+    while tries < max_tries:
+
+        tries += 1
+
+        payload = {
+            'url': f"{APP['brightspace_api']['le_url']}/import/{org_id}/imports/{job_token}",
+            'method': 'GET'
+        }
+
+        # {'data': {'JobToken': '6992', 'Status': 'IMPORTING', 'TargetOrgUnitId': 67143}, 'status': 'success'}
+        json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+        if 'status' in json_response and json_response['status'] == 'success' and 'data' in json_response:
+            if 'Status' in json_response['data']:
+                import_status = json_response['data']['Status']
+                logging.info(f"Import job {job_token} has status {import_status}")
+
+                if import_status == "IMPORTFAILED":
+                    return False
+
+                if import_status == "COMPLETED":
+                    return True
+            else:
+                logging.warning(f"Unexpected response {json_response}, will retry")
+        else:
+            logging.warning(f"Unexpected response {json_response}, will retry")
+
+        time.sleep(delay)
+
+    # Out of tries
+    return False
