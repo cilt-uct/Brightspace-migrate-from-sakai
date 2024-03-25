@@ -10,7 +10,7 @@ import argparse
 import pymysql
 import shutil
 import unicodedata
-import lxml.etree as ElementTree
+import lxml.etree as ET
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -20,18 +20,11 @@ from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
 
-# Basic field limit & field name mapping mechanism
-field_map = {'rubric':
-                  {'title': 'name'},
-              'criteria_groups':
-                  {'title': 'name', 'order_index': 'sort_order'},
-              'criterion':
-                  {'order_index': 'sort_order'},
-              'level':
-                  {'ratings_id': 'level_id', 'order_index': 'sort_order', 'points': 'level_value', 'title': 'name'},
-              'cell':
-                  {'ratings_id': 'level_id'}
-              }
+# Map table columns to XML attributes
+field_map = {
+    'rubric': {'title': 'name'},
+    'level': {'ratings_id': 'level_id', 'order_index': 'sort_order', 'points': 'level_value', 'title': 'name'}
+}
 
 def remove_control_characters(s):
     return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
@@ -43,9 +36,8 @@ def sanitize(txt):
 
 def find_element_key(li, key):
     # this function finds & returns elements in a dictionary
-    for d in li:
-        if key in d:
-            return li[key]
+    if key in li:
+        return li[key]
 
 def create_folders(dir_, clean = False):
     if clean:
@@ -57,99 +49,113 @@ def create_folders(dir_, clean = False):
 
     return r'{}/'.format(os.path.abspath(dir_))
 
-# this function handles data within the Criterion XML element
+# this function adds one or more multiple criteria_group elements
 #  in:  rubric criteria ID
-#       XML row object - updated in function
-def fetchCriterions(db, rubric_id, xmlRow):
+#       XML CriteriaGroups element
+def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
 
-    cursor_criterions = db.cursor()
+    RowCriteria_Group = ET.SubElement(RowCriteria_Groups, "criteria_group")
+    RowCriteria_Group.set("name", "Criteria")
+    RowCriteria_Group.set("sort_order", "0")
+
+    cursor_criterions = db.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT * " \
           "FROM rbc_rubric_criterions " \
           "INNER JOIN rbc_criterion ON rbc_rubric_criterions.criterions_id = rbc_criterion.id " \
           "WHERE rbc_rubric_id = %s;"
     cursor_criterions.execute(sql, rubric_id)
-    columns = [i[0] for i in cursor_criterions.description]
 
     count = 0
     for row in cursor_criterions.fetchall():
 
         if (count == 0):
-            RowLevelSet = ElementTree.SubElement(xmlRow, "level_set")
-            RowLevels = ElementTree.SubElement(RowLevelSet, "levels")
-            fetchLevels(db, row[1], RowLevels)
+            RowLevelSet = ET.SubElement(RowCriteria_Group, "level_set")
+            RowLevels = ET.SubElement(RowLevelSet, "levels")
+            fetchLevels(db, row['criterions_id'], RowLevels)
 
-            RowCriteria = ElementTree.SubElement(xmlRow, "criteria")
+            RowCriteria = ET.SubElement(RowCriteria_Group, "criteria")
 
         count+=1
 
         # add sub-element(s)
-        fetchCriteria(db, row[1], RowCriteria, row)
+        fetchCriteria(db, row['criterions_id'], RowCriteria, row)
 
 # this function handles data within the Criteria XML element
 #  in:  rubric criteria ID
 #       XML row object - updated in function
 def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria):
 
-    Row = ElementTree.SubElement(xmlRow, "criterion")
-    Row.set('name', rowCriteria[9])
-    Row.set('sort_order', str(rowCriteria[2]))
+    Row = ET.SubElement(xmlRow, "criterion")
+    Row.set('name', rowCriteria['title'])
+    Row.set('sort_order', str(rowCriteria['order_index']))
 
-    cursor_criterions = db.cursor()
+    RowCells = ET.SubElement(Row, "cells")
+
+    # <cell cell_value="" level_id="65914">
+    #    <description text_type="text/html">
+    #      <text>&lt;p&gt;&lt;/p&gt;</text>
+    #    </description>
+    #    <feedback text_type="text/html">
+    #      <text>&lt;p&gt;&lt;strong&gt;Inadequate&lt;/strong&gt;&lt;/p&gt;</text>
+    #    </feedback>
+    #  </cell>
+
+    cursor_criterions = db.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT * FROM rbc_criterion_ratings " \
           "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
           "WHERE rbc_criterion_id = %s;"
-
     cursor_criterions.execute(sql, rbc_criterion_id)
-    columns = [i[0] for i in cursor_criterions.description]
-
-    RowCells = ElementTree.SubElement(Row, "cells")
 
     for row in cursor_criterions.fetchall():
+
         # add sub-element(s)
-        Row = ElementTree.SubElement(RowCells, "cell")
+        Row = ET.SubElement(RowCells, "cell")
         Row.set('cell_value', '')
-        Row.set('level_id', str(row[1]))
+        Row.set('level_id', str(row['ratings_id']))
         # create cell description element
-        RowDesc = ElementTree.SubElement(Row, "description")
-        RowFeedback = ElementTree.SubElement(Row, "feedback")
-
-        if row[4] is not None:
-            text = str(row[4]).strip()
-            fb = str(row[10]).strip()
-            ElementTree.SubElement(RowDesc, 'text').text = f'<p>{sanitize(text)}</p>'
-            ElementTree.SubElement(RowFeedback, 'text').text = f'<p><strong>{sanitize(fb)}</strong></p>'
-
+        RowDesc = ET.SubElement(Row, "description")
         RowDesc.set('text_type', 'text/html')
+
+        RowFeedback = ET.SubElement(Row, "feedback")
         RowFeedback.set('text_type', 'text/html')
 
+        if row['description'] is not None:
+            text = str(row['description']).strip()
+            fb = str(row['title']).strip()
+            ET.SubElement(RowDesc, 'text').text = f'<p>{sanitize(text)}</p>'
+            ET.SubElement(RowFeedback, 'text').text = f'<p><strong>{sanitize(fb)}</strong></p>'
+
+    return
 
 # this function handles data within the Levels XML element
 #  in:  rubric criteria ID
 #       XML row object - updated in function
+
 def fetchLevels(db, rbc_criterion_id, xmlRow):
-    cursor_levels = db.cursor()
+    cursor_levels = db.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT rbc_criterion_id, ratings_id, order_index, points, title FROM rbc_criterion_ratings " \
           "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
           "WHERE rbc_criterion_id = %s ORDER BY order_index;"
 
     cursor_levels.execute(sql, rbc_criterion_id)
-    columns = [i[0] for i in cursor_levels.description]
     allRows = cursor_levels.fetchall()
-    for row in allRows:
-        Row = ElementTree.SubElement(xmlRow, "level")
-        columnNumber = 0
-        for column in columns:
 
-            data = row[columnNumber]
+    # <level level_id="65914" sort_order="0" level_value="0.0" name="Inadequate"/>
+    # <level level_id="65915" sort_order="1" level_value="1.0" name="Meets expectations"/>
+    # <level level_id="65916" sort_order="2" level_value="2.0" name="Exceeds expectations"/>
+
+    li = field_map['level']
+
+    for row in allRows:
+        Row = ET.SubElement(xmlRow, "level")
+        for column in row.keys():
+            data = row[column]
             if data is None:
                 data = ''
             data = str(data).replace('&', '\&')
-            li = field_map['level']
             fieldName = find_element_key(li, column)
             if fieldName != None:
-                Row.set(fieldName, data.strip().replace("’", "").replace("\u2019", "&rsquo;"))
-
-            columnNumber += 1
+                Row.set(fieldName, sanitize(data.strip()))
 
 # export rubrics for a site to xml file
 #  in: site_id
@@ -157,100 +163,70 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
 
 def exportSakaiRubric(db_config, site_id, rubrics_file):
     db = pymysql.connect(**db_config)
-    cursor = db.cursor()
+    cursor = db.cursor(pymysql.cursors.DictCursor)
 
     SQL = "SELECT * FROM rbc_rubric WHERE ownerId = %s;"
     cursor.execute(SQL, site_id)
-    resp = {"success": 0, "message": ""}
 
-    columns = [i[0] for i in cursor.description]
     allRows = cursor.fetchall()
 
     if len(allRows) == 0:
-        resp["message"] = "No rubrics found in site: {}".format(site_id)
-        logging.info('No rubrics found in site: {}'.format(site_id))
+        logging.info(f'No rubrics found in site {site_id}')
         return
 
     # create rubric XML export document
-    xmlDoc = ElementTree.Element("rubrics")
+    xmlDoc = ET.Element("rubrics")
     xmlDoc.set('schemaversion', 'v2011')
     export_rubric_id = 0
 
-    try:
-        for row in allRows:
-            Row = ElementTree.SubElement(xmlDoc, "rubric")
-            columnNumber = 0
-            for column in columns:
+    li = field_map['rubric']
 
-                data = row[columnNumber]
-                if data == None:
-                    data = ''
+    for row in allRows:
 
-                data = str(data).replace('&', '\&')
-                li = field_map['rubric']
-                fieldName = find_element_key(li, column)
-                if fieldName != None:
-                    Row.set(fieldName, data)
+        Row = ET.SubElement(xmlDoc, "rubric")
 
-                columnNumber += 1
+        for column in row.keys():
+            data = row[column]
+            if data == None:
+                data = ''
+            data = str(data).replace('&', '\&')
+            fieldName = find_element_key(li, column)
+            if fieldName != None:
+                Row.set(fieldName, data)
 
-            # required fields not found in VR
-            export_rubric_id +=1
-            Row.set('id', f'{export_rubric_id}')
-            Row.set('type', '1')
-            Row.set('scoring_method', '2')
-            Row.set('display_levels_in_des_order', 'True')
-            Row.set('state', '0')
-            Row.set('visibility', '0')
-            Row.set('uses_overall_score', 'True')
-            Row.set('has_manual_alignment', 'False')
-            Row.set('score_visible_to_assessed_users', 'True')
-            Row.set('enabled_feedback_copy', 'False')
-            Row.set('usage_restrictions', 'Competency')
+        # required fields not found in VR
+        export_rubric_id +=1
+        Row.set('id', f'{export_rubric_id}')
+        Row.set('type', '1')
+        Row.set('scoring_method', '2')
+        Row.set('display_levels_in_des_order', 'True')
+        Row.set('state', '0')
+        Row.set('visibility', '0')
+        Row.set('uses_overall_score', 'True')
+        Row.set('has_manual_alignment', 'False')
+        Row.set('score_visible_to_assessed_users', 'True')
+        Row.set('enabled_feedback_copy', 'False')
+        Row.set('usage_restrictions', 'Competency')
 
-            # add sub-element(s)
-            RowDesc = ElementTree.SubElement(Row, "description")
-            ElementTree.SubElement(RowDesc, 'text').text = row[1]
-            RowDesc.set('text_type', 'text')
+        # add sub-element(s)
+        RowDesc = ET.SubElement(Row, "description")
+        ET.SubElement(RowDesc, 'text').text = row['description']
+        RowDesc.set('text_type', 'text')
 
-            RowCriteria_Groups = ElementTree.SubElement(Row, "criteria_groups")
+        RowCriteria_Groups = ET.SubElement(Row, "criteria_groups")
 
-            # new code
-            RowCriteria_Group = ElementTree.SubElement(RowCriteria_Groups, "criteria_group")
-            RowCriteria_Group.set("name", "Criteria")
-            RowCriteria_Group.set("sort_order", "0")
+        fetchCriteriaGroups(db, row['id'], RowCriteria_Groups)
 
-            fetchCriterions(db, row[0], RowCriteria_Group)
-
-        xmlstr = ElementTree.tostring(xmlDoc, encoding='unicode', method='xml', pretty_print=True)
-
-        # print(xmlstr)
-        with open(rubrics_file, "w") as f:
+    # Write the XML to file
+    xmlstr = ET.tostring(xmlDoc, encoding='unicode', method='xml', pretty_print=True)
+    with open(rubrics_file, "w") as f:
             f.write(xmlstr)
-
-        resp["success"] = 1
-        resp["message"] = "XML successfully created"
-
-        # print(json.dumps(resp, indent=4, sort_keys=True))
-
-    except Exception as e:
-        resp["success"] = 0
-        resp["message"] = e
-
-    finally:
-        logging.debug(f'\t{resp}')
 
     return os.path.exists(rubrics_file)
 
+def run(SITE_ID, APP):
 
-def run(SITE_ID, APP, now_st = None):
-
-    if now_st is None:
-        now_st = ""
-    else:
-        now_st = f"_{now_st}"
-
-    logging.info('Rubrics: export {} at {}'.format(SITE_ID, now_st))
+    logging.info(f'Rubrics: export {SITE_ID}')
 
     output_folder = r'{}{}-rubrics/'.format(APP['output'], SITE_ID)
     if not os.path.exists(output_folder):
@@ -260,8 +236,7 @@ def run(SITE_ID, APP, now_st = None):
     if (tmp is not None):
         DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
     else:
-        logging.error("Authentication required")
-        return 0
+        raise Exception("db authentication required")
 
     if (APP['debug']):
         print(f'{SITE_ID}\n{APP}\n{DB_AUTH}')
