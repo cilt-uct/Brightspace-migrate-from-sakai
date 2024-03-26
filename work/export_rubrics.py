@@ -21,11 +21,6 @@ from lib.utils import *
 from lib.local_auth import *
 
 # Map table columns to XML attributes
-field_map = {
-    'rubric': {'title': 'name'},
-    'level': {'ratings_id': 'level_id', 'order_index': 'sort_order', 'points': 'level_value', 'title': 'name'}
-}
-
 def remove_control_characters(s):
     return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
 
@@ -54,21 +49,29 @@ def create_folders(dir_, clean = False):
 #       XML CriteriaGroups element
 def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
 
-    RowCriteria_Group = ET.SubElement(RowCriteria_Groups, "criteria_group")
-    RowCriteria_Group.set("name", "Criteria")
-    RowCriteria_Group.set("sort_order", "0")
-
     cursor_criterions = db.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT * " \
+    sql = "SELECT criterions_id, title, order_index " \
           "FROM rbc_rubric_criterions " \
           "INNER JOIN rbc_criterion ON rbc_rubric_criterions.criterions_id = rbc_criterion.id " \
           "WHERE rbc_rubric_id = %s;"
     cursor_criterions.execute(sql, rubric_id)
 
     count = 0
+    start_group = True
+    cg = 0
+
     for row in cursor_criterions.fetchall():
 
-        if (count == 0):
+        print(f"- criterion id {row['criterions_id']} title {row['title']}")
+
+        if (start_group):
+
+            # Start a new criteria group
+            cg += 1
+            RowCriteria_Group = ET.SubElement(RowCriteria_Groups, "criteria_group")
+            RowCriteria_Group.set("name", f"Criteria:{cg}")
+            RowCriteria_Group.set("sort_order", str(row['order_index']))
+
             RowLevelSet = ET.SubElement(RowCriteria_Group, "level_set")
             RowLevels = ET.SubElement(RowLevelSet, "levels")
             fetchLevels(db, row['criterions_id'], RowLevels)
@@ -144,7 +147,12 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
     # <level level_id="65915" sort_order="1" level_value="1.0" name="Meets expectations"/>
     # <level level_id="65916" sort_order="2" level_value="2.0" name="Exceeds expectations"/>
 
-    li = field_map['level']
+    li = {
+        'ratings_id': 'level_id',
+        'order_index': 'sort_order',
+        'points': 'level_value',
+        'title': 'name'
+    }
 
     for row in allRows:
         Row = ET.SubElement(xmlRow, "level")
@@ -168,9 +176,9 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
     SQL = "SELECT * FROM rbc_rubric WHERE ownerId = %s;"
     cursor.execute(SQL, site_id)
 
-    allRows = cursor.fetchall()
+    siteRubrics = cursor.fetchall()
 
-    if len(allRows) == 0:
+    if len(siteRubrics) == 0:
         logging.info(f'No rubrics found in site {site_id}')
         return
 
@@ -179,24 +187,15 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
     xmlDoc.set('schemaversion', 'v2011')
     export_rubric_id = 0
 
-    li = field_map['rubric']
+    for row in siteRubrics:
 
-    for row in allRows:
+        print(f"Exporting rubric '{row['title']}' id {row['id']}")
+
+        export_rubric_id +=1
 
         Row = ET.SubElement(xmlDoc, "rubric")
-
-        for column in row.keys():
-            data = row[column]
-            if data == None:
-                data = ''
-            data = str(data).replace('&', '\&')
-            fieldName = find_element_key(li, column)
-            if fieldName != None:
-                Row.set(fieldName, data)
-
-        # required fields not found in VR
-        export_rubric_id +=1
         Row.set('id', f'{export_rubric_id}')
+        Row.set('name', sanitize(row['title'].strip()))
         Row.set('type', '1')
         Row.set('scoring_method', '2')
         Row.set('display_levels_in_des_order', 'True')
@@ -214,7 +213,6 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
         RowDesc.set('text_type', 'text')
 
         RowCriteria_Groups = ET.SubElement(Row, "criteria_groups")
-
         fetchCriteriaGroups(db, row['id'], RowCriteria_Groups)
 
     # Write the XML to file
