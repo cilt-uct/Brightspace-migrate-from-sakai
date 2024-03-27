@@ -961,6 +961,25 @@
         "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.1cbrwibz9btg",
         "a": "more info"
       }
+    },
+    {
+      "key": "rubrics_used",
+      "active": true,
+      "tool": "sakai.rubrics",
+      "actor": ["Lecturer"],
+      "icon-class": "icon-settings",
+      "detail-heading": "Rubric",
+      "description": "Rubrics",
+      "found": "Rubrics in this site are used in some assessments. Reassociate the assessments with the rubric.",
+      "not_found": "Good to go! Your site does not use LTI tools.",
+      "args": [
+        "rubric_folder",
+        "site_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.4ordmwpxeyqu",
+        "a": "more info"
+      }
     }
   ],
   "tools": [
@@ -1184,7 +1203,7 @@
     {
       "key": "sakai.rubrics",
       "name": "Rubrics",
-      "found": "Contact the helpdesk for assistance with migrating Rubrics",
+      "found": "Rubrics tool in Manage Course / Course Admin / Rubrics",
       "class": "equivalent",
       "info": {
         "a": "more info",

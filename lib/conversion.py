@@ -929,3 +929,34 @@ def supported_media_types(content_soup, attachment_soup, restricted_ext):
     # Not necessary to check attachments as these don't cause failures
 
     return
+
+
+# AMA-182 Check if rubrics have been used in site tools
+def rubrics_used(site_soup, rubric_folder):
+
+    rubric_tool_file = f"{rubric_folder}rubric_tools.json"
+    data = set()
+
+    if not os.path.exists(rubric_tool_file):
+        return
+
+    with open(rubric_tool_file) as json_file:
+        rubricAssoc = json.load(json_file)['rubric_tool']
+
+    for ra in rubricAssoc:
+        toolId = ra['toolId']
+        if toolId == "sakai.assignment":
+            toolId = "sakai.assignment.grades"
+
+        tool = site_soup.find("tool", attrs={"toolId": toolId})
+        if tool:
+            toolName = tool.get('title')
+        else:
+            toolName = ra['toolId']
+
+        data.add(f"{ra['title']} used in {toolName}")
+
+    if len(data) > 0:
+        return sorted(data)
+    else:
+        return None

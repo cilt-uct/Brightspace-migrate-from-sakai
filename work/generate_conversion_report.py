@@ -292,6 +292,7 @@ def do_check(step, **soups):
 
 def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     site_folder = os.path.join(APP['archive_folder'], f"{SITE_ID}-archive/")
+    rubric_folder = os.path.join(APP['output'], f"{SITE_ID}-rubrics/")
     output_file = os.path.join(APP['report']['output'], f"{SITE_ID}_report{now_st}.html")
     output_url = f"{APP['report']['url']}/{SITE_ID}_report{now_st}.html"
     sakai_url = APP['sakai_url']
@@ -336,6 +337,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
                 print(f"Running check for {k['key']}")
 
             k['is_found'] = do_check(k, site_folder = site_folder,
+                                        rubric_folder = rubric_folder,
                                         site_soup = site_soup,
                                         assignment_soup = assignment_soup,
                                         discussions_soup = discussions_soup,

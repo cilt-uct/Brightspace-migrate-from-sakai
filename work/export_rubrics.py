@@ -48,7 +48,7 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
     sql = "SELECT criterions_id, title, order_index " \
           "FROM rbc_rubric_criterions " \
           "INNER JOIN rbc_criterion ON rbc_rubric_criterions.criterions_id = rbc_criterion.id " \
-          "WHERE rbc_rubric_id = %s;"
+          "WHERE rbc_rubric_id = %s"
     cursor_criterions.execute(sql, rubric_id)
 
     count = 0
@@ -107,7 +107,7 @@ def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
     cursor_criterions = db.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT * FROM rbc_criterion_ratings " \
           "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
-          "WHERE rbc_criterion_id = %s;"
+          "WHERE rbc_criterion_id = %s"
     cursor_criterions.execute(sql, rbc_criterion_id)
 
     cell = 0
@@ -140,7 +140,7 @@ def getLevelsHash(db, rbc_criterion_id):
     cursor_levels = db.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT rbc_criterion_id, ratings_id, order_index, points, title FROM rbc_criterion_ratings " \
           "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
-          "WHERE rbc_criterion_id = %s ORDER BY order_index;"
+          "WHERE rbc_criterion_id = %s ORDER BY order_index"
 
     cursor_levels.execute(sql, rbc_criterion_id)
     allRows = cursor_levels.fetchall()
@@ -164,7 +164,7 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
     cursor_levels = db.cursor(pymysql.cursors.DictCursor)
     sql = "SELECT rbc_criterion_id, ratings_id, order_index, points, title FROM rbc_criterion_ratings " \
           "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
-          "WHERE rbc_criterion_id = %s ORDER BY order_index;"
+          "WHERE rbc_criterion_id = %s ORDER BY order_index"
 
     cursor_levels.execute(sql, rbc_criterion_id)
     allRows = cursor_levels.fetchall()
@@ -188,7 +188,7 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
     db = pymysql.connect(**db_config)
     cursor = db.cursor(pymysql.cursors.DictCursor)
 
-    SQL = "SELECT * FROM rbc_rubric WHERE ownerId = %s;"
+    SQL = "SELECT * FROM rbc_rubric WHERE ownerId = %s"
     cursor.execute(SQL, site_id)
 
     siteRubrics = cursor.fetchall()
@@ -235,6 +235,41 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
 
     return os.path.exists(rubrics_file)
 
+# Export details of where Rubrics are used, for conversion report
+def exportRubricAssociations(db_config, site_id, output_folder):
+    db = pymysql.connect(**db_config)
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+
+    sql = "SELECT rubric_id, title, toolId " \
+          "FROM rbc_tool_item_rbc_assoc RA inner join rbc_rubric RR on RA.rubric_id = RR.id " \
+          "WHERE RA.ownerId = %s and RA.ownerType = 'site'"
+
+    cursor.execute(sql, site_id)
+    siteRubricAssoc = cursor.fetchall()
+
+    if len(siteRubricAssoc) == 0:
+        logging.info(f'No rubric associations found in {site_id}')
+    else:
+        logging.info(f"{len(siteRubricAssoc)} rubric tool association(s) in {site_id}")
+
+    rubric_assoc = { 'rubric_tool' : [] }
+
+    for ra in siteRubricAssoc:
+        ra_info = {
+                'rubric_id' : ra['rubric_id'],
+                'title' : ra['title'],
+                'toolId' : ra['toolId']
+        }
+        rubric_assoc['rubric_tool'].append(ra_info)
+
+    # Write to a json file
+
+    rubrics_assoc_file = f"{output_folder}/rubric_tools.json"
+    with open(rubrics_assoc_file, "w") as f:
+        json.dump(rubric_assoc, f, indent=4)
+
+    return
+
 def run(SITE_ID, APP):
 
     logging.info(f'Rubrics: export {SITE_ID}')
@@ -254,6 +289,7 @@ def run(SITE_ID, APP):
     # generate the rubrics export file
     if exportSakaiRubric(DB_AUTH, SITE_ID, rubrics_file):
         logging.info(f"Created {rubrics_file}")
+        exportRubricAssociations(DB_AUTH, SITE_ID, output_folder)
     else:
         logging.info("Rubrics XML not created")
 
