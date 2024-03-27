@@ -29,11 +29,6 @@ def sanitize(txt):
     txt = txt.replace("’", "").replace("\u2019", "'")
     return remove_control_characters(txt)
 
-def find_element_key(li, key):
-    # this function finds & returns elements in a dictionary
-    if key in li:
-        return li[key]
-
 def create_folders(dir_, clean = False):
     if clean:
         if os.path.exists(dir_):
@@ -59,34 +54,40 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
     count = 0
     start_group = True
     cg = 0
+    last_levels = ""
+    level_ids = []
 
     for row in cursor_criterions.fetchall():
 
-        print(f"- criterion id {row['criterions_id']} title {row['title']}")
+        criterions_id = row['criterions_id']
+        levels_info = getLevelsHash(db, criterions_id)
 
-        if (start_group):
+        if (levels_info['levels_hash'] != last_levels):
 
             # Start a new criteria group
+            last_levels = levels_info['levels_hash']
+            level_ids = levels_info['level_ids']
             cg += 1
+
             RowCriteria_Group = ET.SubElement(RowCriteria_Groups, "criteria_group")
-            RowCriteria_Group.set("name", f"Criteria:{cg}")
+            RowCriteria_Group.set("name", f"Criteria {cg}")
             RowCriteria_Group.set("sort_order", str(row['order_index']))
 
             RowLevelSet = ET.SubElement(RowCriteria_Group, "level_set")
             RowLevels = ET.SubElement(RowLevelSet, "levels")
-            fetchLevels(db, row['criterions_id'], RowLevels)
+            fetchLevels(db, criterions_id, RowLevels)
 
             RowCriteria = ET.SubElement(RowCriteria_Group, "criteria")
 
         count+=1
 
         # add sub-element(s)
-        fetchCriteria(db, row['criterions_id'], RowCriteria, row)
+        fetchCriteria(db, row['criterions_id'], RowCriteria, row, level_ids)
 
 # this function handles data within the Criteria XML element
 #  in:  rubric criteria ID
 #       XML row object - updated in function
-def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria):
+def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
 
     Row = ET.SubElement(xmlRow, "criterion")
     Row.set('name', rowCriteria['title'])
@@ -109,12 +110,14 @@ def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria):
           "WHERE rbc_criterion_id = %s;"
     cursor_criterions.execute(sql, rbc_criterion_id)
 
+    cell = 0
+
     for row in cursor_criterions.fetchall():
 
         # add sub-element(s)
         Row = ET.SubElement(RowCells, "cell")
         Row.set('cell_value', '')
-        Row.set('level_id', str(row['ratings_id']))
+        Row.set('level_id', str(level_ids[cell]))
         # create cell description element
         RowDesc = ET.SubElement(Row, "description")
         RowDesc.set('text_type', 'text/html')
@@ -128,7 +131,30 @@ def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria):
             ET.SubElement(RowDesc, 'text').text = f'<p>{sanitize(text)}</p>'
             ET.SubElement(RowFeedback, 'text').text = f'<p><strong>{sanitize(fb)}</strong></p>'
 
+        cell += 1
+
     return
+
+# return { count: #, hash: string, ids: [list] }
+def getLevelsHash(db, rbc_criterion_id):
+    cursor_levels = db.cursor(pymysql.cursors.DictCursor)
+    sql = "SELECT rbc_criterion_id, ratings_id, order_index, points, title FROM rbc_criterion_ratings " \
+          "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
+          "WHERE rbc_criterion_id = %s ORDER BY order_index;"
+
+    cursor_levels.execute(sql, rbc_criterion_id)
+    allRows = cursor_levels.fetchall()
+
+    levels = 0
+    levels_hash = ""
+    level_ids = []
+
+    for row in allRows:
+        levels += 1
+        levels_hash += f"{row['order_index']}:{row['points']}:{sanitize(row['title'].strip())}|"
+        level_ids.append(row['ratings_id'])
+
+    return { 'levels' : levels, 'levels_hash' : levels_hash, 'level_ids' : level_ids }
 
 # this function handles data within the Levels XML element
 #  in:  rubric criteria ID
@@ -147,23 +173,12 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
     # <level level_id="65915" sort_order="1" level_value="1.0" name="Meets expectations"/>
     # <level level_id="65916" sort_order="2" level_value="2.0" name="Exceeds expectations"/>
 
-    li = {
-        'ratings_id': 'level_id',
-        'order_index': 'sort_order',
-        'points': 'level_value',
-        'title': 'name'
-    }
-
     for row in allRows:
         Row = ET.SubElement(xmlRow, "level")
-        for column in row.keys():
-            data = row[column]
-            if data is None:
-                data = ''
-            data = str(data).replace('&', '\&')
-            fieldName = find_element_key(li, column)
-            if fieldName != None:
-                Row.set(fieldName, sanitize(data.strip()))
+        Row.set('level_id', str(row['ratings_id']))
+        Row.set('sort_order', str(row['order_index']))
+        Row.set('level_value', str(row['points']))
+        Row.set('name', sanitize(row['title'].strip()))
 
 # export rubrics for a site to xml file
 #  in: site_id
@@ -188,8 +203,6 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
     export_rubric_id = 0
 
     for row in siteRubrics:
-
-        print(f"Exporting rubric '{row['title']}' id {row['id']}")
 
         export_rubric_id +=1
 
@@ -235,9 +248,6 @@ def run(SITE_ID, APP):
         DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
     else:
         raise Exception("db authentication required")
-
-    if (APP['debug']):
-        print(f'{SITE_ID}\n{APP}\n{DB_AUTH}')
 
     rubrics_file = os.path.join(output_folder, "rubrics_d2l.xml")
 
