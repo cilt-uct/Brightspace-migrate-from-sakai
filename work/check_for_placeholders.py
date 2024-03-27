@@ -15,6 +15,7 @@ from lib.utils import *
 from lib.local_auth import *
 from lib.lessons import *
 from lib.resources import *
+from lib.d2l import *
 
 # See https://docs.valence.desire2learn.com/res/content.html
 
@@ -335,15 +336,40 @@ def run(SITE_ID, APP, import_id, transfer_id):
                 launch_url = None
                 if sakai_id.startswith("/blti/"):
                     lti_id = sakai_id.replace("/blti/", "")
-                    launch_url = get_lti_launch(archive_path, lti_id)
+                    sakai_link_data = get_lti_link(archive_path, lti_id)
 
-                if launch_url:
-                    logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}' {launch_url}")
+                if sakai_link_data:
+                    logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}' {sakai_link_data['launch']}")
 
-                    # TODO Create a new quicklink in the target site
-                    link_html = f'<p style="border-style:solid;" data-type="placeholder" data-item-type="{placeholder_type}" data-sakai-id="{sakai_id}" data-name="{placeholder_name}"><span style="font-weight:bold;">LTI-CONTENT</span> name: {placeholder_name} url: {launch_url}</p>'
-                    placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
-                    updated = True
+                    # Create a new quicklink in the target site
+                    custom = sakai_link_data['custom']
+                    content_item = sakai_link_data['contentitem']
+                    tool = None
+
+                    if content_item:
+                        content_json = json.loads(content_item)
+                        tool = content_json['custom']['tool']
+
+                    if tool is None and custom.startswith("tool="):
+                        tool = custom.replace("tool=","")
+
+                    # https://docs.valence.desire2learn.com/res/lti.html#LTI.CreateLtiLinkData
+                    lti_link_data = {
+                            "Url" : sakai_link_data['launch'],
+                            "Title" : sakai_link_data['title'],
+                            "Description" : sakai_link_data['description'],
+                            "CustomParameters": [ { "Name": "tool", "Value": tool } ]
+                    }
+
+                    logging.info(f"Creating quicklink with: {lti_link_data}")
+                    quicklink_url = create_quicklink(APP, import_id, lti_link_data)
+
+                    # TODO Set Opencast event or series permissions for target site(s)
+
+                    if quicklink_url:
+                        link_html = f'<p><iframe src="{quicklink_url}" allowfullscreen="allowfullscreen" allow="microphone *; camera *; autoplay *"></iframe></p>'
+                        placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
+                        updated = True
 
                 else:
                     logging.warning(f"LTI placeholder: {sakai_id} '{placeholder_name}' unknown target")

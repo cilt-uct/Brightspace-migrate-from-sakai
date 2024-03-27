@@ -1,9 +1,15 @@
 # Classes and functions for Lessons conversion
 
 import re
+import os
+import sys
 import oembed
 import requests
 from html import escape
+
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
 
 from lib.utils import *
 from lib.resources import *
@@ -257,7 +263,7 @@ def folder_list_embed(archive_path, collection_id, path_prefix, desc):
 
 # Get the LTI launch URL from basiclti.xml for a content item
 
-def get_lti_launch(archive_path, lti_content_id):
+def get_lti_link(archive_path, lti_content_id):
 
     with open(f"{archive_path}/basiclti.xml", "r", encoding="utf8") as blti:
         lti_soup = BeautifulSoup(blti, 'xml')
@@ -265,9 +271,13 @@ def get_lti_launch(archive_path, lti_content_id):
         # Find the collection
         lti_content = lti_soup.find("LTIContent", id=lti_content_id)
         if lti_content:
-            lti_launch = lti_content.find("launch")
-            if lti_launch:
-                return lti_launch.get_text()
+
+            lti_data = { }
+            for param in ["launch", "custom", "description", "title", "contentitem"]:
+                if lti_content.find(param) is not None:
+                    lti_data[param] = lti_content.find(param).get_text()
+
+            return lti_data
 
     # No launch URL found
     return
