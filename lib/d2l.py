@@ -96,6 +96,6 @@ def create_quicklink(APP, org_id, lti_data):
 
     if 'status' in json_response and json_response['status'] == 'success':
         quicklink_url = json_response['data']['PublicUrl']
-        return quicklink_url
+        return quicklink_url.replace("{orgUnitId}", str(org_id))
 
     return

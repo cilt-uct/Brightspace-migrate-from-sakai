@@ -78,10 +78,10 @@ def run(SITE_ID, APP):
                     link_name = item["name"]
                     link_desc = item["description"]
 
-                    item_type = item["type"] if "type" in item else ""
-                    item_format = item["format"] if "format" in item else ""
+                    item_type = item.get("type")
+                    item_format = item.get("format")
 
-                    logging.info(f'Placeholder for LTI content: "{item["name"]}" id: {sakai_id}')
+                    logging.info(f'Placeholder for LTI content: "{item["name"]}" id: {sakai_id} format: {item_format}')
                     html = BeautifulSoup(f'<p style="border-style:solid;" data-type="lti-content" data-display="{item_format}" data-item-type="{item_type}" data-sakai-id="{sakai_id_enc}" data-name="{link_name}"><span style="font-weight:bold;">LTI CONTENT</span> <em>{link_name} ({link_desc})</em></p>', 'html.parser')
 
                 if html:

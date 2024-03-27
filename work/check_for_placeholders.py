@@ -5,6 +5,7 @@ import pprint
 import json
 import base64
 from jsonpath_ng.ext import parse
+from html import escape
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -333,7 +334,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
             # Content links (audio, video)
             if placeholder_type == "lti-content":
-                launch_url = None
+
                 if sakai_id.startswith("/blti/"):
                     lti_id = sakai_id.replace("/blti/", "")
                     sakai_link_data = get_lti_link(archive_path, lti_id)
@@ -361,13 +362,21 @@ def run(SITE_ID, APP, import_id, transfer_id):
                             "CustomParameters": [ { "Name": "tool", "Value": tool } ]
                     }
 
-                    logging.info(f"Creating quicklink with: {lti_link_data}")
                     quicklink_url = create_quicklink(APP, import_id, lti_link_data)
-
-                    # TODO Set Opencast event or series permissions for target site(s)
+                    logging.info(f"Quicklink for {lti_link_data['Url']} is {quicklink_url}")
 
                     if quicklink_url:
-                        link_html = f'<p><iframe src="{quicklink_url}" allowfullscreen="allowfullscreen" allow="microphone *; camera *; autoplay *"></iframe></p>'
+
+                        display = placeholder["data-display"]
+                        title = sakai_link_data['title']
+
+                        if display == "inline":
+                            # embed
+                            link_html = f'<p><iframe src="{quicklink_url}" allowfullscreen="allowfullscreen" allow="microphone *; camera *; autoplay *">{escape(title)}</iframe></p>'
+                        else:
+                            # link
+                            link_html = f'<p><a href="{quicklink_url}" target="_self">{escape(title)}</a></p>'
+
                         placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
                         updated = True
 
