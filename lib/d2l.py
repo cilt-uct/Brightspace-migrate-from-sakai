@@ -16,7 +16,8 @@ sys.path.append(parent)
 from lib.local_auth import getAuth
 from lib.utils import *
 
-def create_quicklink(APP, org_id, lti_data):
+# Get a list of LTI links in a site
+def get_lti_links(APP, org_id):
 
     # get existing LTI links
     payload = {
@@ -27,15 +28,23 @@ def create_quicklink(APP, org_id, lti_data):
     json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
 
     if 'status' not in json_response:
-        raise Exception(f'Unable to update org unit info: {json_response}')
-    else:
-        if json_response['status'] != 'success':
-            raise Exception(f'Unable to update org unit info: {json_response}')
+        raise Exception(f'Unable to get lti links: {json_response}')
+
+    if json_response['status'] == 'NotFound':
+        return []
+
+    if json_response['status'] != 'success':
+        raise Exception(f'Unable to get lti links: {json_response}')
+
+    return json_response['data']
+
+# Create a quicklink for an LTI link in a site
+def create_lti_quicklink(APP, org_id, lti_data):
 
     # See if there's an existing LTI link for this URL
-    link_id = None
-    org_links = json_response['data']
+    org_links = get_lti_links(APP, org_id)
 
+    link_id = None
     for link in org_links:
         if link['Url'] == lti_data['Url']:
             link_id = link['LtiLinkId']

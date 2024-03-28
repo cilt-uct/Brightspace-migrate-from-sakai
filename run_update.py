@@ -154,6 +154,9 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             if 'use_transfer_id' in step:
                 new_kwargs['transfer_id'] = kwargs['transfer_id']
 
+            if 'use_target_site_id' in step:
+                new_kwargs['target_site_id'] = kwargs['target_site_id']
+
             if 'use_import_id' in step:
                 new_kwargs['import_id'] = kwargs['import_id']
 

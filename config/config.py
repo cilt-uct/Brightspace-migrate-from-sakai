@@ -230,7 +230,15 @@ APP = {
             'audio/vnd.wave' : '.wav'
         }
   },
+
+  'lti': {
+          'content_item_urls': {
+              'https://media.uct.ac.za/lti/player/' : 'opencast'
+          }
+  },
+
   'path': Path().absolute(),
+
   # Here for the config unittest
   'loaded' : True,
 }

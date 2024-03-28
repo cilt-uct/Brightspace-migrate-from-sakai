@@ -362,7 +362,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
                             "CustomParameters": [ { "Name": "tool", "Value": tool } ]
                     }
 
-                    quicklink_url = create_quicklink(APP, import_id, lti_link_data)
+                    quicklink_url = create_lti_quicklink(APP, import_id, lti_link_data)
                     logging.info(f"Quicklink for {lti_link_data['Url']} is {quicklink_url}")
 
                     if quicklink_url:

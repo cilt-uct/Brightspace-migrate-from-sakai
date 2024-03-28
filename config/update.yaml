@@ -40,6 +40,11 @@ STEPS:
   - action: create_course_offering
     use_link_id: 1
 
+  # Update Opencast ACLs for LTI Content Item links
+  - action: update_lti_acls
+    use_import_id: 1
+    use_target_site_id: 1
+
   # Finish up
   - action: mail
     template: 'finished'
