@@ -18,7 +18,10 @@ sys.path.append(parent)
 
 from config.config import *
 from config.logging_config import *
-from lib.lessons import *
+from lib.lessons import ItemType, \
+        parse_youtube, generic_iframe, link_item, \
+        folder_list_embed, generic_embed, youtube_embed, twitter_embed, audio_embed, \
+        is_image, is_youtube, is_twitter, is_audio_video, is_url_html, is_audio_url
 
 def update_item_types(APP, SITE_ID, items):
 

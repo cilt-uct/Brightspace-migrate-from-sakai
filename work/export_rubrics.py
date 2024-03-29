@@ -19,8 +19,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from lib.local_auth import getAuth
 
 # Map table columns to XML attributes
 def remove_control_characters(s):

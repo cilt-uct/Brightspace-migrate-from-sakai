@@ -24,7 +24,6 @@ sys.path.append(parent)
 
 from config.config import SCRIPT_FOLDER
 from lib.utils import send_template_email, create_jira
-from lib.local_auth import *
 
 LOG_FILE = 'brightspace_migration_list.log'
 

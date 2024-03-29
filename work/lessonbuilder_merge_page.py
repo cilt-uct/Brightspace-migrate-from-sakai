@@ -15,9 +15,9 @@ sys.path.append(parent)
 
 from config.config import *
 from config.logging_config import *
-from lib.utils import *
-from lib.lessons import *
-from lib.resources import *
+from lib.utils import remove_unwanted_characters
+from lib.lessons import ItemType, link_item
+from lib.resources import get_resource_ids
 
 def run(SITE_ID, APP):
     logging.info('Merge lessons page: {}'.format(SITE_ID))

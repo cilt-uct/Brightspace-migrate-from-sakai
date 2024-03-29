@@ -21,8 +21,9 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from lib.utils import enroll_in_site, middleware_api, sis_course_title, site_has_tool
+from lib.local_auth import getAuth
+from lib.d2l import middleware_d2l_api
 
 def cheap_hash(input_str):
     return hashlib.md5(input_str.encode('utf-8')).hexdigest()[:8]
@@ -49,7 +50,7 @@ def enroll(SITE_ID, APP, import_id, role):
                     _eid = details[0].get('eid')
                     _type = details[0].get('type')
                     if (_type in APP['course']['enroll_user_type']):
-                        find_user_and_enroll_in_site(APP, _eid, import_id, role)
+                        enroll_in_site(APP, _eid, import_id, role)
 
         except Exception as e:
             raise Exception(f'Could not enroll users in {SITE_ID}') from e
@@ -169,7 +170,7 @@ def run(SITE_ID, APP, link_id):
                     course = f'{dept}_{cheap_hash(name)}'
                 else:
                     # single course
-                    title = course_title(APP, course, term)
+                    title = sis_course_title(APP, course, term)
 
                     # Add the course title
                     if title:

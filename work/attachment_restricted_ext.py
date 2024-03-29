@@ -14,7 +14,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import read_yaml
 
 def run(SITE_ID, APP):
     logging.info('Content: check restricted extensions : {}'.format(SITE_ID))

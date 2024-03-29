@@ -9,10 +9,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.lessons import *
-from lib.resources import *
+from lib.d2l import middleware_d2l_api, get_course_info
 
 # Updates course info
 # PUT /d2l/api/lp/(version)/courses/(orgUnitId)

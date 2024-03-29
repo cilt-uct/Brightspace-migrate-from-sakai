@@ -17,7 +17,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import remove_unwanted_characters, make_well_formed
 
 shared_path = '/shared/HTML-Template-Library/HTML-Templates-V3/_assets/img/'
 

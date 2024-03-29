@@ -16,7 +16,6 @@ sys.path.append(parent)
 
 from config.config import *
 from config.logging_config import *
-from lib.utils import *
 
 def run(SITE_ID, APP):
     logging.info('XML: Parseable : {}'.format(SITE_ID))

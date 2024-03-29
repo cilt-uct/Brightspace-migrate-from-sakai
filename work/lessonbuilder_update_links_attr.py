@@ -12,7 +12,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
 
 def run(SITE_ID, APP):
     logging.info('Lessons: Update links add target = _blank for links without target attribute : {}'.format(SITE_ID))

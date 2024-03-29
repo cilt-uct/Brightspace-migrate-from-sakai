@@ -12,7 +12,7 @@ sys.path.append(parent)
 from config.config import *
 from config.logging_config import *
 from lib.utils import *
-from lib.local_auth import *
+from lib.local_auth import getAuth
 
 def login(url, username, password):
     values = {

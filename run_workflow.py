@@ -25,7 +25,6 @@ sys.path.append(parent)
 from config.config import APP, SCRIPT_FOLDER
 from config.logging_config import formatter, logger
 from lib.utils import create_jira, send_email, send_template_email, get_log, get_size, create_folders
-from lib.local_auth import *
 from lib.jira_rest import MyJira
 
 import lib.local_auth

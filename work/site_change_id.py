@@ -16,7 +16,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
 
 def run(SITE_ID, APP, new_id):
     logging.info('Site: Changing site ID to: {}'.format(new_id))

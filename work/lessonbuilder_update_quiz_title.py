@@ -13,7 +13,7 @@ sys.path.append(parent)
 
 from config.config import *
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import remove_unwanted_characters
 
 
 def run(SITE_ID, APP):

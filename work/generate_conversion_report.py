@@ -23,8 +23,7 @@ sys.path.append(parent)
 
 from config.config import *
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from lib.utils import init__soup
 from lib.conversion import *
 
 import lib.utils
@@ -337,6 +336,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
         conf['issues'] = list(filter(lambda i: i['active'], conf['issues']))
 
     for k in conf['issues']:
+
         if k['key'] in globals():
             if APP['debug']:
                 print(f"Running check for {k['key']}")

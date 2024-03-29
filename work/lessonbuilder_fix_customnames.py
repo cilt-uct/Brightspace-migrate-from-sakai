@@ -16,7 +16,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import remove_unwanted_characters
 
 def run(SITE_ID, APP):
     logging.info(f'Lessons: AMA-350 : {SITE_ID}')

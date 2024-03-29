@@ -14,7 +14,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import read_yaml
 from lib.ffprobe_uct import FFProbe_UCT
 
 def check_resources(src_folder, restricted_ext, paths_map, collection):

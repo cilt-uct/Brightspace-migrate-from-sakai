@@ -16,7 +16,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import remove_unwanted_characters, replace_wiris
 
 def run(SITE_ID, APP):
     logging.info('Lessons: Replace wiris in : {}'.format(SITE_ID))

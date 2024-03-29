@@ -14,7 +14,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
 
 def count_items(xml_src):
 

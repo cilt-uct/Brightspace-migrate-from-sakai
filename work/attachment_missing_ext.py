@@ -16,7 +16,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import rewrite_tool_ref
 
 def run(SITE_ID, APP):
     logging.info('Attachments: fix missing extensions : {}'.format(SITE_ID))

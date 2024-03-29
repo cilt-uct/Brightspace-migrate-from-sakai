@@ -17,8 +17,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.resources import *
+from lib.resources import get_resource_ids, move_attachments
 
 def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list, xml_src):
 

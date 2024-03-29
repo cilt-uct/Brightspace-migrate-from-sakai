@@ -21,8 +21,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from lib.local_auth import getAuth
 
 VALID = ['brightspace_conversion_success', 'brightspace_conversion_date', 'brightspace_conversion_status', 'brightspace_imported_site_id']
 

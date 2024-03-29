@@ -20,8 +20,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from lib.local_auth import getAuth
 
 def cleanup_sftp(sftp_folder, site_id):
 

@@ -24,8 +24,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.config import SCRIPT_FOLDER
-from lib.utils import *
-from lib.local_auth import *
 
 # output path for the log file of this script
 LOG_FILE = 'brightspace_uploading_list.log'

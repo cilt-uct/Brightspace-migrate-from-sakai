@@ -15,7 +15,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import format_bytes, get_size
 
 def run(SITE_ID, APP, now_st = None):
 

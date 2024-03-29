@@ -18,8 +18,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from lib.utils import remove_unwanted_characters, make_well_formed
 
 def is_deleted(item, content_xml, site_id):
     sakai_id = item.get("sakaiid")

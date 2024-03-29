@@ -11,7 +11,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
 
 current = os.path.dirname(os.path.realpath(__file__))
 

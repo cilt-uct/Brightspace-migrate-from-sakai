@@ -15,7 +15,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import read_yaml, create_folders
 
 def run(SITE_ID, APP):
     logging.info('Content: fix mime-types : {}'.format(SITE_ID))

@@ -14,8 +14,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from lib.utils import enroll_in_site
 
 
 def run(SITE_ID, APP, import_id):
@@ -43,7 +42,7 @@ def run(SITE_ID, APP, import_id):
                     _eid = details[0].get('eid')
                     _type = details[0].get('type')
                     if (_type in APP['course']['enroll_user_type']):
-                        find_user_and_enroll_in_site(APP, _eid, import_id, APP['course']['enroll_user_role'])
+                        enroll_in_site(APP, _eid, import_id, APP['course']['enroll_user_role'])
 
         except Exception as e:
             raise Exception(f'Could not enroll users from {SITE_ID} in Brightspacd site {import_id}') from e

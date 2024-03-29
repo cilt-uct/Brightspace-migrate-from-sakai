@@ -19,9 +19,8 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-
+from lib.utils import unique
+from lib.local_auth import getAuth
 
 def getProviders(db_config, site_id):
     db = pymysql.connect(**db_config)

@@ -13,11 +13,11 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.lessons import *
-from lib.resources import *
-from lib.d2l import *
+from lib.utils import remove_unwanted_characters, middleware_api
+from lib.local_auth import getAuth
+from lib.lessons import get_archive_lti_link, ItemType, supported_media_type
+from lib.resources import resource_exists, get_content_displayname
+from lib.d2l import create_lti_quicklink, web_login, D2L_API_LE_VERSION
 
 # See https://docs.valence.desire2learn.com/res/content.html
 
@@ -335,7 +335,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
                 if sakai_id.startswith("/blti/"):
                     lti_id = sakai_id.replace("/blti/", "")
-                    sakai_link_data = get_lti_link(archive_path, lti_id)
+                    sakai_link_data = get_archive_lti_link(archive_path, lti_id)
 
                 if sakai_link_data:
                     logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}' {sakai_link_data['launch']}")

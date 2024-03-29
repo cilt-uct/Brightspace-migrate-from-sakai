@@ -17,7 +17,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import init__soup
 
 def drop_content(toolid, archive_path):
     logging.info(f"Tool {toolid} is unused: dropping content")

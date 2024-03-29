@@ -264,7 +264,7 @@ def folder_list_embed(archive_path, collection_id, path_prefix, desc):
 
 # Get the LTI launch URL from basiclti.xml for a content item
 
-def get_lti_link(archive_path, lti_content_id):
+def get_archive_lti_link(archive_path, lti_content_id):
 
     with open(f"{archive_path}/basiclti.xml", "r", encoding="utf8") as blti:
         lti_soup = BeautifulSoup(blti, 'xml')

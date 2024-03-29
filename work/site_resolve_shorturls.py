@@ -14,7 +14,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import resolve_redirect
 
 def run(SITE_ID, APP):
     logging.info('Site: Resolving shortened URLs : {}'.format(SITE_ID))

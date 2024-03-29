@@ -26,7 +26,6 @@ import lib.local_auth
 import lib.utils
 import lib.db
 
-from work.archive_site import *
 from lib.jira_rest import MyJira
 
 WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/upload.yaml'

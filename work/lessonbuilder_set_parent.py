@@ -16,8 +16,6 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.lessons import *
-
 
 def run(SITE_ID, APP):
 

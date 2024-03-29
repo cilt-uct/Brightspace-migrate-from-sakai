@@ -20,7 +20,7 @@ sys.path.append(parent)
 
 from config.config import *
 from lib.utils import *
-from lib.local_auth import *
+from lib.local_auth import getAuth
 
 from work.archive_site import *
 import work.archive_site

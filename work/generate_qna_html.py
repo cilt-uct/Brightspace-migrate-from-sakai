@@ -16,8 +16,8 @@ sys.path.append(parent)
 
 from bs4 import BeautifulSoup
 from config.logging_config import *
-from lib.utils import *
-from lib.resources import *
+from lib.utils import replace_wiris
+from lib.resources import move_attachments, add_resource
 from urllib.parse import quote
 
 # def run(SITE_ID, APP):

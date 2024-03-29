@@ -15,7 +15,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import remove_unwanted_characters, replace_wiris
 
 def work_on_TQ(xml_src):
 

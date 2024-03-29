@@ -19,7 +19,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import remove_unwanted_characters, make_well_formed
 
 def run(SITE_ID, APP):
     logging.info('Lessons: Remove icon h1.lessontitle : {}'.format(SITE_ID))

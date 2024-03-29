@@ -15,8 +15,8 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.lessons import *
+from lib.utils import remove_unwanted_characters
+from lib.lessons import ItemType
 
 def update_page(page, level):
     page_title = page.get("title")

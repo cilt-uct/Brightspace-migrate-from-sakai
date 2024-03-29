@@ -10,10 +10,8 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.lessons import *
-from lib.resources import *
+from lib.local_auth import getAuth
+from lib.d2l import web_login, D2L_API_LE_VERSION
 
 # Returns ToC as JSON
 # See https://docs.valence.desire2learn.com/res/content.html

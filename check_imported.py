@@ -28,7 +28,8 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.config import APP, SCRIPT_FOLDER
-from lib.utils import send_template_email, create_jira, web_login, middleware_d2l_api
+from lib.utils import send_template_email, create_jira
+from lib.d2l import middleware_d2l_api, web_login
 
 # log file of this script
 LOG_FILE = 'brightspace_updating_list.log'

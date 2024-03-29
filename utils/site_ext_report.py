@@ -15,8 +15,9 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+from config.config import *
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import site_has_tool
 
 def extensions(base_path, xml_src):
 
@@ -76,15 +77,15 @@ def extensions(base_path, xml_src):
 def run(SITE_ID, APP):
     logging.info('Content: identify extensions : {}'.format(SITE_ID))
 
-    # Adhoc
-    logging.info(f"Opencast Series tool: {site_has_tool(APP, SITE_ID, 'sakai.opencast.series')}")
-
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 
     content_src = os.path.join(src_folder, "content.xml")
     if not os.path.exists(content_src):
         print(f"ERROR {content_src} not found")
         return False
+
+    # Adhoc
+    logging.info(f"Opencast Series tool: {site_has_tool(APP, SITE_ID, 'sakai.opencast.series')}")
 
     [ext_set, mime_set]  = extensions(src_folder, content_src)
     if ext_set:

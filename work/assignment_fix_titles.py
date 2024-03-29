@@ -15,7 +15,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
+from lib.utils import remove_unwanted_characters_html
 
 def run(SITE_ID, APP):
     logging.info('Assignment: fix empty titles and sanitise instruction text: {}'.format(SITE_ID))

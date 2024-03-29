@@ -13,9 +13,10 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+from config.config import *
 from config.logging_config import *
 from lib.utils import *
-from lib.resources import *
+from lib.resources import get_resource_ids
 
 def orphaned(SITE_ID, content_src):
 
