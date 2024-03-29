@@ -7,6 +7,7 @@ import sys
 import os
 import argparse
 import zeep
+import logging
 
 from requests import Session
 

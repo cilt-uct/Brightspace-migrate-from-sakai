@@ -10,6 +10,8 @@ import shutil
 import argparse
 import lxml.etree as ET
 import base64
+import logging
+
 from bs4 import BeautifulSoup
 from pathlib import Path
 

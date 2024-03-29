@@ -12,6 +12,7 @@ import json
 import lxml.etree as ET
 import importlib
 import hashlib
+import logging
 
 from pymysql.cursors import DictCursor
 

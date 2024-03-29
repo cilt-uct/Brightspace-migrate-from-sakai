@@ -9,7 +9,7 @@ import os
 import shutil
 import argparse
 import lxml.etree as ET
-
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

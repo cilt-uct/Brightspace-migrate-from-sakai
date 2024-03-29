@@ -12,7 +12,7 @@ import argparse
 import pymysql
 import time
 import importlib
-
+import logging
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
@@ -21,13 +21,13 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-import lib.utils
-from lib.local_auth import *
+from config.config import APP, SCRIPT_FOLDER
+from config.logging_config import formatter, logger
+from lib.utils import get_log, send_template_email, send_email, create_jira
+from lib.jira_rest import MyJira
+
 import lib.local_auth
 import lib.db
-from lib.jira_rest import MyJira
 
 WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/update.yaml'
 

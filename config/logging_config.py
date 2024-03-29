@@ -1,5 +1,5 @@
 import logging
-from config.config import *
+from config.config import LOG_PATH, LOG_IN_FILE, LOG_IN_CONSOLE
 
 # create logger
 logger = logging.getLogger()

@@ -4,8 +4,9 @@ import unittest
 import argparse
 
 import config.config
-from work.lessonbuilder_rewrite_urls import *
+from work.lessonbuilder_rewrite_urls import main, fix_unwanted_url_chars
 from unittest.mock import patch
+from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
 class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):

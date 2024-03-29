@@ -8,6 +8,7 @@ import shutil
 import argparse
 import zipfile
 import lxml.etree as ET
+import logging
 from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))

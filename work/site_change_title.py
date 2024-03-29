@@ -7,6 +7,8 @@ import sys
 import os
 import shutil
 import argparse
+import logging
+
 from bs4 import BeautifulSoup
 from datetime import datetime
 

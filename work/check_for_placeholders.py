@@ -3,8 +3,10 @@ import os
 import sys
 import json
 import base64
+import logging
 from jsonpath_ng.ext import parse
 from html import escape
+from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

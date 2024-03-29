@@ -7,6 +7,8 @@ import sys
 import os
 import glob
 import argparse
+import logging
+
 from datetime import datetime
 from pathlib import Path
 

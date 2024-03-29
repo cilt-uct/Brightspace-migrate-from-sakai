@@ -8,6 +8,7 @@ import os
 import json
 import argparse
 import pymysql
+import logging
 
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -18,10 +19,12 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+from config.config import *
 from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
 from lib.conversion import *
+
 import lib.utils
 import lib.local_auth
 
@@ -180,7 +183,7 @@ def populate_tools(dom, found_ul, items):
         found_ul.append(el)
 
 # create html output page
-def html(site_folder, output_file, output_url, config, SITE_ID):
+def html(APP, site_folder, output_file, output_url, config, SITE_ID):
     site_root = site(site_folder)
     now = datetime.now()
     dt_string = now.strftime("%-d %b %Y %H:%M")
@@ -359,7 +362,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
                 return
 
     # general conversion report document
-    html(site_folder, output_file, output_url, conf, SITE_ID)
+    html(APP, site_folder, output_file, output_url, conf, SITE_ID)
 
     # copy the report into the output folder for D2L content import (optional)
     output_folder = "{}/{}-content".format(APP['output'], SITE_ID)

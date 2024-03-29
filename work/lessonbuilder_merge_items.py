@@ -7,6 +7,8 @@ import os
 import argparse
 import urllib.parse
 import json
+import logging
+
 from bs4 import BeautifulSoup
 from html import escape
 
@@ -14,6 +16,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+from config.config import *
 from config.logging_config import *
 from lib.lessons import *
 

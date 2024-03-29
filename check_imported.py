@@ -12,15 +12,14 @@ import logging
 import json
 import importlib
 import re
+import paramiko
 
 from pathlib import Path
 from stat import S_ISREG
-
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
 from subprocess import Popen
 
-import paramiko
 import lib.local_auth
 import lib.db
 
@@ -28,9 +27,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from lib.utils import *
-from lib.local_auth import *
+from config.config import APP, SCRIPT_FOLDER
+from lib.utils import send_template_email, create_jira, web_login, middleware_d2l_api
 
 # log file of this script
 LOG_FILE = 'brightspace_updating_list.log'
@@ -164,7 +162,7 @@ def sftp_file_list(sftp, remotedir):
 # Unused
 def check_sftp(inbox, outbox):
 
-    ftpAuth = getAuth('BrightspaceFTP')
+    ftpAuth = lib.local_auth.getAuth('BrightspaceFTP')
     if (ftpAuth is not None):
         SFTP = {'host' : ftpAuth[0], 'username': ftpAuth[1], 'password' : ftpAuth[2]}
     else:

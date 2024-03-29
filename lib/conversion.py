@@ -11,7 +11,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.resources import *
+from lib.resources import get_resource_ids
 
 # A1 Lessons pages more than 3 levels
 #  in: site_folder

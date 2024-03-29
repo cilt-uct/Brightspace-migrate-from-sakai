@@ -10,7 +10,7 @@ import json
 import argparse
 import pymysql
 import importlib
-
+import logging
 
 from pymysql.cursors import DictCursor
 from datetime import datetime
@@ -19,12 +19,13 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from config.config import APP, SCRIPT_FOLDER
+from config.logging_config import formatter, logger
+
 import lib.local_auth
 import lib.utils
 import lib.db
+
 from work.archive_site import *
 from lib.jira_rest import MyJira
 
@@ -151,7 +152,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
 
             # print("sending email with template: '{}'".format(step['template']))
 
-            return send_template_email(
+            return lib.utils.send_template_email(
                 APP,
                 template=step['template'] + ".html",
                 to=kwargs['to'],
@@ -283,7 +284,7 @@ def start_workflow(link_id, site_id, APP):
         logging.error("Upload workflow did not complete")
 
         # Reset to queued state
-        update_record(DB_AUTH, link_id, site_id, "queued", get_log(log_file))
+        update_record(DB_AUTH, link_id, site_id, "queued", lib.utils.get_log(log_file))
 
 
 def main():

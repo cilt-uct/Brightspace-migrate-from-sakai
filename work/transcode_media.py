@@ -9,6 +9,8 @@ import shutil
 import argparse
 import lxml.etree as ET
 import base64
+import logging
+
 from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))

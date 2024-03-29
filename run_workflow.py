@@ -12,25 +12,27 @@ import argparse
 import pymysql
 import time
 import importlib
-
+import logging
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
+from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+from config.config import APP, SCRIPT_FOLDER
+from config.logging_config import formatter, logger
+from lib.utils import create_jira, send_email, send_template_email, get_log, get_size, create_folders
 from lib.local_auth import *
+from lib.jira_rest import MyJira
+
 import lib.local_auth
 import lib.utils
 import lib.db
-from work.archive_site import *
 import work.archive_site
 import work.get_site_title
-from lib.jira_rest import MyJira
 
 WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/workflow.yaml'
 

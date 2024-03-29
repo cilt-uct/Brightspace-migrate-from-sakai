@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import json
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

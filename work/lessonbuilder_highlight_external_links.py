@@ -10,6 +10,8 @@ import sys
 import os
 import argparse
 import xml.etree.ElementTree as ET
+import logging
+from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

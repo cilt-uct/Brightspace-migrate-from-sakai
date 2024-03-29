@@ -1,4 +1,4 @@
 [lint]
 # E402 Module level import not at top of file
 # F403 and F405 * imports
-ignore = [ "E402", "F403", "F405" ]
+ignore = [ "E402", "F403" ]

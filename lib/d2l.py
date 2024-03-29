@@ -7,7 +7,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.utils import *
+from lib.utils import middleware_d2l_api
 
 # Get a list of LTI links in a site
 def get_lti_links(APP, org_id):

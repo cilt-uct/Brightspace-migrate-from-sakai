@@ -5,14 +5,15 @@ import os
 import sys
 import oembed
 import requests
+from bs4 import BeautifulSoup
 from html import escape
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.utils import *
-from lib.resources import *
+from lib.utils import read_yaml
+from lib.resources import get_content_displayname
 
 # Lessons item types
 # https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36

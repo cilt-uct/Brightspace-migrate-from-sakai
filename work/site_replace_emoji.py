@@ -6,6 +6,7 @@
 import sys
 import os
 import argparse
+import logging
 
 from bs4 import BeautifulSoup
 

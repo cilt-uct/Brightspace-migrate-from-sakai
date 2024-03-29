@@ -7,6 +7,8 @@
 import sys
 import os
 import argparse
+import logging
+
 from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))

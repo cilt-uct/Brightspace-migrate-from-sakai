@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import json
+import logging
 from jsonpath_ng.ext import parse
 
 current = os.path.dirname(os.path.realpath(__file__))

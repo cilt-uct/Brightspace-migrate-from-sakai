@@ -8,6 +8,7 @@ import os
 import glob
 import argparse
 import re
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

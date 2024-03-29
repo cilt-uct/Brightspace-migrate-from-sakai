@@ -8,8 +8,8 @@ import os
 import glob
 import argparse
 import time
-import logging
 import pymysql
+import logging
 
 from pymysql.cursors import DictCursor
 from datetime import timedelta

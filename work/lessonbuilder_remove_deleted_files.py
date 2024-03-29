@@ -8,9 +8,8 @@ import sys
 import os
 import argparse
 import shutil
-# import xml.dom.minidom
-# import xml.dom.expatbuilder
 import lxml.etree as ET
+import logging
 
 from bs4 import BeautifulSoup
 

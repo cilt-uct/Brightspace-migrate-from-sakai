@@ -4,16 +4,17 @@
 ## and adds a default banner to the body if it doesn't exist yet
 ## REF: AMA-85
 
-import logging
 import sys
 import os
 import argparse
 import xml.etree.ElementTree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+from config.config import *
 from config.logging_config import *
 from lib.utils import *
 

@@ -7,6 +7,8 @@ import os
 import argparse
 import hashlib
 import lxml.etree as ET
+import logging
+
 from bs4 import BeautifulSoup
 from urllib.parse import quote, unquote
 

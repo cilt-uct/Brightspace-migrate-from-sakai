@@ -7,8 +7,9 @@ import sys
 import os
 import argparse
 import zeep
-from requests import Session
+import logging
 
+from requests import Session
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
 

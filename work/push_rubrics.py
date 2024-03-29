@@ -7,6 +7,8 @@ import sys
 import os
 import argparse
 import requests
+import logging
+
 from xml.sax.saxutils import escape
 
 current = os.path.dirname(os.path.realpath(__file__))

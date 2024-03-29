@@ -8,6 +8,7 @@ import os
 import copy
 import argparse
 import xml.etree.ElementTree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

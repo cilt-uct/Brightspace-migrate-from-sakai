@@ -9,6 +9,7 @@ import os
 import argparse
 import pymysql
 import json
+import logging
 
 from pymysql.cursors import DictCursor
 

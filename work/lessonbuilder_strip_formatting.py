@@ -9,7 +9,7 @@ import os
 import shutil
 import argparse
 import xml.etree.ElementTree as ET
-
+import logging
 import cssutils
 from bs4 import BeautifulSoup
 
