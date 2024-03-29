@@ -9,16 +9,10 @@ import re
 import glob
 import json
 import argparse
-import numpy
 import pymysql
-import yaml
 import time
 import importlib
 
-import emails
-from emails.template import JinjaTemplate as T
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-from validate_email import validate_email
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta

@@ -32,13 +32,13 @@ def run(SITE_ID, APP):
     rewrite = False
 
     # find each resource with an id that contains that extension
-    for asn in asn_tree.xpath(f"//Assignment/title[not(text())]"):
+    for asn in asn_tree.xpath("//Assignment/title[not(text())]"):
         asn.text = f"Untitled Assignment {ua}"
         ua += 1
         rewrite = True
 
     # Find all Assignment instruction elements
-    for asn in asn_tree.xpath(f"//Assignment/instructions"):
+    for asn in asn_tree.xpath("//Assignment/instructions"):
         if asn.text:
             asn_html = remove_unwanted_characters_html(asn.text)
             if asn_html != asn.text:

@@ -6,8 +6,6 @@
 
 import sys
 import os
-import shutil
-import yaml
 import argparse
 import lxml.etree as ET
 

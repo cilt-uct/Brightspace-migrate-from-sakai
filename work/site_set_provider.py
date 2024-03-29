@@ -9,10 +9,8 @@ import os
 import argparse
 import pymysql
 import json
-import numpy as np
 
 from pymysql.cursors import DictCursor
-from xml.etree import ElementTree
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -50,7 +48,7 @@ def update_providers(db_config, link_id, site_id, provider_list):
             connection.commit()
             logging.debug("Set providers: {} ({}-{})".format(provider_list, link_id, site_id))
 
-    except Exception as e:
+    except Exception:
         logging.error(f"Could not update migration record {link_id} : {site_id}")
         return False
 

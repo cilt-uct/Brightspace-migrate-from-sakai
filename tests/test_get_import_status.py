@@ -14,7 +14,7 @@ class GenerateConversionReportTestCase(unittest.TestCase):
                 self.password = web_auth[1]
             else:
                 raise Exception("Please update username and password before running the GenerateConversionReportTestCase.")
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             self.username = None
             self.password = None
             raise Exception("For local tests, please update username and password.")

@@ -1,10 +1,7 @@
 import argparse
 import os
 import sys
-import pprint
 import json
-import base64
-from jsonpath_ng.ext import parse
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

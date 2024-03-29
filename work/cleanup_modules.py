@@ -1,9 +1,7 @@
 import argparse
 import os
 import sys
-import pprint
 import json
-import base64
 from jsonpath_ng.ext import parse
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -59,7 +57,7 @@ def run(SITE_ID, APP, import_id):
     if (webAuth is not None):
         WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
     else:
-        raise Exception(f'Web Authentication required [BrightspaceWeb]')
+        raise Exception('Web Authentication required [BrightspaceWeb]')
 
     brightspace_url = APP['brightspace_url']
 

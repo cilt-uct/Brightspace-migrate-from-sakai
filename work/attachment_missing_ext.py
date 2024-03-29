@@ -5,9 +5,6 @@
 
 import sys
 import os
-import shutil
-import glob
-import yaml
 import argparse
 import mimetypes
 import lxml.etree as ET
@@ -43,7 +40,7 @@ def run(SITE_ID, APP):
     rewrite = False
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         src_id = item.get('id')
 
@@ -68,7 +65,7 @@ def run(SITE_ID, APP):
         if target_ext and file_extension.upper() == target_ext.upper():
             continue
 
-        if file_extension and not "http" in src_id and not "www" in src_id and not "://" in src_id and len(file_extension) <= 5:
+        if file_extension and "http" not in src_id and "www" not in src_id and "://" not in src_id and len(file_extension) <= 5:
             continue
 
         target_id = f"{src_id}{target_ext}"

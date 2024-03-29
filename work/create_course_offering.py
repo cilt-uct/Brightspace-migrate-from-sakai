@@ -9,13 +9,11 @@ import re
 import argparse
 import pymysql
 import json
-import requests
 import lxml.etree as ET
 import importlib
 import hashlib
 
 from pymysql.cursors import DictCursor
-from requests.exceptions import HTTPError
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

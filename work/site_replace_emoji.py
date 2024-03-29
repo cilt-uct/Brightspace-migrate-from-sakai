@@ -5,10 +5,8 @@
 
 import sys
 import os
-import shutil
 import argparse
 
-from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))

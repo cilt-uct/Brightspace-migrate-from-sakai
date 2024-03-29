@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import pprint
 import json
 import base64
 from jsonpath_ng.ext import parse
@@ -82,7 +81,7 @@ def get_media_id(content_toc, file_path, displayname):
         search_name = filename
         if displayname:
             search_name = displayname
-            if not '.' in search_name and '.' in filename:
+            if '.' not in search_name and '.' in filename:
                 # append the original extension to match the Brightspace import behaviour
                 file_ext = filename.split('.')[-1]
                 search_name += f".{file_ext}"
@@ -244,7 +243,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
     if (webAuth is not None):
         WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
     else:
-        raise Exception(f'Web Authentication required [BrightspaceWeb]')
+        raise Exception('Web Authentication required [BrightspaceWeb]')
 
     brightspace_url = APP['brightspace_url']
 
@@ -449,7 +448,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
             new_topic_filename = f"lessonBuilder_{itemid}a.html"
             update_endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['update_html_file'].format(import_id, topic_id))
             json_response = middleware_api(APP, update_endpoint, payload_data={'html': soup_html.html.encode("utf-8"), 'name': new_topic_filename}, method='PUT')
-            if not 'status' in json_response or json_response['status'] != 'success':
+            if 'status' not in json_response or json_response['status'] != 'success':
                 raise Exception(f"Error updating topic {topic_id}: {json_response}")
             logging.info(f"Updating topic {import_id} / {topic_id} for Lessons item {itemid}")
 

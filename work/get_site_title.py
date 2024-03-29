@@ -5,9 +5,7 @@
 
 import sys
 import os
-import glob
 import argparse
-import time
 import zeep
 from requests import Session
 

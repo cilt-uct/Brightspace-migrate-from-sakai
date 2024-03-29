@@ -5,12 +5,7 @@
 
 import sys
 import os
-import shutil
-import yaml
 import argparse
-import lxml.etree as ET
-import base64
-import validators
 import urllib.parse
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -31,7 +26,7 @@ def orphaned(SITE_ID, content_src):
     qti_folder = "{}{}-archive/qti/".format(APP['archive_folder'], SITE_ID)
 
     archive_files = [entry for entry in os.scandir(xml_folder)
-            if (entry.name.endswith('.xml') and not entry.name in ('content.xml', 'archive.xml')) ]
+            if (entry.name.endswith('.xml') and entry.name not in ('content.xml', 'archive.xml')) ]
     qti_files = [entry for entry in os.scandir(qti_folder) if entry.name.endswith('.xml')]
     xml_files = archive_files + qti_files
 
@@ -48,10 +43,10 @@ def orphaned(SITE_ID, content_src):
                     url_id = urllib.parse.quote(id)
 
                     if id in content:
-                        used_ids[id] = 'found-plain';
+                        used_ids[id] = 'found-plain'
                         print(f"{id} found in {xml_file.name}")
                     elif url_id in content:
-                        used_ids[id] = 'found-escaped';
+                        used_ids[id] = 'found-escaped'
                         print(f"{id} found escaped in {xml_file.name}")
 
     # Now check the ids that weren't found

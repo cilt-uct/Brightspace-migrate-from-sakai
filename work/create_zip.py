@@ -6,9 +6,8 @@
 import sys
 import os
 import glob
-import zipfile
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))

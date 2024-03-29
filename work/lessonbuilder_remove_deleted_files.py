@@ -92,7 +92,7 @@ def run(SITE_ID, APP):
     # <img ... src="https://[server]/access/content/[sakaiid]">
 
     lesson_tree.write(lessons_file, encoding='utf-8', xml_declaration=True)
-    logging.info(f'\tDone')
+    logging.info('\tDone')
 
 def main():
     global APP

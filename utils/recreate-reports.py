@@ -5,17 +5,12 @@
 
 import sys
 import os
-import subprocess
 import argparse
 import pymysql
 import time
 import logging
 import re
-import json
-import importlib
 
-from requests.exceptions import HTTPError
-from pathlib import Path
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta

@@ -41,7 +41,7 @@ def check_resources(src_folder, disallowed, paths_map, collection):
     content_tree = ET.parse(xml_src, parser)
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         # Ignore URL resource types
         if item.get('resource-type') == "org.sakaiproject.content.types.urlResource":

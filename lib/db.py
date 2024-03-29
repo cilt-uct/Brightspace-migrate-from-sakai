@@ -40,7 +40,7 @@ def query_get_record():
 
 
 def query_get_records(order_by_zip: bool = False, expiry_minutes: int = 0):
-    where = f"A.active=1 AND A.state=%s"
+    where = "A.active=1 AND A.state=%s"
     if order_by_zip:
         ordered_by = "zip_size ASC"
     else:

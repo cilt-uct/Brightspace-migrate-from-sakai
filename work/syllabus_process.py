@@ -6,15 +6,12 @@
 
 import sys
 import os
-import re
 import shutil
-import copy
 import argparse
 import lxml.etree as ET
 import base64
 from bs4 import BeautifulSoup
 from pathlib import Path
-import cssutils
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -38,7 +35,7 @@ def run(SITE_ID, APP):
         attachment_names = {}
 
         # find each resource with an id that contains that extension
-        for item in attachment_tree.xpath(f".//resource[contains(@id,'/Course Outline/')]"):
+        for item in attachment_tree.xpath(".//resource[contains(@id,'/Course Outline/')]"):
             path = Path(item.get('id'))
             filename = path.name
             new_path = f"/attachment/Course Outline/{filename}"

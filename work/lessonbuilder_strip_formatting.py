@@ -6,9 +6,7 @@
 import json
 import sys
 import os
-import re
 import shutil
-import copy
 import argparse
 import xml.etree.ElementTree as ET
 
@@ -58,7 +56,7 @@ def run(SITE_ID, APP):
 
             tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
-        logging.info(f'\tDone')
+        logging.info('\tDone')
 
 
 def main():

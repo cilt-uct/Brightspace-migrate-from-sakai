@@ -4,14 +4,11 @@
 
 import sys
 import os
-import re
-import shutil
-import copy
 import argparse
 import hashlib
 import lxml.etree as ET
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, quote, unquote
+from urllib.parse import quote, unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -83,7 +80,7 @@ def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list,
                             if attach_id in content_ids:
                                 continue
 
-                            if not attach_id in attachment_ids:
+                            if attach_id not in attachment_ids:
                                 logging.warning(f"Missing image: {attach_id} in {xml_src} URL {img_src}")
                                 continue
 

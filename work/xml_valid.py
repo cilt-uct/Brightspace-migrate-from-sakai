@@ -6,13 +6,8 @@
 
 import sys
 import os
-import re
-import shutil
-import copy
 import argparse
 import xml.etree.ElementTree as ET
-from bs4 import BeautifulSoup
-import cssutils
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

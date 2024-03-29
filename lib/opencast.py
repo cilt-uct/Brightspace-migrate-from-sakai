@@ -3,20 +3,12 @@
 
 import sys
 import os
-import re
-import shutil
-import copy
-import json
-import bs4
 import logging
-import time
-import requests
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.local_auth import getAuth
 from lib.utils import *
 
 def opencast_update_acls(APP, urls, import_id, target_site_id):

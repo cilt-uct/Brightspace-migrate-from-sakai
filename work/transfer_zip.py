@@ -12,8 +12,7 @@ import logging
 import pymysql
 
 from pymysql.cursors import DictCursor
-from datetime import datetime, timedelta
-from tqdm import tqdm
+from datetime import timedelta
 import paramiko
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -68,7 +67,7 @@ def set_uploaded_at(db_config, link_id, site_id):
 
             connection.commit()
 
-    except Exception as e:
+    except Exception:
         logging.error(f"Could not update migration record {link_id} : {site_id}")
         return None
 

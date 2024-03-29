@@ -5,8 +5,6 @@
 
 import sys
 import os
-import shutil
-import yaml
 import argparse
 import lxml.etree as ET
 
@@ -31,11 +29,11 @@ def count_items(xml_src):
     pagecount = 0
     itemcount = 0
 
-    for item in content_tree.xpath(f".//page"):
+    for item in content_tree.xpath(".//page"):
         pagecount += 1
 
     typecount = {}
-    for item in content_tree.xpath(f".//item"):
+    for item in content_tree.xpath(".//item"):
         itemtype = item.get('type')
         tp = f"type_{itemtype}"
         if tp in typecount:

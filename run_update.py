@@ -9,16 +9,10 @@ import re
 import glob
 import json
 import argparse
-from numpy import true_divide
 import pymysql
-import yaml
 import time
 import importlib
 
-import emails
-from emails.template import JinjaTemplate as T
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-from validate_email import validate_email
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
@@ -49,7 +43,7 @@ def update_record(db_config, link_id, site_id, state, log):
 
             connection.commit()
 
-    except Exception as e:
+    except Exception:
         logging.error(f"Could not update migration record {link_id} : {site_id}")
         return None
 

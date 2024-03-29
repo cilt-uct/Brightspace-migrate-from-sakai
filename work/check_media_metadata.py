@@ -5,12 +5,8 @@
 
 import sys
 import os
-import shutil
 import argparse
-import zipfile
 import lxml.etree as ET
-import base64
-from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -31,7 +27,7 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
     content_tree = ET.parse(xml_src, parser)
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         content_type = item.get('content-type')
         src_id = item.get('id')
@@ -53,7 +49,7 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
             metadata = None
             try:
                 metadata = FFProbe_UCT(resource_file)
-            except Exception as e:
+            except Exception:
                 raise Exception(f"Unable to read metadata for media file {src_id} body {resource_file}")
 
             if metadata is None:

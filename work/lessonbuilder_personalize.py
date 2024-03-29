@@ -8,7 +8,6 @@ import sys
 import os
 import re
 import shutil
-import copy
 import argparse
 # import xml.etree.ElementTree as ET
 import lxml.etree as ET
@@ -79,7 +78,7 @@ def run(SITE_ID, APP):
         item.set('html', str(new_html))
 
     lesson_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
-    logging.info(f'\tDone')
+    logging.info('\tDone')
 
 def main():
     global APP

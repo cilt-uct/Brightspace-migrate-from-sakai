@@ -6,14 +6,8 @@
 
 import sys
 import os
-import re
-import shutil
-import copy
 import argparse
-import urllib.parse
-import json
 from bs4 import BeautifulSoup
-from html import escape
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

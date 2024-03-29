@@ -11,7 +11,7 @@ import time
 import logging
 
 from pymysql.cursors import DictCursor
-from datetime import datetime, timedelta
+from datetime import timedelta
 from subprocess import Popen
 from pathlib import Path
 
@@ -25,7 +25,6 @@ sys.path.append(parent)
 from config.config import *
 from lib.utils import *
 from lib.local_auth import *
-from lib.jira_rest import MyJira
 
 LOG_FILE = 'brightspace_migration_list.log'
 

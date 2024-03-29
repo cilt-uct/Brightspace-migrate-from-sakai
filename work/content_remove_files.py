@@ -6,7 +6,6 @@
 import sys
 import os
 import shutil
-import yaml
 import argparse
 import lxml.etree as ET
 
@@ -33,7 +32,7 @@ def run(SITE_ID, APP):
     found_disallowed = False
 
     # find each resource with a disallowed filename
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
         rel_id = item.get('rel-id')
         filename = os.path.join(src_folder, item.get('body-location'))
 

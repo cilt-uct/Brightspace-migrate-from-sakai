@@ -61,7 +61,7 @@ def main():
     if (webAuth is not None):
         WEB = {'username': webAuth[0], 'password' : webAuth[1]}
     else:
-        raise Exception(f'Web Authentication required [getBrightspaceWebAuth]')
+        raise Exception('Web Authentication required [getBrightspaceWebAuth]')
 
     brightspace_url = APP['brightspace_url']
     logging.info(f"Checking import status for orgids {org_ids} on {brightspace_url}")

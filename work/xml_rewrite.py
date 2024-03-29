@@ -2,17 +2,12 @@
 
 # Testing stub for XML rewriting
 
-import json
 import sys
 import os
-import re
 import shutil
-import copy
 import argparse
 import xml.etree.ElementTree as ET
 
-import cssutils
-from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -32,7 +27,7 @@ def run(SITE_ID, APP):
         tree = ET.parse(xml_src)
         tree.write(xml_src, xml_declaration=True)
 
-        logging.info(f'\tDone')
+        logging.info('\tDone')
 
 def main():
     global APP

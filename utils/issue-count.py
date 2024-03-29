@@ -1,7 +1,6 @@
 #! /usr/bin/python3
 
 import json
-import yaml
 
 # Iterating through the json list
 with open('../config/conversion_issues.json', 'r') as f:

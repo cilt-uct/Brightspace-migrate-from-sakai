@@ -7,8 +7,6 @@
 import sys
 import os
 import re
-import shutil
-import copy
 import argparse
 from bs4 import BeautifulSoup
 

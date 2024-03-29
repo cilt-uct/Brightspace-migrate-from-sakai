@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from re import T
 from pathlib import Path
 from lib.utils import get_var
 from lib.local_auth import getAuth

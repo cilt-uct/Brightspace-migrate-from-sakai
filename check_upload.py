@@ -5,25 +5,18 @@
 
 import sys
 import os
-import subprocess
 import argparse
 import pymysql
 import time
 import logging
-import requests
-import json
-import importlib
 
-from requests.exceptions import HTTPError
 from pathlib import Path
-from stat import S_ISREG
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
 from subprocess import Popen
 
 import lib.local_auth
-import run_update
 import lib.db
 
 current = os.path.dirname(os.path.realpath(__file__))

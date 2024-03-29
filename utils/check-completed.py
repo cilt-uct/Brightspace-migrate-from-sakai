@@ -4,21 +4,14 @@
 
 import sys
 import os
-import subprocess
 import argparse
 import pymysql
-import time
 import logging
 import re
-import json
-import importlib
 import requests
 
-from requests.exceptions import HTTPError
-from pathlib import Path
 
 from pymysql.cursors import DictCursor
-from datetime import datetime, timedelta
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -29,11 +22,8 @@ from lib.utils import *
 from lib.local_auth import *
 
 from work.archive_site import *
-import work.archive_site
-import work.clear_archive
 
 from work.generate_conversion_report import *
-import work.generate_conversion_report
 
 def get_records(db_config):
     try:
@@ -107,7 +97,7 @@ def run(APP):
     if (webAuth is not None):
         WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
     else:
-        raise Exception(f'Web Authentication required [getBrightspaceWebAuth]')
+        raise Exception('Web Authentication required [getBrightspaceWebAuth]')
 
     logging.info(f"Checking for sites migrated to {brightspace_url}")
 
@@ -131,7 +121,7 @@ def run(APP):
 
     status_collection = get_import_status_collection(brightspace_url, WEB_AUTH, ouids)
     for ouid in ouids:
-        logging.debug(f"ouid {ouid} ");
+        logging.debug(f"ouid {ouid} ")
         status = status_collection[ouid]
         if 'status' in status and status['status'] is not None and status['status'] != "Complete":
             logging.warning(f"site {ouid_site[ouid]} ouid {ouid} not completed: {status['status']}")

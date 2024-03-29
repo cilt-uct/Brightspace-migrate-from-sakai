@@ -10,8 +10,6 @@ import shutil
 import argparse
 import lxml.etree as ET
 
-from datetime import datetime, timedelta
-from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -113,7 +111,7 @@ def run(SITE_ID, APP):
 
     for tool in drop_tools:
         toolid = tool['key']
-        if not toolid in found_tool_keys and 'archive' in tool:
+        if toolid not in found_tool_keys and 'archive' in tool:
             # Drop tool content
             drop_content(tool['key'], os.path.join(site_folder, tool['archive']))
 

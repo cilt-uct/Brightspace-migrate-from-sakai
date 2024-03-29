@@ -17,8 +17,7 @@ from bs4 import BeautifulSoup
 from config.logging_config import *
 from lib.utils import *
 from lib.resources import *
-from pathlib import Path
-from urllib.parse import urlparse, quote, unquote
+from urllib.parse import quote
 
 # def run(SITE_ID, APP):
 def run(SITE_ID, APP):
@@ -47,7 +46,7 @@ def run(SITE_ID, APP):
 
         if root.tag == 'archive':
             if len(root.findall(".//question")) == 0:
-                logging.info(f'\tNothing to do')
+                logging.info('\tNothing to do')
                 return
 
         # Replace wiris content

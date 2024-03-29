@@ -6,12 +6,8 @@
 import sys
 import os
 import argparse
-import time
-import json
-import requests
 import lxml.etree as ET
 
-from requests.exceptions import HTTPError
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

@@ -36,7 +36,7 @@ if __name__ == "__main__":
     test_case = args.tc
 
     if test_file and test_case:
-        raise Exception(f'Please provide either a test case or a test file.')
+        raise Exception('Please provide either a test case or a test file.')
 
     if test_file:
         print(f'Test file to be run: {test_file}')

@@ -5,17 +5,14 @@
 
 import sys
 import os
-import subprocess
 import argparse
 import pymysql
 import time
 import logging
-import requests
 import json
 import importlib
 import re
 
-from requests.exceptions import HTTPError
 from pathlib import Path
 from stat import S_ISREG
 
@@ -25,7 +22,6 @@ from subprocess import Popen
 
 import paramiko
 import lib.local_auth
-import run_update
 import lib.db
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -35,7 +31,6 @@ sys.path.append(parent)
 from config.config import *
 from lib.utils import *
 from lib.local_auth import *
-from lib.jira_rest import MyJira
 
 # log file of this script
 LOG_FILE = 'brightspace_updating_list.log'
@@ -173,7 +168,7 @@ def check_sftp(inbox, outbox):
     if (ftpAuth is not None):
         SFTP = {'host' : ftpAuth[0], 'username': ftpAuth[1], 'password' : ftpAuth[2]}
     else:
-        raise Exception(f'SFTP Authentication required [getBrightspaceFTP]')
+        raise Exception('SFTP Authentication required [getBrightspaceFTP]')
 
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -225,7 +220,7 @@ def check_for_brightspace_id(search_site_id):
         else:
             logging.warning(f"Unexpected response {json_response} checking for {search_site_id}")
 
-    except Exception as err:
+    except Exception:
         logging.exception(f"Exception in fetch_course_info for {search_site_id}")
 
     # Error or not found
@@ -315,7 +310,7 @@ def check_imported(APP):
     if (webAuth is not None):
         WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
     else:
-        raise Exception(f'Web Authentication required [BrightspaceWeb]')
+        raise Exception('Web Authentication required [BrightspaceWeb]')
 
     start_time = time.time()
 
@@ -373,7 +368,7 @@ def check_imported(APP):
             import_status = import_status_set[imported_site_id]
 
         try:
-            logging.debug("{} : {} ({})".format(site['link_id'], site['site_id'], site['expired'], site['expired'] == 'Y'))
+            logging.debug("{} : {} ({})".format(site['link_id'], site['site_id'], site['expired'], ))
 
             if not site['files'] or not site['workflow']:
                 logging.warning(f"Skipping {site_id} {site_title} - missing files and/or workflow")

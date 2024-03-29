@@ -6,7 +6,6 @@
 import sys
 import os
 import shutil
-import yaml
 import argparse
 import lxml.etree as ET
 import validators
@@ -34,7 +33,7 @@ def run(SITE_ID, APP):
     found_invalid_url = False
 
     # find each URL item
-    for item in content_tree.xpath(f".//resource[@content-type='text/url']"):
+    for item in content_tree.xpath(".//resource[@content-type='text/url']"):
         filename = os.path.join(src_folder, item.get('body-location'))
         with open(filename, 'r') as b:
             url = b.read()

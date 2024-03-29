@@ -13,13 +13,9 @@ import logging
 import time
 import requests
 import subprocess
-import csv
-import socket
 
-from datetime import datetime, timedelta
-from emails.template import JinjaTemplate as T
+from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from validate_email import validate_email
 from bs4 import BeautifulSoup
 from pathlib import Path
 
@@ -521,7 +517,6 @@ def resolve_redirect(url):
 
 def course_title(APP, course, term):
 
-    import csv
 
     # AAE2001F,2024,"Special Study Module",AAE,2024-01-02,2024-06-12
     fieldnames = ['course', 'term', 'title', 'dept', 'start', 'end']

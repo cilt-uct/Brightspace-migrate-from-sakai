@@ -5,13 +5,8 @@
 
 import sys
 import os
-import re
-import json
-import csv
-import base64
 import argparse
 import requests
-from pathlib import Path
 from xml.sax.saxutils import escape
 
 current = os.path.dirname(os.path.realpath(__file__))

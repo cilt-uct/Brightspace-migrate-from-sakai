@@ -7,12 +7,9 @@ import sys
 import os
 import re
 import shutil
-import copy
 import argparse
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
-import cssutils
-from pathlib import Path
 from urllib.parse import urlparse, unquote
 
 current = os.path.dirname(os.path.realpath(__file__))

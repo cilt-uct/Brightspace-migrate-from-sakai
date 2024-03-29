@@ -229,7 +229,7 @@ def folder_list_embed(archive_path, collection_id, path_prefix, desc):
         html = '<div data-type="folder-list"><hr>'
         collection = content_soup.find("collection", id=collection_id)
         if not collection:
-            print(f"Collection not found")
+            print("Collection not found")
             return None
 
         # Collection title

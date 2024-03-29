@@ -4,9 +4,6 @@
 
 import sys
 import os
-import re
-import shutil
-import copy
 import argparse
 import urllib.parse
 import json

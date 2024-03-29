@@ -7,7 +7,6 @@ import sys
 import os
 import shutil
 import argparse
-import zipfile
 import lxml.etree as ET
 import base64
 from pathlib import Path
@@ -74,7 +73,7 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
     content_tree = ET.parse(xml_src, parser)
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         file_name, file_extension = os.path.splitext(item.get('id'))
         file_extension = file_extension.upper().replace(".","")

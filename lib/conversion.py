@@ -5,7 +5,7 @@ import json
 import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, quote, unquote
+from urllib.parse import unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -359,7 +359,7 @@ def b7(site_folder):
 # B8 Assignments model answers
 def b8(assignment_soup):
     if assignment_soup.find("ModelAnswer") or assignment_soup.find("PrivateNote") or assignment_soup.find("AllPurposeItem"):
-        return True;
+        return True
 
 # B9 Assignments linked to Gradebook
 def b9(assignment_soup):
@@ -758,25 +758,25 @@ def c19(gradebook_soup):
 # D1 Forum / Topic attachments
 def d1(discussions_soup):
 
-    forums = discussions_soup.find_all("discussion_forum");
+    forums = discussions_soup.find_all("discussion_forum")
     for forum in forums:
         if forum.find("attachment", recursive=False):
-            return True;
+            return True
 
-    topics = discussions_soup.find_all("discussion_topic");
+    topics = discussions_soup.find_all("discussion_topic")
     for topic in topics:
         if topic.find("attachment", recursive=False):
-            return True;
+            return True
 
 # D3 Forum / Topic availability dates
 def d3(discussions_soup):
     if len(discussions_soup.select("[available_open]")) or len(discussions_soup.select("[available_close]")):
-        return True;
+        return True
 
 # D5 Forum and Topic gradebook settings
 def d5(discussions_soup):
     if len(discussions_soup.select("[grade_assignment]")):
-        return True;
+        return True
 
 # AMA-355 Gradebook weightings
 def e1(gradebook_soup):

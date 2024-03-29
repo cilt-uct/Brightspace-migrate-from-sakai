@@ -5,8 +5,6 @@
 
 import sys
 import os
-import shutil
-import yaml
 import argparse
 import lxml.etree as ET
 import base64
@@ -36,7 +34,7 @@ def extensions(base_path, xml_src):
     print("\n")
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
         file_path = item.get('id')
 
         #if len(file_path) > 230:

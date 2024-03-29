@@ -5,8 +5,6 @@
 
 import sys
 import os
-import shutil
-import yaml
 import argparse
 import lxml.etree as ET
 
@@ -41,7 +39,7 @@ def run(SITE_ID, APP):
     content_tree = ET.parse(xml_src, parser)
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         # Extensions
         file_name, file_extension = os.path.splitext(item.get('id'))

@@ -8,19 +8,13 @@ import re
 import glob
 import json
 import argparse
-import numpy
 import pymysql
-import yaml
 import time
 import importlib
 
-import emails
-from emails.template import JinjaTemplate as T
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-from validate_email import validate_email
 
 from pymysql.cursors import DictCursor
-from datetime import datetime, timedelta
+from datetime import datetime
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -33,7 +27,6 @@ import lib.local_auth
 import lib.utils
 import lib.db
 from work.archive_site import *
-import work.archive_site
 from lib.jira_rest import MyJira
 
 WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/upload.yaml'
@@ -70,7 +63,7 @@ def update_record(db_config, link_id, site_id, state, log):
 
             connection.commit()
 
-    except Exception as e:
+    except Exception:
         logging.error(f"Could not update migration record {link_id} : {site_id}")
         return None
 
@@ -89,7 +82,7 @@ def update_record_files(db_config, link_id, site_id, files):
             connection.commit()
             logging.debug("Set files: ({}-{})".format(link_id, site_id))
 
-    except Exception as e:
+    except Exception:
         logging.error(f"Could not update migration record {link_id} : {site_id}")
         return None
 
@@ -290,9 +283,9 @@ def start_workflow(link_id, site_id, APP):
         else:
             logging.warning("There are no workflow steps in this workflow.")
 
-    except Exception as e:
+    except Exception:
         # Failed
-        logging.error(f"Upload workflow did not complete")
+        logging.error("Upload workflow did not complete")
 
         # Reset to queued state
         update_record(DB_AUTH, link_id, site_id, "queued", get_log(log_file))

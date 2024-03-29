@@ -8,10 +8,8 @@ import sys
 import os
 import shutil
 import argparse
-import zipfile
 import lxml.etree as ET
 import base64
-from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -47,7 +45,7 @@ def check_resources(src_folder, paths_map, collection, restricted_ext):
     content_tree = ET.parse(xml_src, parser)
 
     # find each resource which needs fixing
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         # Check restricted names
         file_head, file_extension = os.path.splitext(item.get('id'))

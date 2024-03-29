@@ -14,7 +14,6 @@ import paramiko
 import time
 from stat import S_ISREG
 
-from datetime import datetime, timedelta
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -32,7 +31,7 @@ def cleanup_sftp(sftp_folder, site_id):
     if (ftpAuth is not None):
         SFTP = {'host' : ftpAuth[0], 'username': ftpAuth[1], 'password' : ftpAuth[2]}
     else:
-        raise Exception(f'SFTP Authentication required [BrightspaceFTP]')
+        raise Exception('SFTP Authentication required [BrightspaceFTP]')
 
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())

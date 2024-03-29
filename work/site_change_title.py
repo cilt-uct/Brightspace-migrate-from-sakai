@@ -8,7 +8,7 @@ import os
 import shutil
 import argparse
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
+from datetime import datetime
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)

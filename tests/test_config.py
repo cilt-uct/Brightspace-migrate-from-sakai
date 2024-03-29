@@ -1,13 +1,10 @@
 import unittest
-import yaml
 import json
 
 from pathlib import Path
-from emails.template import JinjaTemplate as T
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 import lib.utils
-import config
 
 from config.config import *
 
