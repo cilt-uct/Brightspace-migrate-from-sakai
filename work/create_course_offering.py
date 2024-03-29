@@ -78,7 +78,7 @@ def get_record(db_config, link_id, site_id):
         logging.error(f"Could not retrieve migration record {link_id} : {site_id}")
         return None
 
-def set_site_property(site_id, key, value):
+def set_site_property(APP, site_id, key, value):
     try:
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
@@ -92,8 +92,8 @@ def set_site_property(site_id, key, value):
         logging.error("Workflow operation {} = {} ".format('set_site_property', e))
         return False
 
-def update_target_site(db_config, link_id, site_id, org_unit_id, is_created, target_title):
-    set_site_property(site_id, 'brightspace_course_site_id', org_unit_id)
+def update_target_site(APP, db_config, link_id, site_id, org_unit_id, is_created, target_title):
+    set_site_property(APP, site_id, 'brightspace_course_site_id', org_unit_id)
 
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
@@ -207,7 +207,7 @@ def run(SITE_ID, APP, link_id):
                 target_site_id = json_response['data']['Identifier']
                 target_site_created = json_response['data']['created']
 
-                update_target_site(DB_AUTH, link_id, SITE_ID, target_site_id, target_site_created, name)
+                update_target_site(APP, DB_AUTH, link_id, SITE_ID, target_site_id, target_site_created, name)
 
                 # AMA-983 Enroll users only if a new target site was created
                 if target_site_created:

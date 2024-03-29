@@ -22,7 +22,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import SCRIPT_FOLDER
+from config.config import *
 from lib.utils import send_template_email, create_jira
 
 LOG_FILE = 'brightspace_migration_list.log'
@@ -163,7 +163,7 @@ def check_migrations(APP):
     logging.debug("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
 def main():
-    global APP
+    global APP, SCRIPT_FOLDER
     parser = argparse.ArgumentParser(description="This runs periodically - start workflow on sites that want to migrate.",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-d', '--debug', action='store_true')

@@ -23,7 +23,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import SCRIPT_FOLDER
+from config.config import *
 
 # output path for the log file of this script
 LOG_FILE = 'brightspace_uploading_list.log'
@@ -120,7 +120,8 @@ def check_upload(APP):
     logging.info("##### Finished. Elapsed time {}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
 def main():
-    global APP
+    global APP, SCRIPT_FOLDER
+
     parser = argparse.ArgumentParser(description="This runs periodically - start workflow on sites that need to be uploaded.",
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-d', '--debug', action='store_true')
