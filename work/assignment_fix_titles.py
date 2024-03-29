@@ -22,9 +22,6 @@ def run(SITE_ID, APP):
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
     xml_src = r'{}/assignment.xml'.format(src_folder)
 
-    with open(xml_src, 'r') as f:
-        contents = f.read()
-
     parser = ET.XMLParser(recover=True)
     asn_tree = ET.parse(xml_src, parser)
 

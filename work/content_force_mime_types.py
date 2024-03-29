@@ -28,9 +28,6 @@ def run(SITE_ID, APP):
     xml_old = r'{}/content.old'.format(src_folder)
     shutil.copyfile(xml_src, xml_old)
 
-    with open(xml_src, 'r') as f:
-        contents = f.read()
-
     ET.register_namespace("sakai", "https://www.sakailms.org/")
     parser = ET.XMLParser(recover=True)
 

@@ -20,12 +20,6 @@ from lib.local_auth import *
 
 def run(SITE_ID, APP, import_id, target_site_id = None):
 
-    tmp = getAuth(APP['auth']['middleware'])
-    if (tmp is not None):
-        AUTH = {'host' : tmp[0], 'user': tmp[1], 'password': tmp[2]}
-    else:
-        raise Exception("Middleware Authentication required")
-
     logging.info(f'Update external system access lists for site LTI Content Items: {import_id} {target_site_id}')
 
     org_links_ref = get_lti_links(APP, import_id)

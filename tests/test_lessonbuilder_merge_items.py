@@ -8,6 +8,7 @@ from unittest.mock import patch
 from work.lessonbuilder_merge_items import main
 from bs4 import BeautifulSoup
 
+# ruff: noqa
 
 class AddResourcesHtmlTestCase(unittest.TestCase):
     def setUp(self) -> None:

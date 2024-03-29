@@ -11,9 +11,8 @@ import time
 import logging
 import re
 
-
 from pymysql.cursors import DictCursor
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -55,7 +54,6 @@ def run(APP):
 
     logging.info("Checking for sites ...")
 
-    now = datetime.now()
     start_time = time.time()
     all_sites = get_records(DB_AUTH)
 

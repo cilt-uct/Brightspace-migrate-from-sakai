@@ -127,8 +127,8 @@ def setup_log_file(filename, SITE_ID, logs):
         os.remove(old_log_files)
 
     with open(filename, "w") as f:
-        for l in json.loads(logs):
-            f.write(f'{l}\n')
+        for log_entry in json.loads(logs):
+            f.write(f'{log_entry}\n')
         f.close()
 
     # create a log file so that we can track the progress of the workflow
@@ -205,8 +205,8 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
         rough_list = list(filter(lambda s: FILE_REGEX.match(s), lines))
 
         output_files = dict()
-        for l in rough_list:
-            m = re.findall(r'(file-.*):\s(.*)', l)
+        for file_entry in rough_list:
+            m = re.findall(r'(file-.*):\s(.*)', file_entry)
             output_files[ m[0][0] ] = m[0][1]
 
         if 'file-fixed-zip' in output_files:
@@ -237,7 +237,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             func(**new_kwargs)  # this runs the steps - and writes to log file
 
             # after execution of workflow step check log to see if it contains an error
-            return check_log_file_for_errors(log_file) == False
+            return not check_log_file_for_errors(log_file)
 
         except Exception as e:
             logging.exception(e)

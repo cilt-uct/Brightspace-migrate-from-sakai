@@ -62,8 +62,8 @@ def setup_log_file(filename, SITE_ID, logs):
         os.remove(old_log_files)
 
     with open(filename, "w") as f:
-        for l in json.loads(logs):
-            f.write(f'{l}\n')
+        for log_entry in json.loads(logs):
+            f.write(f'{log_entry}\n')
         f.close()
 
     # create a log file so that we can track the progress of the workflow

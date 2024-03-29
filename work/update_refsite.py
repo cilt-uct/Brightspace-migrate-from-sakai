@@ -58,7 +58,10 @@ def add_semester_to_course(APP, org_id, semester_id):
                         'method': 'DELETE',
                         'payload': None
                     }
-                    result = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+                    result = middleware_d2l_api(APP, payload_data=payload)
+                    if 'status' not in result or result['status'] != 'success':
+                        raise Exception(f"Failed removing semester from org id {org_id}")
 
         # add new Semester
         payload = {
@@ -66,7 +69,10 @@ def add_semester_to_course(APP, org_id, semester_id):
             'method': 'POST',
             'payload': f'{semester_id}'
         }
-        result = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+        result = middleware_d2l_api(APP, payload_data=payload)
+        if 'status' not in result or result['status'] != 'success':
+            raise Exception(f"Failed adding semester to org id {org_id}")
 
     else:
         raise Exception(f"Cannot get parents: {parents}")

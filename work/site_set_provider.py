@@ -30,7 +30,6 @@ def getProviders(db_config, site_id):
             where `realm`.REALM_ID = %s;"""
 
     cursor.execute(SQL, f'/site/{site_id}')
-    resp = {"success": 0, "message": ""}
 
     allRows = list( map(lambda st: re.sub(',\d{4}', '', st), [item[0] for item in cursor.fetchall()]) )
     return unique(allRows)

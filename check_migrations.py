@@ -83,7 +83,7 @@ def check_migrations(APP):
         if (tmp is not None):
             DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
         else:
-            raise Exception('Authentication required ({}})'.format(APP['auth']['db']))
+            raise Exception('Authentication required ({})'.format(APP['auth']['db']))
 
         # datetime object containing current date and time that the workflow was started
         start_time = time.time()

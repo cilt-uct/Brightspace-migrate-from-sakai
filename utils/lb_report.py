@@ -20,9 +20,6 @@ def count_items(xml_src):
     if not os.path.exists(xml_src):
         raise Exception(f"{xml_src} not found")
 
-    with open(xml_src, 'r') as f:
-        contents = f.read()
-
     parser = ET.XMLParser(recover=True)
     content_tree = ET.parse(xml_src, parser)
 
@@ -50,10 +47,6 @@ def count_items(xml_src):
 
 def run(SITE_ID, APP):
     logging.debug('Content: identify extensions : {}'.format(SITE_ID))
-
-    # restricted extensions
-    restricted_ext = read_yaml(APP['content']['restricted-ext'])
-    disallowed = restricted_ext['RESTRICTED_EXT']
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 

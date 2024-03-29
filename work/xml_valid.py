@@ -4,6 +4,7 @@
 ## and adds a default banner to the body if it doesn't exist yet
 ## REF: AMA-85
 
+import logging
 import sys
 import os
 import argparse
@@ -28,7 +29,7 @@ def run(SITE_ID, APP):
 
     for xml_file in xml_files:
         try:
-            tree = ET.parse(xml_file)
+            ET.parse(xml_file)
         except Exception as e:
             logging.error(f"Parse error for {xml_file.name}: {str(e)}")
             raise e

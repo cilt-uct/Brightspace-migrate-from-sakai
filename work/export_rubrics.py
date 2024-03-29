@@ -52,7 +52,6 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
     cursor_criterions.execute(sql, rubric_id)
 
     count = 0
-    start_group = True
     cg = 0
     last_levels = ""
     level_ids = []

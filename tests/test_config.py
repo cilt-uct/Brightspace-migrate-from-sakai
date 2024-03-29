@@ -17,13 +17,13 @@ class QueryTestCase(unittest.TestCase):
 
         # Workflow files
         WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/update.yaml'
-        workflow_steps = lib.utils.read_yaml(WORKFLOW_FILE)
+        lib.utils.read_yaml(WORKFLOW_FILE)
 
         WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/upload.yaml'
-        workflow_steps = lib.utils.read_yaml(WORKFLOW_FILE)
+        lib.utils.read_yaml(WORKFLOW_FILE)
 
         WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/workflow.yaml'
-        workflow_steps = lib.utils.read_yaml(WORKFLOW_FILE)
+        lib.utils.read_yaml(WORKFLOW_FILE)
 
         # Other YAML
         mime_types = lib.utils.read_yaml(APP['content']['mime-types'])

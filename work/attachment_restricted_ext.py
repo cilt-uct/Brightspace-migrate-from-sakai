@@ -32,9 +32,6 @@ def run(SITE_ID, APP):
         logging.info(f"No attachments in {SITE_ID}")
         return
 
-    with open(xml_src, 'r') as f:
-        contents = f.read()
-
     parser = ET.XMLParser(recover=True)
     content_tree = ET.parse(xml_src, parser)
 

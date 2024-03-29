@@ -22,8 +22,6 @@ def run(SITE_ID, APP):
     xml_src = r'{}/content.xml'.format(src_folder)
 
     if os.path.isfile(xml_src):
-        with open(xml_src, 'r') as f:
-            contents = f.read()
 
         parser = ET.XMLParser(recover=True)
         content_tree = ET.parse(xml_src, parser)

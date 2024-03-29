@@ -20,11 +20,17 @@ from config.logging_config import *
 from lib.utils import *
 
 def fix_unwanted_url_chars(currenturl, url_prefix):
+
+    if not currenturl.startswith(url_prefix):
+        return currenturl
+
     # parse url prefix, get path with https and path parsed_url.netloc + parsed_url.path
     parsed_url = urlparse(url_prefix)
+
     # remove the . but not replace the sakaiurl yet
     urlparts = [s.strip(".") for s in currenturl.split("/") if s != 'https:']
     joined_link = "/".join(urlparts).replace("/", "", 1)
+
     # replacements list below array(k,v)
     replacements = [
         (re.escape(parsed_url.netloc) + re.escape(parsed_url.path), ".."),

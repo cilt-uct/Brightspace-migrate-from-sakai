@@ -63,7 +63,6 @@ def run(SITE_ID, APP, import_id):
 
     login_url = f"{brightspace_url}/d2l/lp/auth/login/login.d2l"
     brightspace_session = web_login(login_url, WEB_AUTH['username'], WEB_AUTH['password'])
-    brightspace_last_login = datetime.now()
 
     # Get the ToC
     content_toc = json.loads(get_toc(brightspace_url, import_id, brightspace_session))

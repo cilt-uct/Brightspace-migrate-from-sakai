@@ -9,7 +9,6 @@ import glob
 import json
 import argparse
 import pymysql
-import time
 import importlib
 
 
@@ -101,8 +100,8 @@ def setup_log_file(filename, SITE_ID, logs):
         os.remove(old_log_files)
 
     with open(filename, "w") as f:
-        for l in json.loads(logs):
-            f.write(f'{l}\n')
+        for log_entry in json.loads(logs):
+            f.write(f'{log_entry}\n')
         f.close()
 
     # create a log file so that we can track the progress of the workflow
@@ -174,8 +173,8 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
         rough_list = list(filter(lambda s: FILE_REGEX.match(s), lines))
 
         output_files = dict()
-        for l in rough_list:
-            m = re.findall(r'(file-.*):\s(.*)', l)
+        for file_entry in rough_list:
+            m = re.findall(r'(file-.*):\s(.*)', file_entry)
             output_files[ m[0][0] ] = m[0][1]
 
         update_record_files(db_config, kwargs['link_id'], site_id, output_files)
@@ -203,7 +202,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             func(**new_kwargs)  # this runs the steps - and writes to log file
 
             # after execution of workflow step check log to see if it contains an error
-            return check_log_file_for_errors(log_file) == False
+            return not check_log_file_for_errors(log_file)
 
         except Exception as e:
             logging.exception(e)
@@ -219,13 +218,10 @@ def start_workflow(link_id, site_id, APP):
         return 0
 
     site_title = site_id
-    site_url   = site_id
 
     # datetime object containing current date and time that the workflow was started
     now = datetime.now()
     now_st = now.strftime("%Y-%m-%d_%H%M%S")
-
-    start_time = time.time()
 
     log_file = '{}/tmp/{}_workflow_{}.log'.format(parent, site_id, now_st)
     setup_log_file(log_file, site_id, '[]')
@@ -247,7 +243,6 @@ def start_workflow(link_id, site_id, APP):
         if (record['test_conversion'] == 1):
             APP['site']['prefix'] = APP['site']['test_prefix']
 
-        site_url = record['url']
         log_file = '{}/tmp/{}_workflow_{}.log'.format(parent, site_id, now_st)
         setup_log_file(log_file, site_id, record['workflow'])
 

@@ -60,7 +60,6 @@ def get_media_id(content_toc, file_path, displayname):
     print(f"Filename: {filename} Displayname: {displayname}")
 
     media_id = None
-    topic_id = None
     media_url = None
 
     # Find the media_id. First try to match on title in Lessons, if it's unique in the site.
@@ -200,7 +199,6 @@ def run(SITE_ID, APP, import_id, transfer_id):
         items = soup.find_all('item', attrs={"type": "5"})
         for item in items:
             html = BeautifulSoup(item['html'], 'html.parser')
-            found = False
 
             # At least one placeholder
             if html.find('p', attrs={"data-type": "placeholder"}):
@@ -249,7 +247,6 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
     login_url = f"{brightspace_url}/d2l/lp/auth/login/login.d2l"
     brightspace_session = web_login(login_url, WEB_AUTH['username'], WEB_AUTH['password'])
-    brightspace_last_login = datetime.now()
 
     # Get the ToC
     content_toc = json.loads(get_toc(brightspace_url, import_id, brightspace_session))

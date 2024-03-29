@@ -23,7 +23,8 @@ from config.logging_config import *
 from lib.utils import *
 from lib.local_auth import *
 
-cheap_hash = lambda input: hashlib.md5(input.encode('utf-8')).hexdigest()[:8]
+def cheap_hash(input_str):
+    return hashlib.md5(input_str.encode('utf-8')).hexdigest()[:8]
 
 def enroll(SITE_ID, APP, import_id, role):
     logging.info(f'Enroll users for {SITE_ID}')

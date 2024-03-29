@@ -13,7 +13,7 @@ import logging
 from pathlib import Path
 
 from pymysql.cursors import DictCursor
-from datetime import datetime, timedelta
+from datetime import timedelta
 from subprocess import Popen
 
 import lib.local_auth
@@ -79,7 +79,6 @@ def check_upload(APP):
     active_uploads = lib.db.get_state_count(DB_AUTH, 'uploading')
 
     # datetime object containing current date and time that the workflow was started
-    now = datetime.now()
     start_time = time.time()
 
     # Jobs pending

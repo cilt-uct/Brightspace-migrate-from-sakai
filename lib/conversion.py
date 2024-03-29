@@ -38,7 +38,7 @@ def a1(site_folder):
                 for _item in element:
                     type = _item.get('type')
                     name = _item.get('name')
-                    sequence = _item.get('sequence')
+                    #sequence = _item.get('sequence')
                     if type == "2":
                         outline += name if len(outline) == 0 else ";" + name
 
@@ -427,7 +427,6 @@ def c2(site_folder, samigo_soup):
         for collection in items:
             file_path = os.path.join(site_folder, 'qti', 'assessment' + collection.get('id') + '.xml')
             tree = ET.parse(file_path)
-            root = tree.getroot()
             desc = tree.find("./assessment/presentation_material/flow_mat/material/mattext")
             if desc is not None and desc.text and desc.text.strip():
                 return True

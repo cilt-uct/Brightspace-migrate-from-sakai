@@ -209,7 +209,6 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
     @patch('lib.db.get_records', return_value=[{
         'link_id': 'link_id_12345',
-        'notification': 'cilt1@uct.ac.za',
         'site_id': 'site_id_12345',
         'active': 'true',
         'state': 'active',

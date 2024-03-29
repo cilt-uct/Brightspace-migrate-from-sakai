@@ -331,7 +331,6 @@ def check_imported(APP):
 
         site_id = site['site_id']
         refsite_id = site['imported_site_id']
-        new_id = False
 
         # Check to see if a site has been created
         if refsite_id == 0:

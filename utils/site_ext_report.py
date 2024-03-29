@@ -22,9 +22,6 @@ def extensions(base_path, xml_src):
     if not os.path.exists(xml_src):
         return
 
-    with open(xml_src, 'r') as f:
-        contents = f.read()
-
     parser = ET.XMLParser(recover=True)
     content_tree = ET.parse(xml_src, parser)
 
@@ -80,10 +77,6 @@ def run(SITE_ID, APP):
 
     # Adhoc
     logging.info(f"Opencast Series tool: {site_has_tool(APP, SITE_ID, 'sakai.opencast.series')}")
-
-    # restricted extensions
-    restricted_ext = read_yaml(APP['content']['restricted-ext'])
-    disallowed = restricted_ext['RESTRICTED_EXT']
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 
