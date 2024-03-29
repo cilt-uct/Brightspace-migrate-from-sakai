@@ -112,6 +112,12 @@ APP = {
       'le': '1.74'
   },
 
+  # Opencast
+  'opencast': {
+      'base_url' : 'https://media.uct.ac.za',
+      'content_item_path' : '/lti/player/'
+  },
+
   # Local middleware
   'middleware': {
           'base_url': middleware[0],
@@ -230,6 +236,7 @@ APP = {
         }
   },
 
+  # Map content item URLs to tool providers
   'lti': {
           'content_item_urls': {
               'https://media.uct.ac.za/lti/player/' : 'opencast'
