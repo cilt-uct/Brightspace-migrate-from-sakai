@@ -8,6 +8,8 @@ import lib.utils
 
 from config.config import *
 
+# ruff: noqa
+
 class QueryTestCase(unittest.TestCase):
     def test_config(self):
 

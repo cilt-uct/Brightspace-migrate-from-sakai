@@ -4,6 +4,7 @@ from __future__ import division
 ## This script transfers the 'fixed' zip file for a site to the sftp folder
 
 import sys
+import re
 import os
 import glob
 import argparse

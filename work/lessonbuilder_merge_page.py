@@ -5,6 +5,7 @@ import os
 import argparse
 import base64
 import logging
+import shutil
 from bs4 import BeautifulSoup
 from html import escape
 

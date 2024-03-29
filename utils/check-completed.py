@@ -10,7 +10,6 @@ import logging
 import re
 import requests
 
-
 from pymysql.cursors import DictCursor
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -20,9 +19,7 @@ sys.path.append(parent)
 from config.config import *
 from lib.utils import *
 from lib.local_auth import *
-
 from work.archive_site import *
-
 from work.generate_conversion_report import *
 
 def get_records(db_config):
@@ -93,7 +90,7 @@ def run(APP):
     else:
         raise Exception("DB Authentication required")
 
-    webAuth = lib.local_auth.getAuth('BrightspaceWeb')
+    webAuth = getAuth('BrightspaceWeb')
     if (webAuth is not None):
         WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
     else:

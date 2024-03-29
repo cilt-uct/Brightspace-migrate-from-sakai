@@ -6,6 +6,8 @@
 import sys
 import os
 import json
+import copy
+import shutil
 import argparse
 import pymysql
 import logging

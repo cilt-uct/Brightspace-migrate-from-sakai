@@ -7,6 +7,7 @@ import sys
 import os
 import argparse
 import lxml.etree as ET
+import shutil
 import logging
 
 current = os.path.dirname(os.path.realpath(__file__))

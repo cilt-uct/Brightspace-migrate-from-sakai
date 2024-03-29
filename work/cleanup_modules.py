@@ -46,7 +46,7 @@ def get_module_id(content_toc, module_title):
     for match in module_matches:
         return match.value['ModuleId']
 
-    return Npone
+    return None
 
 
 def run(SITE_ID, APP, import_id):

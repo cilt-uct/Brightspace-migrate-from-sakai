@@ -15,8 +15,8 @@ sys.path.append(parent)
 
 from config.logging_config import *
 from lib.utils import *
-from lib.d2l import *
-from lib.opencast import *
+from lib.d2l import get_lti_links
+from lib.opencast import opencast_update_acls
 from lib.local_auth import *
 
 def run(SITE_ID, APP, import_id, target_site_id = None):

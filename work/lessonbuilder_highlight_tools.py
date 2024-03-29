@@ -10,6 +10,8 @@ import sys
 import os
 import argparse
 import xml.etree.ElementTree as ET
+import re
+import shutil
 import logging
 
 current = os.path.dirname(os.path.realpath(__file__))

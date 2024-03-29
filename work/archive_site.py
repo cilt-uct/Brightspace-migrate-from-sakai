@@ -21,8 +21,8 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from lib.utils import format_bytes
+from lib.local_auth import getAuth
 
 class SizeExceededError(Exception):
     pass

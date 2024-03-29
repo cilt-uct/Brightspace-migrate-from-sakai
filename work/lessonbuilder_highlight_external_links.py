@@ -11,6 +11,8 @@ import os
 import argparse
 import xml.etree.ElementTree as ET
 import logging
+import re
+import shutil
 from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
