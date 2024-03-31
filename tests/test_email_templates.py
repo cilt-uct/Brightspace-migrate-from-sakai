@@ -1,5 +1,4 @@
 import unittest
-import os
 
 import config.config
 import run_update

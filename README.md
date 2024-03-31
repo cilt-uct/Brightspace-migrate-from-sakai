@@ -170,6 +170,16 @@ In order to run a specific test case, use the `run_test.py` script and the `--tc
 python run_test.py --tc test_query_get_records
 ```
 
+## Code quality
+
+To check python lint-style issues, use:
+
+```
+ruff check
+```
+
+Ruff configuration is in `ruff.toml`
+
 ## Size limits
 The D2L Bulk Course Import Service accepts zip packages up to 30GB (30,000,000,000 bytes).
 

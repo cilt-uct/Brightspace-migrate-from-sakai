@@ -9,7 +9,6 @@ import os
 import json
 import argparse
 import pymysql
-import shutil
 import unicodedata
 import lxml.etree as ET
 import logging

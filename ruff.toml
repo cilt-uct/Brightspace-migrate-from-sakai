@@ -1,7 +1,7 @@
 [lint]
 # E402 Module level import not at top of file
-# F401 Module imported but unused
-ignore = [ "E402", "F401" ]
+ignore = [ "E402"]
 
 [lint.per-file-ignores]
+# F403 from from lib.conversion import *
 "work/generate_conversion_report.py" = [ "F403" ]

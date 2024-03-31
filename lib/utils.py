@@ -12,13 +12,11 @@ import emails
 import logging
 import time
 import requests
-import subprocess
 import csv
 
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from bs4 import BeautifulSoup
-from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
