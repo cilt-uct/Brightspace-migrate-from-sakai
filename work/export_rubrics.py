@@ -19,8 +19,16 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.config
-from config.logging_config import *
+import config.logging_config
 from lib.local_auth import getAuth
+
+def truncate(txt):
+
+    # D2L rubric criteria group and criteria names have a limit of 255 characters
+    if len(txt) > 255:
+        txt = txt[0:250] + " ..."
+
+    return txt
 
 # Map table columns to XML attributes
 def remove_control_characters(s):
@@ -86,7 +94,7 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
             RowCriteria_Group = ET.SubElement(RowCriteria_Groups, "criteria_group")
 
             if next_cg_title:
-                RowCriteria_Group.set("name", next_cg_title if next_cg_title else f"Criteria {cg}")
+                RowCriteria_Group.set("name", truncate(next_cg_title))
                 next_cg_title = None
             else:
                 RowCriteria_Group.set("name", f"Criteria {cg}")
@@ -116,7 +124,7 @@ def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
     if criteria_desc is not None and len(criteria_desc.strip()) > 0:
         criteria_name += ": " + sanitize(criteria_desc.strip())
 
-    Row.set('name', criteria_name)
+    Row.set('name', truncate(criteria_name))
     Row.set('sort_order', str(rowCriteria['order_index']))
 
     RowCells = ET.SubElement(Row, "cells")
@@ -200,10 +208,18 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
     # <level level_id="65916" sort_order="2" level_value="2.0" name="Exceeds expectations"/>
 
     for row in allRows:
+
+        row_points = row['points']
+
+        # D2L rubrics do not allow negative points
+        if row_points < 0:
+            # TODO flag in conversion report
+            row_points = 0
+
         Row = ET.SubElement(xmlRow, "level")
         Row.set('level_id', str(row['ratings_id']))
         Row.set('sort_order', str(row['order_index']))
-        Row.set('level_value', str(row['points']))
+        Row.set('level_value', str(row_points))
         Row.set('name', sanitize(row['title'].strip()))
 
 # export rubrics for a site to xml file
@@ -261,7 +277,7 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
 
     return os.path.exists(rubrics_file)
 
-# Export details of where Rubrics are used, for conversion report
+# Export rubric details for conversion report
 def exportRubricAssociations(db_config, site_id, output_folder):
     db = pymysql.connect(**db_config)
     cursor = db.cursor(pymysql.cursors.DictCursor)

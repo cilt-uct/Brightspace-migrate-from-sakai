@@ -2,7 +2,7 @@ import os
 import sys
 import base64
 import json
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 
 from bs4 import BeautifulSoup
 from urllib.parse import unquote
@@ -959,3 +959,39 @@ def rubrics_used(site_soup, rubric_folder):
         return sorted(data)
     else:
         return None
+
+
+# AMA-443 Check if rubrics have been used in site tools
+# Negative point values replaced with level_value="0"
+def rubric_negative_points(site_soup, rubric_folder):
+
+    rubric_file = f"{rubric_folder}rubrics_d2l.xml"
+
+    if not os.path.exists(rubric_file):
+        return None
+
+    tree = ET.parse(rubric_file)
+    root = tree.getroot()
+
+    if root.find(".//level[@level_value='0']") is not None:
+        return True
+
+    return False
+
+
+# AMA-443 Check if rubric descriptions have been truncated
+def rubric_truncated(site_soup, rubric_folder):
+
+    rubric_file = f"{rubric_folder}rubrics_d2l.xml"
+
+    if not os.path.exists(rubric_file):
+        return None
+
+    tree = ET.parse(rubric_file)
+    root = tree.getroot()
+
+    for el_name in root.xpath(".//criteria_group | .//criterion"):
+        if el_name.get('name').endswith(" ..."):
+            return True
+
+    return False
