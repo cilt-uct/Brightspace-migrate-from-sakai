@@ -18,6 +18,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+import config.config
 from config.logging_config import *
 from lib.local_auth import getAuth
 
@@ -46,7 +47,7 @@ def create_folders(dir_, clean = False):
 def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
 
     cursor_criterions = db.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT criterions_id, title, order_index " \
+    sql = "SELECT criterions_id, title, description, order_index " \
           "FROM rbc_rubric_criterions " \
           "INNER JOIN rbc_criterion ON rbc_rubric_criterions.criterions_id = rbc_criterion.id " \
           "WHERE rbc_rubric_id = %s"
@@ -56,13 +57,26 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
     cg = 0
     last_levels = ""
     level_ids = []
+    RowCriteria = None
+    next_cg_title = None
 
     for row in cursor_criterions.fetchall():
 
         criterions_id = row['criterions_id']
         levels_info = getLevelsHash(db, criterions_id)
 
+        if levels_info['levels'] == 0:
+            # Use this as the title for the next criteria group
+            next_cg_title = row['title'].strip()
+            if row['description'] is not None and len(row['description'].strip()) > 0:
+                next_cg_title += ": " + sanitize(row['description'].strip())
+            continue
+
+        logging.debug(f"Criterion {row['criterions_id']} '{row['title']}'")
+
         if (levels_info['levels_hash'] != last_levels):
+
+            logging.debug(f"Starting new criteria group for {levels_info}")
 
             # Start a new criteria group
             last_levels = levels_info['levels_hash']
@@ -70,7 +84,13 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
             cg += 1
 
             RowCriteria_Group = ET.SubElement(RowCriteria_Groups, "criteria_group")
-            RowCriteria_Group.set("name", f"Criteria {cg}")
+
+            if next_cg_title:
+                RowCriteria_Group.set("name", next_cg_title if next_cg_title else f"Criteria {cg}")
+                next_cg_title = None
+            else:
+                RowCriteria_Group.set("name", f"Criteria {cg}")
+
             RowCriteria_Group.set("sort_order", str(row['order_index']))
 
             RowLevelSet = ET.SubElement(RowCriteria_Group, "level_set")
@@ -90,7 +110,13 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
 def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
 
     Row = ET.SubElement(xmlRow, "criterion")
-    Row.set('name', rowCriteria['title'])
+
+    criteria_name = rowCriteria['title'].strip()
+    criteria_desc = rowCriteria['description']
+    if criteria_desc is not None and len(criteria_desc.strip()) > 0:
+        criteria_name += ": " + sanitize(criteria_desc.strip())
+
+    Row.set('name', criteria_name)
     Row.set('sort_order', str(rowCriteria['order_index']))
 
     RowCells = ET.SubElement(Row, "cells")
@@ -295,7 +321,7 @@ def run(SITE_ID, APP):
 
 def main():
 
-    global APP
+    APP = config.config.APP
 
     parser = argparse.ArgumentParser(description="This script accesses a Sakai DB and exports the rubrics in D2L XML format.",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
