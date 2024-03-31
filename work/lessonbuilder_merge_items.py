@@ -16,8 +16,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from config.logging_config import *
+import config.config
+import config.logging_config
 from lib.lessons import ItemType, \
         parse_youtube, generic_iframe, link_item, \
         folder_list_embed, generic_embed, youtube_embed, twitter_embed, audio_embed, \
@@ -341,7 +341,7 @@ def run(SITE_ID, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script merges Lessons items",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

@@ -20,7 +20,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import enroll_in_site, middleware_api, sis_course_title, site_has_tool
 from lib.local_auth import getAuth
 from lib.d2l import middleware_d2l_api
@@ -265,7 +265,7 @@ def run(SITE_ID, APP, link_id):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Workflow operation to create a course template, course offering and enroll Lecturers",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("LINK_ID", help="The Link ID to run the workflow for")

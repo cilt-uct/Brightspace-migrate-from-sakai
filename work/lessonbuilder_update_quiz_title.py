@@ -11,10 +11,9 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from config.logging_config import *
+import config.config
+import config.logging_config
 from lib.utils import remove_unwanted_characters
-
 
 def run(SITE_ID, APP):
     logging.info('Lessons: Updating quiz title : {}'.format(SITE_ID))
@@ -48,7 +47,7 @@ def run(SITE_ID, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' "
                                                  "file inside the site-archive folder and updates quiz titles",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)

@@ -1,9 +1,8 @@
 import unittest
 
+import config.config
 import lib.local_auth
 import utils.get_import_status
-
-from config.config import APP
 
 class GenerateConversionReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
@@ -20,11 +19,13 @@ class GenerateConversionReportTestCase(unittest.TestCase):
             raise Exception("For local tests, please update username and password.")
 
     def test_login(self):
+        APP = config.config.APP
         url = f"{APP['brightspace_url']}/d2l/lp/auth/login/login.d2l"
         res = utils.get_import_status.login(url=url, username=self.username, password=self.password)
         self.assertIsNotNone(res)
 
     def test_get_org(self):
+        APP = config.config.APP
         url = f"{APP['brightspace_url']}/d2l/lp/auth/login/login.d2l"
         login = utils.get_import_status.login(url=url, username=self.username, password=self.password)
         res = utils.get_import_status.get_org(APP['brightspace_url'], 12980, login)

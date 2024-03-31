@@ -14,7 +14,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 
 def run(SITE_ID, APP):
     logging.info('Content: checking folder names valid AMA-651 : {}'.format(SITE_ID))
@@ -35,7 +35,7 @@ def run(SITE_ID, APP):
         logging.warning(f"No content.xml found for {SITE_ID}")
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="AMA-651 Check that folder names are valid",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

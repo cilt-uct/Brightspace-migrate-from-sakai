@@ -11,19 +11,17 @@ import time
 import logging
 
 from pathlib import Path
-
 from pymysql.cursors import DictCursor
 from datetime import timedelta
 from subprocess import Popen
 
+import config.config
 import lib.local_auth
 import lib.db
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
-
-from config.config import *
 
 # output path for the log file of this script
 LOG_FILE = 'brightspace_uploading_list.log'
@@ -45,12 +43,12 @@ def set_to_state(db_config, link_id, site_id, new_state):
     except Exception as e:
         raise Exception(f'Could not set_to_updating for {link_id} : {site_id}') from e
 
-def upload(db_config, link_id, site_id, title):
+def upload(APP, db_config, link_id, site_id, title):
 
     try:
         set_to_state(db_config, link_id, site_id, "uploading")
 
-        cmd = "python3 {}/run_upload.py {} {}".format(SCRIPT_FOLDER, link_id, site_id).split()
+        cmd = "python3 {}/run_upload.py {} {}".format(APP['script_folder'], link_id, site_id).split()
         if APP['debug']:
             cmd.append("-d")
 
@@ -112,7 +110,7 @@ def check_upload(APP):
             logging.info(f"Upload for '{site_title}' {site_id}")
 
             # run upload workflow
-            upload(DB_AUTH, site['link_id'], site_id, site_title)
+            upload(APP, DB_AUTH, site['link_id'], site_id, site_title)
 
         except Exception as e:
             logging.exception(e)
@@ -120,7 +118,7 @@ def check_upload(APP):
     logging.info("##### Finished. Elapsed time {}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
 def main():
-    global APP, SCRIPT_FOLDER
+    APP = config.config.APP
 
     parser = argparse.ArgumentParser(description="This runs periodically - start workflow on sites that need to be uploaded.",
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)

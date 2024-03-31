@@ -16,7 +16,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import make_well_formed
 
 def do_work(site_info_file, title):
@@ -76,7 +76,7 @@ def run(SITE_ID, APP):
     return True
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script searches for 'Site Information.html' in context.xml and if found will add the the appropriate header (from templates/styled.html)",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

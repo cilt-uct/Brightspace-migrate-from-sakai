@@ -11,6 +11,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
+import config.config
+import config.logging_config
 from lib.utils import middleware_api
 
 
@@ -42,7 +44,7 @@ def run(SITE_ID, LINK_ID, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script sorts the order of units on the content page",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("LINK_ID", help="The Link ID to run the workflow for")

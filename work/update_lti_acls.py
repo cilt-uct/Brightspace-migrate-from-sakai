@@ -13,8 +13,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from config.logging_config import *
+import config.config
+import config.logging_config
 from lib.d2l import get_lti_links
 from lib.opencast import opencast_update_acls
 
@@ -50,7 +50,7 @@ def run(SITE_ID, APP, import_id, target_site_id = None):
     return
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script will create a topic",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")

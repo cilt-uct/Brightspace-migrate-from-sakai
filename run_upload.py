@@ -19,16 +19,14 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import APP, SCRIPT_FOLDER
 from config.logging_config import formatter, logger
 
+import config.config
 import lib.local_auth
 import lib.utils
 import lib.db
 
 from lib.jira_rest import MyJira
-
-WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/upload.yaml'
 
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")
 
@@ -110,31 +108,7 @@ def setup_log_file(filename, SITE_ID, logs):
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
-def create_jira(url, site_id, site_title, jira_state, now, jira_log):
-    jira_date_str = now.strftime("%a, %-d %b %-y %H:%M")
-    jira_log = json.loads(jira_log)
-    sakai_url = APP['sakai_url']
-
-    if APP['jira']['last'] > 0:
-        N = APP['jira']['last']
-        jira_log = jira_log[-N:]
-
-    with MyJira() as j:
-        fields = {
-            'project': {'key': APP['jira']['key']},
-            'summary': "{} {} {}".format(APP['jira']['prefix'], site_title, jira_date_str),
-            'description': "+SITE:+ {}\n+LINK:+ {}/{} \n\n+LOG:+\n{{noformat}}{}{{noformat}}".format(sakai_url, site_id, url,'\n'.join(jira_log)),
-            'issuetype': {'name': 'Task'},
-            'assignee': { 'name': APP['jira']['assignee'] },
-            'customfield_10001': str(site_id)
-        }
-
-        if j.createIssue(fields) is not None:
-            return True
-
-    return False
-
-def transition_jira(site_id):
+def transition_jira(APP, site_id):
     with MyJira() as j:
         fields = {
             'project': {'key': APP['jira']['key']},
@@ -144,7 +118,7 @@ def transition_jira(site_id):
 
         j.setToInProgressIssue(fields)
 
-def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
+def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
 
     if step['action'] == "mail":
         if 'template' in step:
@@ -208,7 +182,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             logging.exception(e)
             return False
 
-def start_workflow(link_id, site_id, APP):
+def start_workflow(workflow_file, link_id, site_id, APP):
 
     tmp = lib.local_auth.getAuth(APP['auth']['db'])
     if (tmp is not None):
@@ -248,7 +222,7 @@ def start_workflow(link_id, site_id, APP):
 
         new_id = '{}_{}'.format(site_id, now.strftime("%Y%m%d_%H%M"))
 
-        workflow_steps = lib.utils.read_yaml(WORKFLOW_FILE)
+        workflow_steps = lib.utils.read_yaml(workflow_file)
 
         if workflow_steps['STEPS'] is not None:
             for step in workflow_steps['STEPS']:
@@ -259,7 +233,7 @@ def start_workflow(link_id, site_id, APP):
                     new_state = step['state']
                     logging.info(f"New state: {new_state}")
 
-                if run_workflow_step(step=step, site_id=site_id, log_file=log_file, db_config=DB_AUTH,
+                if run_workflow_step(APP, step=step, site_id=site_id, log_file=log_file, db_config=DB_AUTH,
                                          to=record['notification'], started_by=record['started_by_email'],
                                          now_st=now_st, new_id=new_id, import_id=record['imported_site_id'],
                                          link_id=link_id, title=site_title, zip_file=files['file-fixed-zip']):
@@ -273,7 +247,7 @@ def start_workflow(link_id, site_id, APP):
                     set_to_state(DB_AUTH, link_id, site_id, new_state)
 
             # Completed
-            transition_jira(site_id=site_id)
+            transition_jira(APP, site_id=site_id)
 
         else:
             logging.warning("There are no workflow steps in this workflow.")
@@ -287,7 +261,7 @@ def start_workflow(link_id, site_id, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script runs the upload workflow for a site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("LINK_ID", help="The Link ID to run the update workflow for")
@@ -296,7 +270,8 @@ def main():
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
 
-    start_workflow(args['LINK_ID'], args['SITE_ID'], APP)
+    workflow = os.path.join(APP['config_folder'], "upload.yaml")
+    start_workflow(workflow, args['LINK_ID'], args['SITE_ID'], APP)
 
 if __name__ == '__main__':
     main()

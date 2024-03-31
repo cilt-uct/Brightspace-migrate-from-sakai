@@ -17,7 +17,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import remove_unwanted_characters, make_well_formed
 
 def is_deleted(item, content_xml, site_id):
@@ -36,9 +36,7 @@ def update(item, SITE_ID):
 
     title = item.getparent().get('title')
 
-    if APP['debug']:
-        print(f"Updating item {item.get('id')} of type {item.get('html')}")
-        # print("{} {} {}".format(item.get('id'), item.get('html'), title))
+    logging.debug(f"Updating item {item.get('id')} of type {item.get('html')}")
 
     content_path = str(item.get('sakaiid')).replace(f'/group/{SITE_ID}/', '')
     html = BeautifulSoup(f"<p><em>File not available: {content_path}</em></p>", 'html.parser')
@@ -93,7 +91,7 @@ def run(SITE_ID, APP):
     logging.info('\tDone')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script replaces audio, images and video files in lessonbuilder (with text) that have been removed from content (deleted resources)",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to fix lessons")

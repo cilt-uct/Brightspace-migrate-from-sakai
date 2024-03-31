@@ -18,7 +18,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import unique
 from lib.local_auth import getAuth
 
@@ -78,7 +78,7 @@ def run(SITE_ID, APP, link_id):
         logging.info('\tDone')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script runs the workflow for a site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("LINK_ID", help="The Link ID to run the workflow for")

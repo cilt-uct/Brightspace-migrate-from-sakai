@@ -20,7 +20,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import format_bytes
 from lib.local_auth import getAuth
 
@@ -135,7 +135,7 @@ def archive_site_retry(SITE_ID, APP, max_tries=3):
     return succeeded
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script will try and archive a Sakai site - this will create a ZIP file and return True if success",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID for which to transfer fixed file")

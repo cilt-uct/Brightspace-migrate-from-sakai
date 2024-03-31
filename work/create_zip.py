@@ -16,7 +16,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import format_bytes, get_size, zipfolder
 
 def run(SITE_ID, APP, now_st = None):
@@ -64,7 +64,7 @@ def run(SITE_ID, APP, now_st = None):
         raise Exception(f"Zip size {format_bytes(zip_size)} exceeds maximum {format_bytes(max_size)}")
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script will create a new zip file for the site in the site-archive folder (SITE_ID-fixed.zip)",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to create a zip for")

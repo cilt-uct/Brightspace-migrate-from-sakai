@@ -1,2 +1,2 @@
 #! /bin/sh
-ruff check *py lib/ work/
+ruff check *py lib/ work/ tests/

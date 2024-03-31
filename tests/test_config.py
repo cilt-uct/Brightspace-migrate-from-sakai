@@ -5,26 +5,24 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 import lib.utils
-
-from config.config import *
-
-# ruff: noqa
+import config.config
 
 class QueryTestCase(unittest.TestCase):
     def test_config(self):
 
         # global config
-        global APP
+        APP = config.config.APP
+        config_folder = APP['config_folder']
         self.assertTrue(APP['loaded'])
 
         # Workflow files
-        WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/update.yaml'
+        WORKFLOW_FILE = f'{config_folder}/update.yaml'
         lib.utils.read_yaml(WORKFLOW_FILE)
 
-        WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/upload.yaml'
+        WORKFLOW_FILE = f'{config_folder}/upload.yaml'
         lib.utils.read_yaml(WORKFLOW_FILE)
 
-        WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/workflow.yaml'
+        WORKFLOW_FILE = f'{config_folder}/workflow.yaml'
         lib.utils.read_yaml(WORKFLOW_FILE)
 
         # Other YAML
@@ -47,7 +45,7 @@ class QueryTestCase(unittest.TestCase):
     # Test the email templates for valid syntax
     def test_template_syntax(self):
 
-        global APP
+        APP = config.config.APP
         env = Environment(
             loader=FileSystemLoader(APP['email']['path']),
             autoescape=select_autoescape(['html', 'xml'])

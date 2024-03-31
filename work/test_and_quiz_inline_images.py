@@ -16,7 +16,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.resources import get_resource_ids, move_attachments
 
 def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list, xml_src):
@@ -139,7 +139,7 @@ def run(SITE_ID, APP):
         move_attachments(SITE_ID, site_folder, collection, move_list)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="AMA-121 Inline Images",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

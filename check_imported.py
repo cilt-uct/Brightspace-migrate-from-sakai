@@ -20,6 +20,7 @@ from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
 from subprocess import Popen
 
+import config.config
 import lib.local_auth
 import lib.db
 
@@ -27,14 +28,13 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import APP, SCRIPT_FOLDER
 from lib.utils import send_template_email, create_jira
 from lib.d2l import middleware_d2l_api, web_login
 
 # log file of this script
 LOG_FILE = 'brightspace_updating_list.log'
 
-def set_site_property(site_id, key, value):
+def set_site_property(APP, site_id, key, value):
     try:
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
@@ -65,9 +65,9 @@ def set_to_updating(db_config, link_id, site_id):
     except Exception as e:
         raise Exception(f'Could not set_to_updating for {link_id} : {site_id}') from e
 
-def update_import_id(db_config, link_id, site_id, org_unit_id, log):
+def update_import_id(APP, db_config, link_id, site_id, org_unit_id, log):
 
-    set_site_property(site_id, 'brightspace_imported_site_id', org_unit_id)
+    set_site_property(APP, site_id, 'brightspace_imported_site_id', org_unit_id)
 
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
@@ -191,7 +191,7 @@ def check_sftp(inbox, outbox):
 
     return (inbox_files, outbox_files)
 
-def check_for_brightspace_id(search_site_id):
+def check_for_brightspace_id(APP, search_site_id):
 
     # We want to swallow exceptions and failures here because if we can't search successfully,
     # it's not a workflow failure, we just retry again later.
@@ -242,7 +242,7 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
         if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Complete"):
             set_to_updating(db_config, link_id, site_id)
 
-            cmd = "python3 {}/run_update.py {} {}".format(SCRIPT_FOLDER, link_id, site_id).split()
+            cmd = "python3 {}/run_update.py {} {}".format(APP['script_folder'], link_id, site_id).split()
             if APP['debug']:
                 cmd.append("-d")
 
@@ -333,10 +333,10 @@ def check_imported(APP):
 
         # Check to see if a site has been created
         if refsite_id == 0:
-            refsite_id = check_for_brightspace_id(site['transfer_site_id'])
+            refsite_id = check_for_brightspace_id(APP, site['transfer_site_id'])
             if refsite_id > 0:
                 logging.info(f"Site {site_id} has new Brightspace Id {refsite_id}")
-                update_import_id(DB_AUTH, site['link_id'], site_id, refsite_id, json.loads(site['workflow']))
+                update_import_id(APP, DB_AUTH, site['link_id'], site_id, refsite_id, json.loads(site['workflow']))
                 site['imported_site_id'] = refsite_id
 
         # If we have a Brightspace site, add to the import status check list
@@ -412,7 +412,7 @@ def check_imported(APP):
     logging.info("##### Finished. Elapsed time {}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This runs periodically - start workflow on sites that have been imported and need to be updated.",
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-d', '--debug', action='store_true')

@@ -21,8 +21,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from config.logging_config import *
+import config.config
+import config.logging_config
 from lib.utils import init__soup
 from lib.conversion import *
 
@@ -301,6 +301,8 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     output_url = f"{APP['report']['url']}/{SITE_ID}_report{now_st}.html"
     sakai_url = APP['sakai_url']
 
+    logging.debug("Setting up conversion report arguments")
+
     # soups used in this dish
     site_soup = init__soup(site_folder, "site.xml")
 
@@ -338,8 +340,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     for k in conf['issues']:
 
         if k['key'] in globals():
-            if APP['debug']:
-                print(f"Running check for {k['key']}")
+            logging.debug(f"Running check for {k['key']}")
 
             k['is_found'] = do_check(k, site_folder = site_folder,
                                         rubric_folder = rubric_folder,
@@ -431,7 +432,7 @@ def run(SITE_ID, APP, issue_key = None, link_id = None, now_st = None):
         raise e
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script generates a site conversion report",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
@@ -440,6 +441,9 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
+
+    if APP['debug']:
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     run(SITE_ID=args['SITE_ID'], APP=APP, issue_key=args['ISSUE_KEY'])
 

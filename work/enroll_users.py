@@ -13,7 +13,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import enroll_in_site
 
 
@@ -50,7 +50,7 @@ def run(SITE_ID, APP, import_id):
         raise Exception(f'XML file does not exist anymore {dir}/site.xml or user.xml')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Workflow operation to enrol site owners of converted site into reference and teaching site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

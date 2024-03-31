@@ -16,7 +16,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import read_yaml, rewrite_tool_ref
 
 def has_restricted(name, disallowed):
@@ -187,7 +187,7 @@ def run(SITE_ID, APP):
     check_resources(src_folder, paths_map, 'content.xml', restricted_ext)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for restricted names",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

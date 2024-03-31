@@ -19,10 +19,10 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.local_auth import getAuth
 
-def cleanup_sftp(sftp_folder, site_id):
+def cleanup_sftp(APP, sftp_folder, site_id):
 
     removed = False
 
@@ -101,7 +101,7 @@ def run(SITE_ID, APP, **kwargs):
         max_tries = 15
         sleeptime = 60
         while tries <= max_tries:
-            if cleanup_sftp(APP['ftp']['outbox'], SITE_ID):
+            if cleanup_sftp(APP, APP['ftp']['outbox'], SITE_ID):
                 break
             logging.info(f"Sleeping {sleeptime}s for retry {tries} / {max_tries} for cleanup of {SITE_ID} in outbox")
             tries += 1
@@ -110,7 +110,7 @@ def run(SITE_ID, APP, **kwargs):
         if tries > max_tries:
             logging.warning(f"No files for {SITE_ID} found in outbox")
 
-        cleanup_sftp(APP['ftp']['inbox'], SITE_ID)
+        cleanup_sftp(APP, APP['ftp']['inbox'], SITE_ID)
 
     except Exception as e:
         logging.warn(f"Exception during cleanup for {SITE_ID}", e)
@@ -120,7 +120,7 @@ def run(SITE_ID, APP, **kwargs):
     return True
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Workflow operation to remove zip file from sftp inbox and outbox",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

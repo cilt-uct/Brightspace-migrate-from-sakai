@@ -20,7 +20,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import format_bytes, get_size
 from lib.local_auth import getAuth
 
@@ -150,7 +150,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
     logging.info("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script transfers a zip file for a site to the sftp folder",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID for which to transfer fixed file")

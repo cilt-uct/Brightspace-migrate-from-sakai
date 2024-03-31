@@ -14,7 +14,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 
 def run(SITE_ID, APP):
     logging.info('Content: remove zero-byte files : {}'.format(SITE_ID))
@@ -43,7 +43,7 @@ def run(SITE_ID, APP):
         content_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Remove zero-byte files from content.xml and folder",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

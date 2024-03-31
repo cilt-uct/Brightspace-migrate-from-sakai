@@ -46,7 +46,8 @@ APP = {
 
   # test / production
   'environment': 'production',
-
+  'script_folder' : SCRIPT_FOLDER,
+  'config_folder' : Path(SCRIPT_FOLDER) / 'config',
   'tmp' : Path(SCRIPT_FOLDER) / 'tmp',
   'template' : Path(SCRIPT_FOLDER) / 'templates',
 

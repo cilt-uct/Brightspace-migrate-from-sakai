@@ -12,7 +12,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import remove_unwanted_characters, middleware_api
 from lib.local_auth import getAuth
 from lib.lessons import get_archive_lti_link, ItemType, supported_media_type
@@ -456,7 +456,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
     return
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for placeholders in lessons and embed multimedia file",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")

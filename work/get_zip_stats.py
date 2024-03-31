@@ -14,7 +14,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
+import config.logging_config
 from lib.utils import format_bytes, get_size
 
 def run(SITE_ID, APP, now_st = None):
@@ -36,7 +36,7 @@ def run(SITE_ID, APP, now_st = None):
         logging.info("\t{}: {}".format(file_type.ljust(6), format_bytes(int(get_size(py)))))
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script will get statistics on the zip files for this site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to get stats for")

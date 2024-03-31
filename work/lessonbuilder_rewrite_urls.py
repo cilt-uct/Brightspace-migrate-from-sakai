@@ -18,8 +18,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from config.logging_config import *
+import config.config
+import config.logging_config
 from lib.utils import remove_unwanted_characters
 
 def fix_unwanted_url_chars(currenturl, url_prefix):
@@ -83,7 +83,7 @@ def run(SITE_ID, APP):
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script fixes embedded URLs in Lessons content",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
