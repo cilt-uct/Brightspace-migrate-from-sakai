@@ -209,9 +209,6 @@ def read_yaml(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
 
-def get_config():
-    return read_yaml("{}/config/config.yaml".format(parent))
-
 def get_log(filename):
     _file = open(filename, "r")
     lines = _file.readlines()
@@ -467,13 +464,6 @@ def enroll_in_site(APP, eid, import_id, role):
         return True
 
     raise Exception(f"Could not enroll user {eid} in {import_id}: {json_response}")
-
-def get_var(varname):
-    base = Path(os.path.dirname(os.path.abspath(__file__))).parent / 'base.sh'
-
-    CMD = f'echo $(source {base}; echo $%s)' % varname
-    p = subprocess.Popen(CMD, stdout=subprocess.PIPE, shell=True, executable='/bin/bash')
-    return p.stdout.readlines()[0].strip().decode("utf-8")
 
 def resolve_redirect(url):
 

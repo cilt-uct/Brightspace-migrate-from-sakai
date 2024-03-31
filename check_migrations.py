@@ -25,8 +25,6 @@ sys.path.append(parent)
 
 from lib.utils import send_template_email, create_jira
 
-LOG_FILE = 'brightspace_migration_list.log'
-
 def set_running(db_config, link_id, site_id):
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
@@ -170,23 +168,8 @@ def main():
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
 
-    # create logger
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(process)d %(filename)s(%(lineno)d) %(message)s')
-
-    # create file handler
-    fh = logging.FileHandler(Path(APP['log_folder']) / LOG_FILE)
-    fh.setLevel(logging.INFO)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-
     if APP['debug']:
-        # create stream handler (logging in the console)
-        sh = logging.StreamHandler()
-        sh.setLevel(logging.DEBUG)
-        sh.setFormatter(formatter)
-        logger.addHandler(sh)
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     scan_interval = APP['scan_interval']['workflow']
     exit_flag_file = APP['exit_flag']['workflow']

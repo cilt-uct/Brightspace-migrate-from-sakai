@@ -91,10 +91,10 @@ def check_log_file_for_errors(filename):
     # check if log contains a line with ERROR in it ...
     return len(list(filter(lambda s: re.match(r'.*(\[ERROR\]).*',s), lines))) > 0
 
-def setup_log_file(filename, SITE_ID, logs):
+def setup_log_file(APP, filename, SITE_ID, logs):
 
     # remove previous log files
-    for old_log_files in glob.glob('{}/tmp/{}_workflow_*.log'.format(parent, SITE_ID)):
+    for old_log_files in glob.glob('{}/{}_workflow_*.log'.format(APP['log_folder'], SITE_ID)):
         os.remove(old_log_files)
 
     with open(filename, "w") as f:
@@ -197,8 +197,8 @@ def start_workflow(workflow_file, link_id, site_id, APP):
     now = datetime.now()
     now_st = now.strftime("%Y-%m-%d_%H%M%S")
 
-    log_file = '{}/tmp/{}_workflow_{}.log'.format(parent, site_id, now_st)
-    setup_log_file(log_file, site_id, '[]')
+    log_file = '{}/{}_workflow_{}.log'.format(APP['log_folder'], site_id, now_st)
+    setup_log_file(APP, log_file, site_id, '[]')
 
     record = None
 
@@ -217,8 +217,8 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         if (record['test_conversion'] == 1):
             APP['site']['prefix'] = APP['site']['test_prefix']
 
-        log_file = '{}/tmp/{}_workflow_{}.log'.format(parent, site_id, now_st)
-        setup_log_file(log_file, site_id, record['workflow'])
+        log_file = '{}/{}_workflow_{}.log'.format(APP['log_folder'], site_id, now_st)
+        setup_log_file(APP, log_file, site_id, record['workflow'])
 
         new_id = '{}_{}'.format(site_id, now.strftime("%Y%m%d_%H%M"))
 

@@ -119,10 +119,10 @@ def check_log_file_for_errors(filename):
     # check if log contains a line with ERROR in it ...
     return len(list(filter(lambda s: re.match(r'.*(\[ERROR\]).*',s), lines))) > 0
 
-def setup_log_file(filename, SITE_ID, logs):
+def setup_log_file(APP, filename, SITE_ID, logs):
 
     # remove previous log files
-    for old_log_files in glob.glob('{}/tmp/{}_workflow_*.log'.format(parent, SITE_ID)):
+    for old_log_files in glob.glob('{}/{}_workflow_*.log'.format(APP['log_folder'], SITE_ID)):
         os.remove(old_log_files)
 
     with open(filename, "w") as f:
@@ -267,8 +267,8 @@ def start_workflow(workflow_file, link_id, site_id, APP):
     start_time = time.time()
 
     state = 'error'
-    log_file = '{}/tmp/{}_workflow_{}.log'.format(parent, site_id, now_st)
-    setup_log_file(log_file, site_id, '[]')
+    log_file = '{}/{}_workflow_{}.log'.format(APP['log_folder'], site_id, now_st)
+    setup_log_file(APP, log_file, site_id, '[]')
 
     record = None
 
@@ -288,8 +288,8 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         failure_type = record['failure_type']
         failure_detail = record['failure_detail']
 
-        log_file = '{}/tmp/{}_workflow_{}.log'.format(parent, site_id, now_st)
-        setup_log_file(log_file, site_id, record['workflow'])
+        log_file = '{}/{}_workflow_{}.log'.format(APP['log_folder'], site_id, now_st)
+        setup_log_file(APP, log_file, site_id, record['workflow'])
 
         new_id = '{}_{}'.format(site_id, now.strftime("%Y%m%d_%H%M"))
         update_record_ref_site_id(DB_AUTH, link_id, site_id, new_id)
@@ -381,9 +381,10 @@ def start_workflow(workflow_file, link_id, site_id, APP):
                     jira_log=log, failure_type=failure_type, failure_detail=failure_detail, user=job_started_by)
 
     finally:
-        BODY = json.loads(get_log(log_file))
-        logging.info("Emailing job log for site {}".format(site_id))
-        send_email(APP['helpdesk-email'], APP['admin_emails'], f"workflow_run : {site_title} {state}", '\n<br/>'.join(BODY))
+        if APP['email_logs']:
+            BODY = json.loads(get_log(log_file))
+            logging.info("Emailing job log for site {}".format(site_id))
+            send_email(APP['helpdesk-email'], APP['admin_emails'], f"workflow_run : {site_title} {state}", '\n<br/>'.join(BODY))
 
         set_site_property(APP, site_id, 'brightspace_conversion_status', state)
 

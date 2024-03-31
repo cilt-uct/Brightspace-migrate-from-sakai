@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
 from pathlib import Path
-from lib.utils import get_var
-from lib.local_auth import getAuth
+from lib.local_auth import getAuth, get_var
 
 # See base.sh
 SCRIPT_FOLDER = get_var('SCRIPT_FOLDER')
@@ -10,6 +9,7 @@ ARCHIVE_FOLDER = get_var('ARCHIVE_FOLDER')
 OUTPUT_FOLDER = get_var('OUTPUT_FOLDER')
 CONVERSION_REPORT_FOLDER = get_var('CONVERSION_REPORT_FOLDER')
 
+# Persistent logging
 LOG_PATH = Path(SCRIPT_FOLDER) / 'brightspace_migration.log'
 LOG_IN_CONSOLE = True
 LOG_IN_FILE = True
@@ -42,13 +42,13 @@ APP = {
     'semester' : 6653
   },
 
+  # Temporary logs for workflows and operations
   'log_folder' : Path(SCRIPT_FOLDER) / 'log',
 
   # test / production
   'environment': 'production',
   'script_folder' : SCRIPT_FOLDER,
   'config_folder' : Path(SCRIPT_FOLDER) / 'config',
-  'tmp' : Path(SCRIPT_FOLDER) / 'tmp',
   'template' : Path(SCRIPT_FOLDER) / 'templates',
 
   'archive_folder': ARCHIVE_FOLDER,
@@ -58,6 +58,7 @@ APP = {
 
   # Only accept True or False
   'debug': False,
+  'email_logs' : False,
   'clean_up': True,
 
   'archive' : {
@@ -176,7 +177,6 @@ APP = {
     'limit': 30000000000,
     'show_progress': False,
     'log': True,
-    'log_output' : Path(SCRIPT_FOLDER) / 'log',
     'inbox': '/incoming/BulkCourseImport/Inbox',
     'outbox': '/incoming/BulkCourseImport/Outbox'
   },

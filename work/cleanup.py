@@ -91,7 +91,7 @@ def run(SITE_ID, APP, **kwargs):
             logging.info(f" - removed {zipfile}")
 
         # FTP logs
-        ftp_log = f"{APP['ftp']['log_output']}/{SITE_ID}_ftp.log"
+        ftp_log = f"{APP['log_folder']}/{SITE_ID}_ftp.log"
         if os.path.exists(ftp_log):
             os.remove(ftp_log)
             logging.info(f" - removed {ftp_log}")

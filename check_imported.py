@@ -31,9 +31,6 @@ sys.path.append(parent)
 from lib.utils import send_template_email, create_jira
 from lib.d2l import middleware_d2l_api, web_login
 
-# log file of this script
-LOG_FILE = 'brightspace_updating_list.log'
-
 def set_site_property(APP, site_id, key, value):
     try:
         mod = importlib.import_module('work.set_site_property')
@@ -419,26 +416,8 @@ def main():
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
 
-    # create logger
-    logger = logging.getLogger()
     if APP['debug']:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(process)d %(filename)s(%(lineno)d) %(message)s')
-
-    # create file handler
-    fh = logging.FileHandler(Path(APP['log_folder']) / LOG_FILE)
-    fh.setLevel(logging.INFO)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-
-    if APP['debug']:
-        # create stream handler (logging in the console)
-        sh = logging.StreamHandler()
-        sh.setLevel(logging.DEBUG)
-        sh.setFormatter(formatter)
-        logger.addHandler(sh)
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     global brightspace_last_login, brightspace_session
     brightspace_last_login = None

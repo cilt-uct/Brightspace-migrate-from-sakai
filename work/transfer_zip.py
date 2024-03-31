@@ -122,7 +122,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
     t = paramiko.Transport((SFTP['host'], 22))
     if APP['ftp']['log']:
         logging.getLogger("paramiko").setLevel(logging.DEBUG) # for example
-        paramiko.util.log_to_file(f"{APP['ftp']['log_output']}/{SITE_ID}_ftp.log", level = "DEBUG")
+        paramiko.util.log_to_file(f"{APP['log_folder']}/{SITE_ID}_ftp.log", level = "DEBUG")
 
     try:
         t.connect(username=SFTP['username'], password=SFTP['password'])

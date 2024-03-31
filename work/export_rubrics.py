@@ -39,16 +39,6 @@ def sanitize(txt):
     txt = txt.replace("’", "").replace("\u2019", "'")
     return remove_control_characters(txt)
 
-def create_folders(dir_, clean = False):
-    if clean:
-        if os.path.exists(dir_):
-            shutil.rmtree(dir_)
-
-    if not os.path.exists("{}".format(dir_)):
-        os.makedirs("{}".format(dir_))
-
-    return r'{}/'.format(os.path.abspath(dir_))
-
 # this function adds one or more multiple criteria_group elements
 #  in:  rubric criteria ID
 #       XML CriteriaGroups element
@@ -345,8 +335,6 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
 
-    APP['output'] = create_folders(APP['output'])
-    APP['tmp'] = create_folders(APP['tmp'])
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

@@ -64,9 +64,6 @@ def run(SITE_ID, APP):
 
     tree = BeautifulSoup(contents, 'xml')
     for item in tree.find_all('resource', {'rel-id': 'Site Information.html'}):
-        # item['id'] = "/group/{}/Site Information".format(SITE_ID)
-        # item['file-path'] = "/tmp/Site Information"
-        # item['rel-id'] = "Site Information"
         item['content-length'] = do_work(
             r'{}{}-archive/{}'.format(APP['archive_folder'], SITE_ID, item['body-location']), item['rel-id'])
 

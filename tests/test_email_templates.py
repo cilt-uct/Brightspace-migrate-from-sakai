@@ -45,13 +45,6 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     def test_start_workflow(
             self, mock_render, *_):
         APP = config.config.APP
-        dir = 'tmp'
-        parent_dir = '..'
-        path = os.path.join(parent_dir, dir)
-        try:
-            os.mkdir(path)
-        except FileExistsError as e:
-            print(str(e))
         run_update.start_workflow(f"{APP['config_folder']}/update.yaml",link_id='link_id_12345', site_id='site_id_12345', APP=APP)
         self.assertTrue(mock_render.called)
         self.assertEqual('test_title', mock_render.call_args.kwargs['title'])

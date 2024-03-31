@@ -54,10 +54,10 @@ def check_log_file_for_errors(filename):
     # number of ERROR log entries
     return len(list(filter(lambda s: re.match(r'.*(\[ERROR\]).*',s), lines)))
 
-def setup_log_file(filename, SITE_ID, logs):
+def setup_log_file(APP, filename, SITE_ID, logs):
 
     # remove previous log files
-    for old_log_files in glob.glob('{}/tmp/{}_workflow_*.log'.format(parent, SITE_ID)):
+    for old_log_files in glob.glob('{}/{}_workflow_*.log'.format(APP['log_folder'], SITE_ID)):
         os.remove(old_log_files)
 
     with open(filename, "w") as f:
@@ -204,8 +204,8 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         failure_type = record['failure_type']
         failure_detail = record['failure_detail']
 
-        log_file = '{}/tmp/{}_update_{}.log'.format(parent, site_id, now_st)
-        setup_log_file(log_file, site_id, record['workflow'])
+        log_file = '{}/{}_update_{}.log'.format(APP['log_folder'], site_id, now_st)
+        setup_log_file(APP, log_file, site_id, record['workflow'])
 
         workflow_steps = lib.utils.read_yaml(workflow_file)
         update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
@@ -274,9 +274,10 @@ def start_workflow(workflow_file, link_id, site_id, APP):
                     jira_log=log, failure_type=failure_type, failure_detail=failure_detail, user=record['started_by_email'])
 
     finally:
-        BODY = json.loads(get_log(log_file))
-        logging.info("Emailing job log for site {}".format(site_id))
-        send_email(APP['helpdesk-email'], APP['admin_emails'], f"update_run : {site_title} {state}", '\n<br/>'.join(BODY))
+        if APP['email_logs']:
+            BODY = json.loads(get_log(log_file))
+            logging.info("Emailing job log for site {}".format(site_id))
+            send_email(APP['helpdesk-email'], APP['admin_emails'], f"update_run : {site_title} {state}", '\n<br/>'.join(BODY))
 
         set_site_property(APP, site_id, 'brightspace_conversion_status', state)
 
