@@ -31,12 +31,15 @@ def run(SITE_ID, APP):
     # find each resource with a disallowed filename
     for item in content_tree.xpath(".//resource"):
         rel_id = item.get('rel-id')
-        filename = os.path.join(src_folder, item.get('body-location'))
+        file_name = rel_id.split('/')[-1]
+        file_size = item.get('content-length')
+        body_filename = os.path.join(src_folder, item.get('body-location'))
 
-        if rel_id.endswith(".DS_Store"):
+        # Mac metadata files
+        if rel_id.endswith(".DS_Store") or (file_name.startswith("._") and file_size == "4096"):
             found_disallowed = True
             item.getparent().remove(item)
-            os.remove(filename)
+            os.remove(body_filename)
             logging.info(f"\tremoved disallowed file: {item.get('id')}")
 
     # Rewrite the XML if we need to
