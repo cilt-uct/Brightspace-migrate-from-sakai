@@ -168,8 +168,13 @@ def web_login(login_url, username, password):
     }
 
     session = requests.Session()
-    session.post(login_url, data=values, timeout=30)
-    return session
+    resp = session.post(login_url, data=values, allow_redirects = False, timeout=30)
+
+    if resp.is_redirect and resp.headers['Location'] == "/d2l/home":
+        return session
+
+    logging.error(f"Authentication failed logging in to {login_url} with {username}")
+    return None
 
 # Gets course info
 # See https://docs.valence.desire2learn.com/res/course.html
