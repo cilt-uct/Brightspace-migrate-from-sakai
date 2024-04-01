@@ -32,6 +32,7 @@ STEPS:
   - action: content_force_mime_types
 
   # Audio and video
+  - action: content_remove_files
   - action: check_media_metadata
   - action: transcode_media
 
@@ -39,7 +40,6 @@ STEPS:
   - action: fix_zero_byte_files
   - action: content_remove_invalidurls
   - action: content_remove_zerobytes
-  - action: content_remove_files
   - action: fix_restricted_ext
   - action: fix_restricted_names
 
