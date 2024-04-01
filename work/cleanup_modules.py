@@ -11,21 +11,13 @@ sys.path.append(parent)
 
 import config.logging_config
 from lib.local_auth import getAuth
-from lib.d2l import web_login, D2L_API_LE_VERSION
-
-# Returns ToC as JSON
-# See https://docs.valence.desire2learn.com/res/content.html
-# https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
-def get_toc(base_url, org_id, session):
-    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/toc"
-    r = session.get(api_url, timeout=300)
-    return r.text if r.status_code == 200 else None
+from lib.d2l import web_login, get_toc
 
 # Deletes module
 # https://docs.valence.desire2learn.com/res/content.html#delete--d2l-api-le-(version)-(orgUnitId)-content-modules-(moduleId)
 # DELETE /d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)¶
-def delete_module(base_url, org_id, module_id, session):
-    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/modules/{module_id}"
+def delete_module(APP, org_id, module_id, session):
+    api_url = f"{APP['brightspace_api']['le_url']}/{org_id}/content/modules/{module_id}"
     r = session.delete(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
 
@@ -64,13 +56,13 @@ def run(SITE_ID, APP, import_id):
     brightspace_session = web_login(login_url, WEB_AUTH['username'], WEB_AUTH['password'])
 
     # Get the ToC
-    content_toc = json.loads(get_toc(brightspace_url, import_id, brightspace_session))
+    content_toc = json.loads(get_toc(APP, import_id, brightspace_session))
 
     # Quiz Images
     module_title = APP['quizzes']['image_collection']
     module_id = get_module_id(content_toc, module_title)
     if module_id:
-        delete_module(brightspace_url, import_id, module_id, brightspace_session)
+        delete_module(APP, import_id, module_id, brightspace_session)
 
     # QNA
     module_title = APP['qna']['collection']

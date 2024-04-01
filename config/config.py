@@ -106,12 +106,13 @@ APP = {
   },
 
   # D2L Brightspace Valence APIs
+  # See https://docs.valence.desire2learn.com/about.html#principal-version-table
+  # TODO find out how to get the tenantId via API
   'brightspace_api': {
-      'base_url' : 'https://amathuba.uct.ac.za/d2l/api',
-      'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74',
+      'base_url' : 'https://amathuba.uct.ac.za',
       'lp_url' : 'https://amathuba.uct.ac.za/d2l/api/lp/1.45',
-      'lp': '1.45',
-      'le': '1.74'
+      'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74',
+      'tenantId': '6d665046-9dc7-49c8-9521-c482b938d31f'
   },
 
   # Opencast

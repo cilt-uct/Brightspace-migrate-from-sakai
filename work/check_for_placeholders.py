@@ -17,7 +17,7 @@ from lib.utils import remove_unwanted_characters, middleware_api
 from lib.local_auth import getAuth
 from lib.lessons import get_archive_lti_link, ItemType, supported_media_type
 from lib.resources import resource_exists, get_content_displayname
-from lib.d2l import create_lti_quicklink, web_login, D2L_API_LE_VERSION
+from lib.d2l import create_lti_quicklink, web_login, get_toc
 
 # See https://docs.valence.desire2learn.com/res/content.html
 
@@ -28,13 +28,6 @@ def get_lessons_html(url, session):
     # Set the encoding explicitly
     r.encoding="UTF-8"
 
-    return r.text if r.status_code == 200 else None
-
-# Returns ToC as JSON: https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
-def get_toc(base_url, org_id, session):
-    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/toc"
-    print(f"TOC from: {api_url}")
-    r = session.get(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
 
 # Get the media ID for a given audio or video path
@@ -251,7 +244,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
     brightspace_session = web_login(login_url, WEB_AUTH['username'], WEB_AUTH['password'])
 
     # Get the ToC
-    content_toc = json.loads(get_toc(brightspace_url, import_id, brightspace_session))
+    content_toc = json.loads(get_toc(APP, import_id, brightspace_session))
     print("#### TOC ####")
 
     #pprint.pprint(content_toc, width=sys.maxsize)
@@ -274,7 +267,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
             print(f"Topic for {topic_path} not found: possibly already updated")
             continue
 
-        topic_url = f"{brightspace_url}/d2l/api/le/{D2L_API_LE_VERSION}/{import_id}/content/topics/{topic_id}/file"
+        topic_url = f"{APP['brightspace_api']['le_url']}/{import_id}/content/topics/{topic_id}/file"
 
         print(f"Contents from: {topic_url}")
         page_html = get_lessons_html(topic_url, brightspace_session)

@@ -3,6 +3,7 @@ import os
 import json
 import time
 import requests
+import re
 import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -13,9 +14,6 @@ from lib.utils import middleware_api
 
 # D2L API versions
 # See https://docs.valence.desire2learn.com/about.html#principal-version-table
-
-D2L_API_LE_VERSION="1.74"
-D2L_API_LP_VERSION="1.45"
 
 # Call a D2L endpoint via middleware proxy
 def middleware_d2l_api(APP, payload_data = None, retries = None, retry_delay = None, headers = None):
@@ -192,3 +190,28 @@ def get_course_info(APP, org_id):
             raise Exception(f'Unable to get org unit info: {json_response}')
 
     return json_response['data']
+
+# Course package import history
+def get_import_history(brightspace_url, org_unit, session):
+    url = f'{brightspace_url}/d2l/le/conversion/import/{org_unit}/history/display?ou={org_unit}'
+    r = session.get(url, timeout=30)
+    return r.text
+
+def get_first_import_status(content):
+    pattern = re.compile('<d2l-status-indicator state="(.*?)" text="(.*?)"(.*?)>')
+    if pattern.search(content):
+        return pattern.search(content).group(2)
+
+def get_first_import_job_log(content):
+    pattern = re.compile('<a class=(.*?) href=(.*?)logs/(.*?)/Display">View Import Log(.*?)')
+    if pattern.search(content):
+        return pattern.search(content).group(3)
+
+# Content modules and topics
+# Returns ToC as JSON
+# See https://docs.valence.desire2learn.com/res/content.html
+# https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
+def get_toc(APP, org_id, session):
+    api_url = f"{APP['brightspace_api']['le_url']}/{org_id}/content/toc"
+    r = session.get(api_url, timeout=300)
+    return r.text if r.status_code == 200 else None

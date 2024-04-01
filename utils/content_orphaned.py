@@ -13,13 +13,11 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from config.logging_config import *
-from lib.utils import *
+import config.config
+import config.logging_config
 from lib.resources import get_resource_ids
 
-def orphaned(SITE_ID, content_src):
-
+def orphaned(APP, SITE_ID, content_src):
     content_ids = get_resource_ids(content_src)
     used_ids = {}
 
@@ -73,10 +71,10 @@ def run(SITE_ID, APP):
         print(f"ERROR {content_src} not found")
         return False
 
-    orphaned(SITE_ID, content_src)
+    orphaned(APP, SITE_ID, content_src)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
@@ -84,6 +82,8 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
+    if APP['debug']:
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     run(args['SITE_ID'], APP)
 

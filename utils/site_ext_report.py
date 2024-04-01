@@ -15,8 +15,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from config.logging_config import *
+import config.config
+import config.logging_config
 from lib.utils import site_has_tool
 
 def extensions(base_path, xml_src):
@@ -111,7 +111,7 @@ def run(SITE_ID, APP):
         print("No attachments")
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

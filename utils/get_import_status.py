@@ -1,5 +1,3 @@
-import requests
-import re
 import argparse
 import os
 import sys
@@ -9,44 +7,15 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from config.logging_config import *
-from lib.utils import *
+import config.config
+import config.logging_config
+from lib.d2l import web_login, get_import_history, get_first_import_status, get_first_import_job_log
 from lib.local_auth import getAuth
-
-def login(url, username, password):
-    values = {
-        'loginPath': '/d2l/login',
-        'username': username,
-        'password': password
-    }
-
-    session = requests.Session()
-    session.post(url, data=values)
-    return session
-
-
-def get_org(brightspace_url, org_unit, session):
-    url = f'{brightspace_url}/d2l/le/conversion/import/{org_unit}/history/display?ou={org_unit}'
-    r = session.get(url)
-    return r.text
-
-
-def get_status(content):
-    logging.debug(f"looking in {content}")
-
-    pattern = re.compile('<d2l-status-indicator state="(.*?)" text="(.*?)"(.*?)>')
-    return pattern.search(content).group(2)
-
-
-def get_import_job_log(content):
-    pattern = re.compile('<a class=(.*?) href=(.*?)logs/(.*?)/Display">View Import Log(.*?)')
-    return pattern.search(content).group(3)
 
 
 def main():
 
-    global APP
+    APP = config.config.APP
 
     parser = argparse.ArgumentParser(description="This script gets Brightspace import statuses",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -69,14 +38,14 @@ def main():
 
     url = f'{brightspace_url}/d2l/lp/auth/login/login.d2l'
     logging.info(f"Checking import status at {url} username {WEB['username']}")
-    session = login(url, WEB['username'], WEB['password'])
+    session = web_login(url, WEB['username'], WEB['password'])
 
     status_list = { }
     for org_id in org_ids:
-        content = get_org(brightspace_url, org_id, session)
+        content = get_import_history(brightspace_url, org_id, session)
         status_list[org_id] = {
-                'status': get_status(content),
-                'job_id': get_import_job_log(content)
+                'status': get_first_import_status(content),
+                'job_id': get_first_import_job_log(content)
             }
 
     logging.info(f"Result: {status_list}")

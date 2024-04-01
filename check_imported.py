@@ -11,7 +11,6 @@ import time
 import logging
 import json
 import importlib
-import re
 import paramiko
 
 from pathlib import Path
@@ -29,7 +28,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from lib.utils import send_template_email, create_jira
-from lib.d2l import middleware_d2l_api, web_login
+from lib.d2l import middleware_d2l_api, web_login, get_import_history, get_first_import_status, get_first_import_job_log
 
 def set_site_property(APP, site_id, key, value):
     try:
@@ -255,21 +254,6 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
     except Exception as e:
         logging.exception(e)
         return False
-
-def get_import_history(brightspace_url, org_unit, session):
-    url = f'{brightspace_url}/d2l/le/conversion/import/{org_unit}/history/display?ou={org_unit}'
-    r = session.get(url, timeout=30)
-    return r.text
-
-def get_first_import_status(content):
-    pattern = re.compile('<d2l-status-indicator state="(.*?)" text="(.*?)"(.*?)>')
-    if pattern.search(content):
-        return pattern.search(content).group(2)
-
-def get_first_import_job_log(content):
-    pattern = re.compile('<a class=(.*?) href=(.*?)logs/(.*?)/Display">View Import Log(.*?)')
-    if pattern.search(content):
-        return pattern.search(content).group(3)
 
 def get_import_status_collection(brightspace_url, WEB_AUTH, orgunit_ids):
 
