@@ -6,22 +6,16 @@
 
 import sys
 import os
-import re
-import shutil
-import copy
 import argparse
-import urllib.parse
-import json
+import logging
+
 from bs4 import BeautifulSoup
-from html import escape
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.lessons import *
-
+import config.logging_config
 
 def run(SITE_ID, APP):
 
@@ -86,7 +80,7 @@ def run(SITE_ID, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script sets Lessons page parents",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

@@ -1,22 +1,23 @@
 import argparse
 import os
 import sys
-import pprint
 import json
 import base64
+import logging
 from jsonpath_ng.ext import parse
 from html import escape
+from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.lessons import *
-from lib.resources import *
-from lib.d2l import *
+import config.logging_config
+from lib.utils import remove_unwanted_characters, middleware_api
+from lib.local_auth import getAuth
+from lib.lessons import get_archive_lti_link, ItemType, supported_media_type
+from lib.resources import resource_exists, get_content_displayname
+from lib.d2l import create_lti_quicklink, web_login, get_toc
 
 # See https://docs.valence.desire2learn.com/res/content.html
 
@@ -27,13 +28,6 @@ def get_lessons_html(url, session):
     # Set the encoding explicitly
     r.encoding="UTF-8"
 
-    return r.text if r.status_code == 200 else None
-
-# Returns ToC as JSON: https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
-def get_toc(base_url, org_id, session):
-    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/toc"
-    print(f"TOC from: {api_url}")
-    r = session.get(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
 
 # Get the media ID for a given audio or video path
@@ -61,7 +55,6 @@ def get_media_id(content_toc, file_path, displayname):
     print(f"Filename: {filename} Displayname: {displayname}")
 
     media_id = None
-    topic_id = None
     media_url = None
 
     # Find the media_id. First try to match on title in Lessons, if it's unique in the site.
@@ -82,7 +75,7 @@ def get_media_id(content_toc, file_path, displayname):
         search_name = filename
         if displayname:
             search_name = displayname
-            if not '.' in search_name and '.' in filename:
+            if '.' not in search_name and '.' in filename:
                 # append the original extension to match the Brightspace import behaviour
                 file_ext = filename.split('.')[-1]
                 search_name += f".{file_ext}"
@@ -201,7 +194,6 @@ def run(SITE_ID, APP, import_id, transfer_id):
         items = soup.find_all('item', attrs={"type": "5"})
         for item in items:
             html = BeautifulSoup(item['html'], 'html.parser')
-            found = False
 
             # At least one placeholder
             if html.find('p', attrs={"data-type": "placeholder"}):
@@ -244,16 +236,15 @@ def run(SITE_ID, APP, import_id, transfer_id):
     if (webAuth is not None):
         WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
     else:
-        raise Exception(f'Web Authentication required [BrightspaceWeb]')
+        raise Exception('Web Authentication required [BrightspaceWeb]')
 
     brightspace_url = APP['brightspace_url']
 
     login_url = f"{brightspace_url}/d2l/lp/auth/login/login.d2l"
     brightspace_session = web_login(login_url, WEB_AUTH['username'], WEB_AUTH['password'])
-    brightspace_last_login = datetime.now()
 
     # Get the ToC
-    content_toc = json.loads(get_toc(brightspace_url, import_id, brightspace_session))
+    content_toc = json.loads(get_toc(APP, import_id, brightspace_session))
     print("#### TOC ####")
 
     #pprint.pprint(content_toc, width=sys.maxsize)
@@ -276,7 +267,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
             print(f"Topic for {topic_path} not found: possibly already updated")
             continue
 
-        topic_url = f"{brightspace_url}/d2l/api/le/{D2L_API_LE_VERSION}/{import_id}/content/topics/{topic_id}/file"
+        topic_url = f"{APP['brightspace_api']['le_url']}/{import_id}/content/topics/{topic_id}/file"
 
         print(f"Contents from: {topic_url}")
         page_html = get_lessons_html(topic_url, brightspace_session)
@@ -337,7 +328,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
                 if sakai_id.startswith("/blti/"):
                     lti_id = sakai_id.replace("/blti/", "")
-                    sakai_link_data = get_lti_link(archive_path, lti_id)
+                    sakai_link_data = get_archive_lti_link(archive_path, lti_id)
 
                 if sakai_link_data:
                     logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}' {sakai_link_data['launch']}")
@@ -362,7 +353,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
                             "CustomParameters": [ { "Name": "tool", "Value": tool } ]
                     }
 
-                    quicklink_url = create_quicklink(APP, import_id, lti_link_data)
+                    quicklink_url = create_lti_quicklink(APP, import_id, lti_link_data)
                     logging.info(f"Quicklink for {lti_link_data['Url']} is {quicklink_url}")
 
                     if quicklink_url:
@@ -449,7 +440,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
             new_topic_filename = f"lessonBuilder_{itemid}a.html"
             update_endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['update_html_file'].format(import_id, topic_id))
             json_response = middleware_api(APP, update_endpoint, payload_data={'html': soup_html.html.encode("utf-8"), 'name': new_topic_filename}, method='PUT')
-            if not 'status' in json_response or json_response['status'] != 'success':
+            if 'status' not in json_response or json_response['status'] != 'success':
                 raise Exception(f"Error updating topic {topic_id}: {json_response}")
             logging.info(f"Updating topic {import_id} / {topic_id} for Lessons item {itemid}")
 
@@ -458,7 +449,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
     return
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for placeholders in lessons and embed multimedia file",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")

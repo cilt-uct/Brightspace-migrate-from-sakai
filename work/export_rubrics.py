@@ -6,19 +6,28 @@
 
 import sys
 import os
+import json
 import argparse
 import pymysql
-import shutil
 import unicodedata
 import lxml.etree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+import config.config
+import config.logging_config
+from lib.local_auth import getAuth
+
+def truncate(txt):
+
+    # D2L rubric criteria group and criteria names have a limit of 255 characters
+    if len(txt) > 255:
+        txt = txt[0:250] + " ..."
+
+    return txt
 
 # Map table columns to XML attributes
 def remove_control_characters(s):
@@ -29,40 +38,42 @@ def sanitize(txt):
     txt = txt.replace("’", "").replace("\u2019", "'")
     return remove_control_characters(txt)
 
-def create_folders(dir_, clean = False):
-    if clean:
-        if os.path.exists(dir_):
-            shutil.rmtree(dir_)
-
-    if not os.path.exists("{}".format(dir_)):
-        os.makedirs("{}".format(dir_))
-
-    return r'{}/'.format(os.path.abspath(dir_))
-
 # this function adds one or more multiple criteria_group elements
 #  in:  rubric criteria ID
 #       XML CriteriaGroups element
 def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
 
     cursor_criterions = db.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT criterions_id, title, order_index " \
+    sql = "SELECT criterions_id, title, description, order_index " \
           "FROM rbc_rubric_criterions " \
           "INNER JOIN rbc_criterion ON rbc_rubric_criterions.criterions_id = rbc_criterion.id " \
           "WHERE rbc_rubric_id = %s"
     cursor_criterions.execute(sql, rubric_id)
 
     count = 0
-    start_group = True
     cg = 0
     last_levels = ""
     level_ids = []
+    RowCriteria = None
+    next_cg_title = None
 
     for row in cursor_criterions.fetchall():
 
         criterions_id = row['criterions_id']
         levels_info = getLevelsHash(db, criterions_id)
 
+        if levels_info['levels'] == 0:
+            # Use this as the title for the next criteria group
+            next_cg_title = row['title'].strip()
+            if row['description'] is not None and len(row['description'].strip()) > 0:
+                next_cg_title += ": " + sanitize(row['description'].strip())
+            continue
+
+        logging.debug(f"Criterion {row['criterions_id']} '{row['title']}'")
+
         if (levels_info['levels_hash'] != last_levels):
+
+            logging.debug(f"Starting new criteria group for {levels_info}")
 
             # Start a new criteria group
             last_levels = levels_info['levels_hash']
@@ -70,7 +81,13 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
             cg += 1
 
             RowCriteria_Group = ET.SubElement(RowCriteria_Groups, "criteria_group")
-            RowCriteria_Group.set("name", f"Criteria {cg}")
+
+            if next_cg_title:
+                RowCriteria_Group.set("name", truncate(next_cg_title))
+                next_cg_title = None
+            else:
+                RowCriteria_Group.set("name", f"Criteria {cg}")
+
             RowCriteria_Group.set("sort_order", str(row['order_index']))
 
             RowLevelSet = ET.SubElement(RowCriteria_Group, "level_set")
@@ -90,7 +107,13 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
 def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
 
     Row = ET.SubElement(xmlRow, "criterion")
-    Row.set('name', rowCriteria['title'])
+
+    criteria_name = rowCriteria['title'].strip()
+    criteria_desc = rowCriteria['description']
+    if criteria_desc is not None and len(criteria_desc.strip()) > 0:
+        criteria_name += ": " + sanitize(criteria_desc.strip())
+
+    Row.set('name', truncate(criteria_name))
     Row.set('sort_order', str(rowCriteria['order_index']))
 
     RowCells = ET.SubElement(Row, "cells")
@@ -174,10 +197,18 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
     # <level level_id="65916" sort_order="2" level_value="2.0" name="Exceeds expectations"/>
 
     for row in allRows:
+
+        row_points = row['points']
+
+        # D2L rubrics do not allow negative points
+        if row_points < 0:
+            # TODO flag in conversion report
+            row_points = 0
+
         Row = ET.SubElement(xmlRow, "level")
         Row.set('level_id', str(row['ratings_id']))
         Row.set('sort_order', str(row['order_index']))
-        Row.set('level_value', str(row['points']))
+        Row.set('level_value', str(row_points))
         Row.set('name', sanitize(row['title'].strip()))
 
 # export rubrics for a site to xml file
@@ -235,7 +266,7 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
 
     return os.path.exists(rubrics_file)
 
-# Export details of where Rubrics are used, for conversion report
+# Export rubric details for conversion report
 def exportRubricAssociations(db_config, site_id, output_folder):
     db = pymysql.connect(**db_config)
     cursor = db.cursor(pymysql.cursors.DictCursor)
@@ -295,7 +326,7 @@ def run(SITE_ID, APP):
 
 def main():
 
-    global APP
+    APP = config.config.APP
 
     parser = argparse.ArgumentParser(description="This script accesses a Sakai DB and exports the rubrics in D2L XML format.",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -303,8 +334,6 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
 
-    APP['output'] = create_folders(APP['output'])
-    APP['tmp'] = create_folders(APP['tmp'])
     APP['debug'] = APP['debug'] or args['debug']
 
     run(args['SITE_ID'], APP)

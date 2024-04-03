@@ -4,22 +4,20 @@
 
 import sys
 import os
-import re
-import shutil
-import copy
 import argparse
 import hashlib
 import lxml.etree as ET
+import logging
+
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, quote, unquote
+from urllib.parse import quote, unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.resources import *
+import config.logging_config
+from lib.resources import get_resource_ids, move_attachments
 
 def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list, xml_src):
 
@@ -83,7 +81,7 @@ def fix_images(APP, SITE_ID, content_ids, attachment_ids, collection, move_list,
                             if attach_id in content_ids:
                                 continue
 
-                            if not attach_id in attachment_ids:
+                            if attach_id not in attachment_ids:
                                 logging.warning(f"Missing image: {attach_id} in {xml_src} URL {img_src}")
                                 continue
 
@@ -141,7 +139,7 @@ def run(SITE_ID, APP):
         move_attachments(SITE_ID, site_folder, collection, move_list)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="AMA-121 Inline Images",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

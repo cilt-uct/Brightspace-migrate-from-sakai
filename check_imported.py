@@ -5,42 +5,32 @@
 
 import sys
 import os
-import subprocess
 import argparse
 import pymysql
 import time
 import logging
-import requests
 import json
 import importlib
-import re
+import paramiko
 
-from requests.exceptions import HTTPError
 from pathlib import Path
 from stat import S_ISREG
-
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
 from subprocess import Popen
 
-import paramiko
+import config.config
 import lib.local_auth
-import run_update
 import lib.db
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.jira_rest import MyJira
+from lib.utils import send_template_email, create_jira
+from lib.d2l import middleware_d2l_api, web_login, get_import_history, get_first_import_status, get_first_import_job_log
 
-# log file of this script
-LOG_FILE = 'brightspace_updating_list.log'
-
-def set_site_property(site_id, key, value):
+def set_site_property(APP, site_id, key, value):
     try:
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
@@ -71,9 +61,9 @@ def set_to_updating(db_config, link_id, site_id):
     except Exception as e:
         raise Exception(f'Could not set_to_updating for {link_id} : {site_id}') from e
 
-def update_import_id(db_config, link_id, site_id, org_unit_id, log):
+def update_import_id(APP, db_config, link_id, site_id, org_unit_id, log):
 
-    set_site_property(site_id, 'brightspace_imported_site_id', org_unit_id)
+    set_site_property(APP, site_id, 'brightspace_imported_site_id', org_unit_id)
 
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
@@ -169,11 +159,11 @@ def sftp_file_list(sftp, remotedir):
 # Unused
 def check_sftp(inbox, outbox):
 
-    ftpAuth = getAuth('BrightspaceFTP')
+    ftpAuth = lib.local_auth.getAuth('BrightspaceFTP')
     if (ftpAuth is not None):
         SFTP = {'host' : ftpAuth[0], 'username': ftpAuth[1], 'password' : ftpAuth[2]}
     else:
-        raise Exception(f'SFTP Authentication required [getBrightspaceFTP]')
+        raise Exception('SFTP Authentication required [getBrightspaceFTP]')
 
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -197,7 +187,7 @@ def check_sftp(inbox, outbox):
 
     return (inbox_files, outbox_files)
 
-def check_for_brightspace_id(search_site_id):
+def check_for_brightspace_id(APP, search_site_id):
 
     # We want to swallow exceptions and failures here because if we can't search successfully,
     # it's not a workflow failure, we just retry again later.
@@ -225,7 +215,7 @@ def check_for_brightspace_id(search_site_id):
         else:
             logging.warning(f"Unexpected response {json_response} checking for {search_site_id}")
 
-    except Exception as err:
+    except Exception:
         logging.exception(f"Exception in fetch_course_info for {search_site_id}")
 
     # Error or not found
@@ -248,7 +238,7 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
         if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Complete"):
             set_to_updating(db_config, link_id, site_id)
 
-            cmd = "python3 {}/run_update.py {} {}".format(SCRIPT_FOLDER, link_id, site_id).split()
+            cmd = "python3 {}/run_update.py {} {}".format(APP['script_folder'], link_id, site_id).split()
             if APP['debug']:
                 cmd.append("-d")
 
@@ -264,21 +254,6 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
     except Exception as e:
         logging.exception(e)
         return False
-
-def get_import_history(brightspace_url, org_unit, session):
-    url = f'{brightspace_url}/d2l/le/conversion/import/{org_unit}/history/display?ou={org_unit}'
-    r = session.get(url, timeout=30)
-    return r.text
-
-def get_first_import_status(content):
-    pattern = re.compile('<d2l-status-indicator state="(.*?)" text="(.*?)"(.*?)>')
-    if pattern.search(content):
-        return pattern.search(content).group(2)
-
-def get_first_import_job_log(content):
-    pattern = re.compile('<a class=(.*?) href=(.*?)logs/(.*?)/Display">View Import Log(.*?)')
-    if pattern.search(content):
-        return pattern.search(content).group(3)
 
 def get_import_status_collection(brightspace_url, WEB_AUTH, orgunit_ids):
 
@@ -315,7 +290,7 @@ def check_imported(APP):
     if (webAuth is not None):
         WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
     else:
-        raise Exception(f'Web Authentication required [BrightspaceWeb]')
+        raise Exception('Web Authentication required [BrightspaceWeb]')
 
     start_time = time.time()
 
@@ -336,14 +311,13 @@ def check_imported(APP):
 
         site_id = site['site_id']
         refsite_id = site['imported_site_id']
-        new_id = False
 
         # Check to see if a site has been created
         if refsite_id == 0:
-            refsite_id = check_for_brightspace_id(site['transfer_site_id'])
+            refsite_id = check_for_brightspace_id(APP, site['transfer_site_id'])
             if refsite_id > 0:
                 logging.info(f"Site {site_id} has new Brightspace Id {refsite_id}")
-                update_import_id(DB_AUTH, site['link_id'], site_id, refsite_id, json.loads(site['workflow']))
+                update_import_id(APP, DB_AUTH, site['link_id'], site_id, refsite_id, json.loads(site['workflow']))
                 site['imported_site_id'] = refsite_id
 
         # If we have a Brightspace site, add to the import status check list
@@ -373,7 +347,7 @@ def check_imported(APP):
             import_status = import_status_set[imported_site_id]
 
         try:
-            logging.debug("{} : {} ({})".format(site['link_id'], site['site_id'], site['expired'], site['expired'] == 'Y'))
+            logging.debug("{} : {} ({})".format(site['link_id'], site['site_id'], site['expired'], ))
 
             if not site['files'] or not site['workflow']:
                 logging.warning(f"Skipping {site_id} {site_title} - missing files and/or workflow")
@@ -419,33 +393,15 @@ def check_imported(APP):
     logging.info("##### Finished. Elapsed time {}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This runs periodically - start workflow on sites that have been imported and need to be updated.",
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
 
-    # create logger
-    logger = logging.getLogger()
     if APP['debug']:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(process)d %(filename)s(%(lineno)d) %(message)s')
-
-    # create file handler
-    fh = logging.FileHandler(Path(APP['log_folder']) / LOG_FILE)
-    fh.setLevel(logging.INFO)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-
-    if APP['debug']:
-        # create stream handler (logging in the console)
-        sh = logging.StreamHandler()
-        sh.setLevel(logging.DEBUG)
-        sh.setFormatter(formatter)
-        logger.addHandler(sh)
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     global brightspace_last_login, brightspace_session
     brightspace_last_login = None

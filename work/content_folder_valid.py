@@ -6,17 +6,15 @@
 
 import sys
 import os
-import shutil
-import yaml
 import argparse
 import lxml.etree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
 
 def run(SITE_ID, APP):
     logging.info('Content: checking folder names valid AMA-651 : {}'.format(SITE_ID))
@@ -25,9 +23,6 @@ def run(SITE_ID, APP):
     xml_src = r'{}/content.xml'.format(src_folder)
 
     if os.path.isfile(xml_src):
-        with open(xml_src, 'r') as f:
-            contents = f.read()
-
         parser = ET.XMLParser(recover=True)
         content_tree = ET.parse(xml_src, parser)
 
@@ -40,7 +35,7 @@ def run(SITE_ID, APP):
         logging.warning(f"No content.xml found for {SITE_ID}")
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="AMA-651 Check that folder names are valid",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

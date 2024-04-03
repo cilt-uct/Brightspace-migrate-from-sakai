@@ -12,16 +12,11 @@ import emails
 import logging
 import time
 import requests
-import subprocess
 import csv
-import socket
 
-from datetime import datetime, timedelta
-from emails.template import JinjaTemplate as T
+from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from validate_email import validate_email
 from bs4 import BeautifulSoup
-from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -29,12 +24,6 @@ sys.path.append(parent)
 
 from lib.jira_rest import MyJira
 from lib.local_auth import getAuth
-
-# D2L API versions
-# See https://docs.valence.desire2learn.com/about.html#principal-version-table
-
-D2L_API_LE_VERSION="1.74"
-D2L_API_LP_VERSION="1.45"
 
 class myFile(object):
     def __init__(self, filename):
@@ -218,9 +207,6 @@ def read_yaml(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
 
-def get_config():
-    return read_yaml("{}/config/config.yaml".format(parent))
-
 def get_log(filename):
     _file = open(filename, "r")
     lines = _file.readlines()
@@ -377,12 +363,6 @@ def stripspace(orig):
 
     return new
 
-# Call a D2L endpoint via middleware proxy
-def middleware_d2l_api(APP, payload_data = None, retries = None, retry_delay = None, headers = None):
-
-    api_proxy_url = f"{APP['middleware']['base_url']}{APP['middleware']['api_proxy_url']}"
-    return middleware_api(APP, api_proxy_url, method='POST', payload_data = payload_data, retries = retries, retry_delay = retry_delay, headers = headers)
-
 # Call middleware API and return JSON response with optional retries
 def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None, method = None, headers = None):
 
@@ -483,32 +463,6 @@ def enroll_in_site(APP, eid, import_id, role):
 
     raise Exception(f"Could not enroll user {eid} in {import_id}: {json_response}")
 
-def find_user_and_enroll_in_site(APP, eid, import_id, role):
-
-    # middleware now supports enrolment via eid directly, so no need to search
-    return enroll_in_site(APP, eid, import_id, role)
-
-def get_var(varname):
-    base = Path(os.path.dirname(os.path.abspath(__file__))).parent / 'base.sh'
-
-    CMD = f'echo $(source {base}; echo $%s)' % varname
-    p = subprocess.Popen(CMD, stdout=subprocess.PIPE, shell=True, executable='/bin/bash')
-    return p.stdout.readlines()[0].strip().decode("utf-8")
-
-def web_login(login_url, username, password):
-
-    logging.info(f"Web UI login with service account {username}")
-
-    values = {
-        'web_loginPath': '/d2l/login',
-        'username': username,
-        'password': password
-    }
-
-    session = requests.Session()
-    session.post(login_url, data=values, timeout=30)
-    return session
-
 def resolve_redirect(url):
 
     # Sakai shortened URLs like /x/ are resolved with redirects
@@ -519,9 +473,8 @@ def resolve_redirect(url):
 
     return None
 
-def course_title(APP, course, term):
-
-    import csv
+# Get the canonical SIS course titl
+def sis_course_title(APP, course, term):
 
     # AAE2001F,2024,"Special Study Module",AAE,2024-01-02,2024-06-12
     fieldnames = ['course', 'term', 'title', 'dept', 'start', 'end']
@@ -545,23 +498,6 @@ def site_has_tool(APP, SITE_ID, tool_id):
         return True
 
     return False
-
-# Gets course info
-# See https://docs.valence.desire2learn.com/res/course.html
-def get_course_info(APP, org_id):
-
-    info_url_template = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['course_info_url'])
-    info_url = info_url_template.format(org_id)
-
-    json_response = middleware_api(APP, info_url)
-
-    if 'status' not in json_response:
-        raise Exception(f'Unable to get org unit info: {json_response}')
-    else:
-        if json_response['status'] != 'success':
-            raise Exception(f'Unable to get org unit info: {json_response}')
-
-    return json_response['data']
 
 # Replace wiris with markup in an HTML blob
 # Used in Lessons, T&Q, Q&A
@@ -588,43 +524,3 @@ def replace_wiris(html_str):
         el.replace_with(math_ml)
 
     return str(html)
-
-# GET /d2l/api/le/(version)/import/(orgUnitId)/imports/(jobToken)
-# Status = UPLOADING | IMPORTING | IMPORTFAILED | COMPLETED
-def wait_for_job(APP, org_id, job_token, initial_delay = 3, delay = 10, max_tries = 12):
-
-    time.sleep(initial_delay)
-
-    tries = 0
-
-    while tries < max_tries:
-
-        tries += 1
-
-        payload = {
-            'url': f"{APP['brightspace_api']['le_url']}/import/{org_id}/imports/{job_token}",
-            'method': 'GET'
-        }
-
-        # {'data': {'JobToken': '6992', 'Status': 'IMPORTING', 'TargetOrgUnitId': 67143}, 'status': 'success'}
-        json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
-
-        if 'status' in json_response and json_response['status'] == 'success' and 'data' in json_response:
-            if 'Status' in json_response['data']:
-                import_status = json_response['data']['Status']
-                logging.info(f"Import job {job_token} has status {import_status}")
-
-                if import_status == "IMPORTFAILED":
-                    return False
-
-                if import_status == "COMPLETED":
-                    return True
-            else:
-                logging.warning(f"Unexpected response {json_response}, will retry")
-        else:
-            logging.warning(f"Unexpected response {json_response}, will retry")
-
-        time.sleep(delay)
-
-    # Out of tries
-    return False

@@ -1,20 +1,15 @@
 import argparse
 import os
 import sys
-import pprint
 import json
-import base64
-from jsonpath_ng.ext import parse
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.lessons import *
-from lib.resources import *
+import config.logging_config
+from lib.d2l import middleware_d2l_api, get_course_info
 
 # Adds a root module
 # POST /d2l/api/le/(version)/(orgUnitId)/content/root/¶
@@ -123,7 +118,7 @@ def run(SITE_ID, APP, import_id):
     return False
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Update reference site status and semester",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")

@@ -4,12 +4,11 @@
 
 import sys
 import os
-import re
-import shutil
-import copy
 import argparse
 import urllib.parse
 import json
+import logging
+
 from bs4 import BeautifulSoup
 from html import escape
 
@@ -17,8 +16,12 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.lessons import *
+import config.config
+import config.logging_config
+from lib.lessons import ItemType, \
+        parse_youtube, generic_iframe, link_item, \
+        folder_list_embed, generic_embed, youtube_embed, twitter_embed, audio_embed, \
+        is_image, is_youtube, is_twitter, is_audio_video, is_url_html, is_audio_url
 
 def update_item_types(APP, SITE_ID, items):
 
@@ -338,7 +341,7 @@ def run(SITE_ID, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script merges Lessons items",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

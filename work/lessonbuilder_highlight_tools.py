@@ -10,13 +10,16 @@ import sys
 import os
 import argparse
 import xml.etree.ElementTree as ET
+import re
+import shutil
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import remove_unwanted_characters, make_well_formed
 from bs4 import BeautifulSoup
 
 
@@ -58,7 +61,7 @@ def run(SITE_ID, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replaces adds a class to the ol and removes styling on li",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

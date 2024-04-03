@@ -5,17 +5,16 @@
 
 import sys
 import os
-import shutil
-import yaml
 import argparse
 import lxml.etree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import read_yaml
 
 def run(SITE_ID, APP):
     logging.info('Content: check restricted extensions : {}'.format(SITE_ID))
@@ -34,14 +33,11 @@ def run(SITE_ID, APP):
         logging.info(f"No attachments in {SITE_ID}")
         return
 
-    with open(xml_src, 'r') as f:
-        contents = f.read()
-
     parser = ET.XMLParser(recover=True)
     content_tree = ET.parse(xml_src, parser)
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         # Extensions
         file_name, file_extension = os.path.splitext(item.get('id'))
@@ -54,7 +50,7 @@ def run(SITE_ID, APP):
             raise Exception(f"Attachment '{item.get('id')}' is {content_type} without .URL extension: AMA-451")
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

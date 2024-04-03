@@ -7,18 +7,17 @@
 import sys
 import os
 import shutil
+import json
 import argparse
 import lxml.etree as ET
-
-from datetime import datetime, timedelta
-from bs4 import BeautifulSoup
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import init__soup
 
 def drop_content(toolid, archive_path):
     logging.info(f"Tool {toolid} is unused: dropping content")
@@ -113,7 +112,7 @@ def run(SITE_ID, APP):
 
     for tool in drop_tools:
         toolid = tool['key']
-        if not toolid in found_tool_keys and 'archive' in tool:
+        if toolid not in found_tool_keys and 'archive' in tool:
             # Drop tool content
             drop_content(tool['key'], os.path.join(site_folder, tool['archive']))
 
@@ -125,7 +124,7 @@ def run(SITE_ID, APP):
     return True
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script drops tool content where the tool is unused",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

@@ -7,9 +7,9 @@ import sys
 import os
 import argparse
 import zeep
+import logging
 
 from requests import Session
-from datetime import datetime, timedelta
 
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
@@ -20,9 +20,8 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+import config.logging_config
+from lib.local_auth import getAuth
 
 VALID = ['brightspace_conversion_success', 'brightspace_conversion_date', 'brightspace_conversion_status', 'brightspace_imported_site_id']
 
@@ -71,7 +70,7 @@ def run(SITE_ID, APP, **kwargs):
         raise Exception(fault)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Workflow operation to update Sakai site property with migration status",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

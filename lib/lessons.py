@@ -5,14 +5,15 @@ import os
 import sys
 import oembed
 import requests
+from bs4 import BeautifulSoup
 from html import escape
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.utils import *
-from lib.resources import *
+from lib.utils import read_yaml
+from lib.resources import get_content_displayname
 
 # Lessons item types
 # https://github.com/cilt-uct/sakai/blob/21.x/lessonbuilder/api/src/java/org/sakaiproject/lessonbuildertool/SimplePageItem.java#L36
@@ -229,7 +230,7 @@ def folder_list_embed(archive_path, collection_id, path_prefix, desc):
         html = '<div data-type="folder-list"><hr>'
         collection = content_soup.find("collection", id=collection_id)
         if not collection:
-            print(f"Collection not found")
+            print("Collection not found")
             return None
 
         # Collection title
@@ -263,7 +264,7 @@ def folder_list_embed(archive_path, collection_id, path_prefix, desc):
 
 # Get the LTI launch URL from basiclti.xml for a content item
 
-def get_lti_link(archive_path, lti_content_id):
+def get_archive_lti_link(archive_path, lti_content_id):
 
     with open(f"{archive_path}/basiclti.xml", "r", encoding="utf8") as blti:
         lti_soup = BeautifulSoup(blti, 'xml')

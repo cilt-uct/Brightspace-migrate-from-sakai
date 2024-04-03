@@ -9,36 +9,29 @@ import re
 import glob
 import json
 import argparse
-import numpy
 import pymysql
-import yaml
 import time
 import importlib
-
-import emails
-from emails.template import JinjaTemplate as T
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-from validate_email import validate_email
+import logging
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
+from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+from config.logging_config import formatter, logger
+from lib.utils import create_jira, send_email, send_template_email, get_log, get_size, create_folders
+from lib.jira_rest import MyJira
+
+import config.config
 import lib.local_auth
 import lib.utils
 import lib.db
-from work.archive_site import *
 import work.archive_site
 import work.get_site_title
-from lib.jira_rest import MyJira
-
-WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/workflow.yaml'
 
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")
 
@@ -126,15 +119,15 @@ def check_log_file_for_errors(filename):
     # check if log contains a line with ERROR in it ...
     return len(list(filter(lambda s: re.match(r'.*(\[ERROR\]).*',s), lines))) > 0
 
-def setup_log_file(filename, SITE_ID, logs):
+def setup_log_file(APP, filename, SITE_ID, logs):
 
     # remove previous log files
-    for old_log_files in glob.glob('{}/tmp/{}_workflow_*.log'.format(parent, SITE_ID)):
+    for old_log_files in glob.glob('{}/{}_workflow_*.log'.format(APP['log_folder'], SITE_ID)):
         os.remove(old_log_files)
 
     with open(filename, "w") as f:
-        for l in json.loads(logs):
-            f.write(f'{l}\n')
+        for log_entry in json.loads(logs):
+            f.write(f'{log_entry}\n')
         f.close()
 
     # create a log file so that we can track the progress of the workflow
@@ -158,7 +151,7 @@ def get_title(site_xml):
 
     return None
 
-def set_site_property(site_id, key, value):
+def set_site_property(APP, site_id, key, value):
     try:
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
@@ -172,7 +165,7 @@ def set_site_property(site_id, key, value):
         logging.error("Workflow operation {} = {} ".format('set_site_property', e))
         return False
 
-def transition_jira(site_id):
+def transition_jira(APP, site_id):
     with MyJira() as j:
         fields = {
             'project': {'key': APP['jira']['key']},
@@ -182,7 +175,7 @@ def transition_jira(site_id):
 
         j.setToInProgressIssue(fields)
 
-def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
+def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
 
     if step['action'] == "mail":
         if 'template' in step:
@@ -211,8 +204,8 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
         rough_list = list(filter(lambda s: FILE_REGEX.match(s), lines))
 
         output_files = dict()
-        for l in rough_list:
-            m = re.findall(r'(file-.*):\s(.*)', l)
+        for file_entry in rough_list:
+            m = re.findall(r'(file-.*):\s(.*)', file_entry)
             output_files[ m[0][0] ] = m[0][1]
 
         if 'file-fixed-zip' in output_files:
@@ -243,7 +236,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             func(**new_kwargs)  # this runs the steps - and writes to log file
 
             # after execution of workflow step check log to see if it contains an error
-            return check_log_file_for_errors(log_file) == False
+            return not check_log_file_for_errors(log_file)
 
         except Exception as e:
             logging.exception(e)
@@ -253,7 +246,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
 # States
 ## enum('init','starting','exporting','running','importing','updating','completed','error')
 
-def start_workflow(link_id, site_id, APP):
+def start_workflow(workflow_file, link_id, site_id, APP):
     tmp = lib.local_auth.getAuth(APP['auth']['db'])
     if (tmp is not None):
         DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
@@ -274,8 +267,8 @@ def start_workflow(link_id, site_id, APP):
     start_time = time.time()
 
     state = 'error'
-    log_file = '{}/tmp/{}_workflow_{}.log'.format(parent, site_id, now_st)
-    setup_log_file(log_file, site_id, '[]')
+    log_file = '{}/{}_workflow_{}.log'.format(APP['log_folder'], site_id, now_st)
+    setup_log_file(APP, log_file, site_id, '[]')
 
     record = None
 
@@ -295,13 +288,13 @@ def start_workflow(link_id, site_id, APP):
         failure_type = record['failure_type']
         failure_detail = record['failure_detail']
 
-        log_file = '{}/tmp/{}_workflow_{}.log'.format(parent, site_id, now_st)
-        setup_log_file(log_file, site_id, record['workflow'])
+        log_file = '{}/{}_workflow_{}.log'.format(APP['log_folder'], site_id, now_st)
+        setup_log_file(APP, log_file, site_id, record['workflow'])
 
         new_id = '{}_{}'.format(site_id, now.strftime("%Y%m%d_%H%M"))
         update_record_ref_site_id(DB_AUTH, link_id, site_id, new_id)
 
-        set_site_property(site_id, 'brightspace_conversion_date', now.strftime("%Y-%m-%d %H:%M:%S"))
+        set_site_property(APP, site_id, 'brightspace_conversion_date', now.strftime("%Y-%m-%d %H:%M:%S"))
 
         # Get the site title
         site_title = work.get_site_title.get_site_title(site_id, APP)
@@ -320,7 +313,7 @@ def start_workflow(link_id, site_id, APP):
             output_folder = "{}/{}-content".format(APP['output'], site_id)
             create_folders(output_folder)
 
-            workflow_steps = lib.utils.read_yaml(WORKFLOW_FILE)
+            workflow_steps = lib.utils.read_yaml(workflow_file)
 
             state = 'running'
             update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
@@ -331,7 +324,9 @@ def start_workflow(link_id, site_id, APP):
                     if 'state' in step:
                         state = step['state']
 
-                    if run_workflow_step(step=step,
+                    if run_workflow_step(
+                            APP,
+                            step=step,
                             site_id=site_id,
                             log_file=log_file,
                             db_config=DB_AUTH,
@@ -347,7 +342,7 @@ def start_workflow(link_id, site_id, APP):
                         # something went wrong while processing this step
                         raise Exception("On step: {}".format(step['action']))
 
-                transition_jira(site_id=site_id)
+                transition_jira(APP, site_id=site_id)
             else:
                 logging.warning("There are no workflows steps in this workflow.")
         else:
@@ -386,14 +381,15 @@ def start_workflow(link_id, site_id, APP):
                     jira_log=log, failure_type=failure_type, failure_detail=failure_detail, user=job_started_by)
 
     finally:
-        BODY = json.loads(get_log(log_file))
-        logging.info("Emailing job log for site {}".format(site_id))
-        send_email(APP['helpdesk-email'], APP['admin_emails'], f"workflow_run : {site_title} {state}", '\n<br/>'.join(BODY))
+        if APP['email_logs']:
+            BODY = json.loads(get_log(log_file))
+            logging.info("Emailing job log for site {}".format(site_id))
+            send_email(APP['helpdesk-email'], APP['admin_emails'], f"workflow_run : {site_title} {state}", '\n<br/>'.join(BODY))
 
-        set_site_property(site_id, 'brightspace_conversion_status', state)
+        set_site_property(APP, site_id, 'brightspace_conversion_status', state)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script runs the workflow for a site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("LINK_ID", help="The Link ID to run the workflow for")
@@ -402,7 +398,8 @@ def main():
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
 
-    start_workflow(args['LINK_ID'], args['SITE_ID'], APP)
+    workflow = os.path.join(APP['config_folder'], "workflow.yaml")
+    start_workflow(workflow, args['LINK_ID'], args['SITE_ID'], APP)
 
 if __name__ == '__main__':
     main()

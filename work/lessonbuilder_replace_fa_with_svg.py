@@ -5,20 +5,19 @@
 
 import sys
 import os
-import re
 import shutil
-import copy
 import argparse
 import xml.etree.ElementTree as ET
+import logging
+
 from bs4 import BeautifulSoup
-import cssutils
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import remove_unwanted_characters, make_well_formed
 
 shared_path = '/shared/HTML-Template-Library/HTML-Templates-V3/_assets/img/'
 
@@ -87,7 +86,7 @@ def run(SITE_ID, APP):
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Replace lesson FontAwesome icons with SVG images",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

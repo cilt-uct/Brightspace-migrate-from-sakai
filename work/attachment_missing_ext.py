@@ -5,20 +5,18 @@
 
 import sys
 import os
-import shutil
-import glob
-import yaml
 import argparse
 import mimetypes
 import lxml.etree as ET
+import logging
 from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import rewrite_tool_ref
 
 def run(SITE_ID, APP):
     logging.info('Attachments: fix missing extensions : {}'.format(SITE_ID))
@@ -34,16 +32,13 @@ def run(SITE_ID, APP):
         logging.info(f"No attachments in {SITE_ID}")
         return
 
-    with open(xml_src, 'r') as f:
-        contents = f.read()
-
     parser = ET.XMLParser(recover=True)
     content_tree = ET.parse(xml_src, parser)
 
     rewrite = False
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         src_id = item.get('id')
 
@@ -68,7 +63,7 @@ def run(SITE_ID, APP):
         if target_ext and file_extension.upper() == target_ext.upper():
             continue
 
-        if file_extension and not "http" in src_id and not "www" in src_id and not "://" in src_id and len(file_extension) <= 5:
+        if file_extension and "http" not in src_id and "www" not in src_id and "://" not in src_id and len(file_extension) <= 5:
             continue
 
         target_id = f"{src_id}{target_ext}"
@@ -143,7 +138,7 @@ def run(SITE_ID, APP):
         content_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

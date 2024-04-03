@@ -1,5 +1,4 @@
 import unittest
-import os
 
 import config.config
 import run_update
@@ -8,9 +7,6 @@ import lib.utils
 from check_imported import check_imported
 from check_migrations import check_migrations
 from unittest.mock import patch
-
-from config.config import APP
-
 
 class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
@@ -48,14 +44,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     def test_start_workflow(
             self, mock_render, *_):
         APP = config.config.APP
-        dir = 'tmp'
-        parent_dir = '..'
-        path = os.path.join(parent_dir, dir)
-        try:
-            os.mkdir(path)
-        except FileExistsError as e:
-            print(str(e))
-        run_update.start_workflow(link_id='link_id_12345', site_id='site_id_12345', APP=APP)
+        run_update.start_workflow(f"{APP['config_folder']}/update.yaml",link_id='link_id_12345', site_id='site_id_12345', APP=APP)
         self.assertTrue(mock_render.called)
         self.assertEqual('test_title', mock_render.call_args.kwargs['title'])
         self.assertEqual('site_id_12345', mock_render.call_args.kwargs['site_id'])
@@ -74,7 +63,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'started_by': 'cilt1@uct.ac.za'
         }
         workflow = lib.utils.send_template_email(
-            APP, template='finished.html', to='cilt@uct.ac.za', subj='test', **kwargs)
+            config.config.APP, template='finished.html', to='cilt@uct.ac.za', subj='test', **kwargs)
         self.assertIsNotNone(workflow)
         self.assertTrue(mock_render.called)
         self.assertEqual('title', mock_render.call_args.kwargs['title'])
@@ -96,7 +85,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'target_title': 'New site for 2023'
         }
         workflow = lib.utils.send_template_email(
-            APP, template='finished.html', to='cilt@uct.ac.za', subj='test', **kwargs)
+            config.config.APP, template='finished.html', to='cilt@uct.ac.za', subj='test', **kwargs)
         self.assertIsNotNone(workflow)
         self.assertTrue(mock_render.called)
         self.assertEqual('title', mock_render.call_args.kwargs['title'])
@@ -115,7 +104,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'started_by': 'cilt@uct.ac.za'
         }
         workflow = lib.utils.send_template_email(
-            APP, template='finished.html', to=None, subj='test', **kwargs)
+            config.config.APP, template='finished.html', to=None, subj='test', **kwargs)
         self.assertIsNotNone(workflow)
         self.assertTrue(mock_send_email.called)
         self.assertEqual('cilt@uct.ac.za', mock_send_email.call_args.args[1][0])
@@ -132,7 +121,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'started_by': 'cilt@uct.ac.za'
         }
         workflow = lib.utils.send_template_email(
-            APP, template='finished.html', to='cilt1@uct.ac.za', subj='test', **kwargs)
+            config.config.APP, template='finished.html', to='cilt1@uct.ac.za', subj='test', **kwargs)
         self.assertIsNotNone(workflow)
         self.assertTrue(mock_send_email.called)
         self.assertEqual('cilt1@uct.ac.za', mock_send_email.call_args.args[1][0])
@@ -141,6 +130,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('jinja2.environment.Template.render')
     @patch('jinja2.environment.Environment.get_template')
     def test_run_workflow_step(self, _, mock_render):
+        APP = config.config.APP
+
         step = {
             'action': 'mail',
             'template': 'finished',
@@ -160,7 +151,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'target_term': 2023,
             'provider': '[]'
         }
-        workflow = run_update.run_workflow_step(step=step, site_id='site_id_12345', log_file='', db_config='',  **kwargs)
+        workflow = run_update.run_workflow_step(APP, step=step, site_id='site_id_12345', log_file='', db_config='',  **kwargs)
         self.assertIsNotNone(workflow)
         self.assertTrue(mock_render.called)
         self.assertEqual('title', mock_render.call_args.kwargs['title'])
@@ -195,7 +186,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('run_update.create_jira')
     @patch('run_update.send_template_email')
     def test_run_update_fail_email(self, mock_send_template_email, *_):
-        run_update.start_workflow('link_id', 'site_id', APP)
+        APP = config.config.APP
+        run_update.start_workflow(f"{APP['config_folder']}/workflow.yaml", 'link_id', 'site_id', config.config.APP)
         self.assertTrue(mock_send_template_email.called)
         self.assertEqual('error_import.html', mock_send_template_email.call_args.kwargs['template'])
         self.assertIsNone(mock_send_template_email.call_args.kwargs['to'])
@@ -209,7 +201,6 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
     @patch('lib.db.get_records', return_value=[{
         'link_id': 'link_id_12345',
-        'notification': 'cilt1@uct.ac.za',
         'site_id': 'site_id_12345',
         'active': 'true',
         'state': 'active',
@@ -230,6 +221,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('check_imported.get_import_status_collection')
     @patch('check_imported.send_template_email')
     def test_check_imported_fail_email(self, mock_send_template_email, *_):
+        APP = config.config.APP
         check_imported(APP)
         self.assertTrue(mock_send_template_email.called)
         self.assertEqual('error_import.html', mock_send_template_email.call_args.kwargs['template'])
@@ -265,6 +257,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('check_migrations.create_jira')
     @patch('check_migrations.send_template_email')
     def test_check_migrations_fail_email(self, mock_send_template_email, *_):
+        APP = config.config.APP
         check_migrations(APP)
         self.assertTrue(mock_send_template_email.called)
         self.assertEqual('error_workflow.html', mock_send_template_email.call_args.kwargs['template'])
@@ -297,7 +290,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('run_workflow.create_jira')
     @patch('run_workflow.send_template_email')
     def test_run_workflow_fail_email(self, mock_send_template_email, *_):
-        run_workflow.start_workflow('link_id', 'site_id', APP)
+        APP = config.config.APP
+        run_workflow.start_workflow(f"{APP['config_folder']}/workflow.yaml", 'link_id', 'site_id', APP)
         self.assertTrue(mock_send_template_email.called)
         self.assertEqual('error_workflow.html', mock_send_template_email.call_args.kwargs['template'])
         self.assertIsNone(mock_send_template_email.call_args.kwargs['to'])

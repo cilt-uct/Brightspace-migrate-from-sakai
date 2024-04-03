@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import sys
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -7,7 +8,11 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from jira import JIRA
 from jira import JIRAError
 
-from lib.local_auth import *
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+from lib.local_auth import getAuth
 
 ## https://jira.readthedocs.io/examples.html
 class MyJira(object):
@@ -101,26 +106,3 @@ class MyJira(object):
             if issue is not None and issue.total > 0 and issue[0].get_field('status') != 'In Progress':
                 self._jira.add_comment(issue=issue[0].id, body=comment)
                 self._jira.transition_issue(issue=issue[0].id, transition='21')
-
-def main():
-    with MyJira() as j:
-        # Who has authenticated
-        myself = j.myself()
-        print(myself)
-
-        # test filter
-        for i in j.getFilter(10641, 3):
-            print(i.key)
-
-        for i in j.getJQL('assignee = currentUser() AND resolution = Unresolved order by updated DESC'):
-            print(i.key)
-
-        fields = {
-            'project': {'key': 'TSUG'},
-            'summary': 'New issue from jira-python',
-            'description': 'Look into this one',
-            'issuetype': {'name': 'Task'}
-        }
-
-if __name__ == '__main__':
-    main()

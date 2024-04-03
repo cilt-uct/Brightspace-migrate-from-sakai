@@ -9,19 +9,18 @@ import os
 import argparse
 import pymysql
 import json
-import numpy as np
+import re
+import logging
 
 from pymysql.cursors import DictCursor
-from xml.etree import ElementTree
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-
+import config.logging_config
+from lib.utils import unique
+from lib.local_auth import getAuth
 
 def getProviders(db_config, site_id):
     db = pymysql.connect(**db_config)
@@ -32,7 +31,6 @@ def getProviders(db_config, site_id):
             where `realm`.REALM_ID = %s;"""
 
     cursor.execute(SQL, f'/site/{site_id}')
-    resp = {"success": 0, "message": ""}
 
     allRows = list( map(lambda st: re.sub(',\d{4}', '', st), [item[0] for item in cursor.fetchall()]) )
     return unique(allRows)
@@ -50,7 +48,7 @@ def update_providers(db_config, link_id, site_id, provider_list):
             connection.commit()
             logging.debug("Set providers: {} ({}-{})".format(provider_list, link_id, site_id))
 
-    except Exception as e:
+    except Exception:
         logging.error(f"Could not update migration record {link_id} : {site_id}")
         return False
 
@@ -80,7 +78,7 @@ def run(SITE_ID, APP, link_id):
         logging.info('\tDone')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script runs the workflow for a site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("LINK_ID", help="The Link ID to run the workflow for")

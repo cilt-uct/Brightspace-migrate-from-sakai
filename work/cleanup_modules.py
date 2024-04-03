@@ -1,34 +1,23 @@
 import argparse
 import os
 import sys
-import pprint
 import json
-import base64
+import logging
 from jsonpath_ng.ext import parse
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.lessons import *
-from lib.resources import *
-
-# Returns ToC as JSON
-# See https://docs.valence.desire2learn.com/res/content.html
-# https://docs.valence.desire2learn.com/res/content.html#get--d2l-api-le-(version)-(orgUnitId)-content-toc
-def get_toc(base_url, org_id, session):
-    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/toc"
-    r = session.get(api_url, timeout=300)
-    return r.text if r.status_code == 200 else None
+import config.logging_config
+from lib.local_auth import getAuth
+from lib.d2l import web_login, get_toc
 
 # Deletes module
 # https://docs.valence.desire2learn.com/res/content.html#delete--d2l-api-le-(version)-(orgUnitId)-content-modules-(moduleId)
 # DELETE /d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)¶
-def delete_module(base_url, org_id, module_id, session):
-    api_url = f"{base_url}/d2l/api/le/{D2L_API_LE_VERSION}/{org_id}/content/modules/{module_id}"
+def delete_module(APP, org_id, module_id, session):
+    api_url = f"{APP['brightspace_api']['le_url']}/{org_id}/content/modules/{module_id}"
     r = session.delete(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
 
@@ -47,7 +36,7 @@ def get_module_id(content_toc, module_title):
     for match in module_matches:
         return match.value['ModuleId']
 
-    return Npone
+    return None
 
 
 def run(SITE_ID, APP, import_id):
@@ -59,22 +48,21 @@ def run(SITE_ID, APP, import_id):
     if (webAuth is not None):
         WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
     else:
-        raise Exception(f'Web Authentication required [BrightspaceWeb]')
+        raise Exception('Web Authentication required [BrightspaceWeb]')
 
     brightspace_url = APP['brightspace_url']
 
     login_url = f"{brightspace_url}/d2l/lp/auth/login/login.d2l"
     brightspace_session = web_login(login_url, WEB_AUTH['username'], WEB_AUTH['password'])
-    brightspace_last_login = datetime.now()
 
     # Get the ToC
-    content_toc = json.loads(get_toc(brightspace_url, import_id, brightspace_session))
+    content_toc = json.loads(get_toc(APP, import_id, brightspace_session))
 
     # Quiz Images
     module_title = APP['quizzes']['image_collection']
     module_id = get_module_id(content_toc, module_title)
     if module_id:
-        delete_module(brightspace_url, import_id, module_id, brightspace_session)
+        delete_module(APP, import_id, module_id, brightspace_session)
 
     # QNA
     module_title = APP['qna']['collection']
@@ -85,7 +73,7 @@ def run(SITE_ID, APP, import_id):
     return
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for placeholders in lessons and embed multimedia file",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")

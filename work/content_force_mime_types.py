@@ -6,16 +6,16 @@
 import sys
 import os
 import shutil
-import yaml
 import argparse
 import lxml.etree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import read_yaml, create_folders
 
 def run(SITE_ID, APP):
     logging.info('Content: fix mime-types : {}'.format(SITE_ID))
@@ -28,9 +28,6 @@ def run(SITE_ID, APP):
     xml_src = r'{}/content.xml'.format(src_folder)
     xml_old = r'{}/content.old'.format(src_folder)
     shutil.copyfile(xml_src, xml_old)
-
-    with open(xml_src, 'r') as f:
-        contents = f.read()
 
     ET.register_namespace("sakai", "https://www.sakailms.org/")
     parser = ET.XMLParser(recover=True)
@@ -51,7 +48,7 @@ def run(SITE_ID, APP):
     content_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Force the mime-types for specific extentions",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

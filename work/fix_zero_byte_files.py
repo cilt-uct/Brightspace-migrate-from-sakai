@@ -7,13 +7,14 @@ import sys
 import os
 import argparse
 import lxml.etree as ET
+import shutil
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
 
 def check_resources(src_folder, collection):
 
@@ -25,9 +26,6 @@ def check_resources(src_folder, collection):
     rewrite = False
 
     if os.path.isfile(xml_src):
-        with open(xml_src, 'r') as f:
-            contents = f.read()
-
         parser = ET.XMLParser(recover=True)
         content_tree = ET.parse(xml_src, parser)
 
@@ -69,7 +67,7 @@ def run(SITE_ID, APP):
     check_resources(src_folder, 'content.xml')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for zero-byte files",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

@@ -6,8 +6,11 @@
 import sys
 import os
 import json
+import copy
+import shutil
 import argparse
 import pymysql
+import logging
 
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -18,10 +21,11 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+import config.config
+import config.logging_config
+from lib.utils import init__soup
 from lib.conversion import *
+
 import lib.utils
 import lib.local_auth
 
@@ -180,7 +184,7 @@ def populate_tools(dom, found_ul, items):
         found_ul.append(el)
 
 # create html output page
-def html(site_folder, output_file, output_url, config, SITE_ID):
+def html(APP, site_folder, output_file, output_url, config, SITE_ID):
     site_root = site(site_folder)
     now = datetime.now()
     dt_string = now.strftime("%-d %b %Y %H:%M")
@@ -297,6 +301,8 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     output_url = f"{APP['report']['url']}/{SITE_ID}_report{now_st}.html"
     sakai_url = APP['sakai_url']
 
+    logging.debug("Setting up conversion report arguments")
+
     # soups used in this dish
     site_soup = init__soup(site_folder, "site.xml")
 
@@ -332,9 +338,9 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
         conf['issues'] = list(filter(lambda i: i['active'], conf['issues']))
 
     for k in conf['issues']:
+
         if k['key'] in globals():
-            if APP['debug']:
-                print(f"Running check for {k['key']}")
+            logging.debug(f"Running check for {k['key']}")
 
             k['is_found'] = do_check(k, site_folder = site_folder,
                                         rubric_folder = rubric_folder,
@@ -359,7 +365,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
                 return
 
     # general conversion report document
-    html(site_folder, output_file, output_url, conf, SITE_ID)
+    html(APP, site_folder, output_file, output_url, conf, SITE_ID)
 
     # copy the report into the output folder for D2L content import (optional)
     output_folder = "{}/{}-content".format(APP['output'], SITE_ID)
@@ -426,7 +432,7 @@ def run(SITE_ID, APP, issue_key = None, link_id = None, now_st = None):
         raise e
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script generates a site conversion report",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
@@ -435,6 +441,9 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
+
+    if APP['debug']:
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     run(SITE_ID=args['SITE_ID'], APP=APP, issue_key=args['ISSUE_KEY'])
 

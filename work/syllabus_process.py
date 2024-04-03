@@ -6,22 +6,20 @@
 
 import sys
 import os
-import re
 import shutil
-import copy
 import argparse
 import lxml.etree as ET
 import base64
+import logging
+
 from bs4 import BeautifulSoup
 from pathlib import Path
-import cssutils
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
 
 def run(SITE_ID, APP):
     logging.info('Syllabus: Attachments, export  html: {}'.format(SITE_ID))
@@ -38,7 +36,7 @@ def run(SITE_ID, APP):
         attachment_names = {}
 
         # find each resource with an id that contains that extension
-        for item in attachment_tree.xpath(f".//resource[contains(@id,'/Course Outline/')]"):
+        for item in attachment_tree.xpath(".//resource[contains(@id,'/Course Outline/')]"):
             path = Path(item.get('id'))
             filename = path.name
             new_path = f"/attachment/Course Outline/{filename}"
@@ -114,7 +112,7 @@ def run(SITE_ID, APP):
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script applies an HTML template to syllabus.xml",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

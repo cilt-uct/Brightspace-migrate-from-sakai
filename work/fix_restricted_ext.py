@@ -8,14 +8,15 @@ import shutil
 import argparse
 import zipfile
 import lxml.etree as ET
+import logging
 from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import read_yaml, rewrite_tool_ref, get_size
 
 def replace_with_zip(src_path, src_name):
 
@@ -41,7 +42,7 @@ def check_resources(src_folder, disallowed, paths_map, collection):
     content_tree = ET.parse(xml_src, parser)
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         # Ignore URL resource types
         if item.get('resource-type') == "org.sakaiproject.content.types.urlResource":
@@ -127,7 +128,7 @@ def run(SITE_ID, APP):
     check_resources(src_folder, disallowed, paths_map, 'content.xml')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="AMA-316 Zip restricted files",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

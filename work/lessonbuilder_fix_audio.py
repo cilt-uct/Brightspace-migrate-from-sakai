@@ -4,21 +4,20 @@
 
 import sys
 import os
-import re
 import shutil
-import copy
 import argparse
 import xml.etree.ElementTree as ET
+import logging
+
 from bs4 import BeautifulSoup
-import cssutils
 from pathlib import Path
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import remove_unwanted_characters
 
 def run(SITE_ID, APP):
     logging.info(f'Lessons: Fix embedded audio .wav files : {SITE_ID}')
@@ -74,7 +73,7 @@ def run(SITE_ID, APP):
             af.write(attachment_xml)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script fixes embedded audio files in Lessons content",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

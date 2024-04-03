@@ -6,16 +6,15 @@
 import sys
 import os
 import shutil
-import yaml
 import argparse
 import lxml.etree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
 
 def run(SITE_ID, APP):
     logging.info('Content: remove zero-byte files : {}'.format(SITE_ID))
@@ -24,16 +23,13 @@ def run(SITE_ID, APP):
 
     xml_src = r'{}/content.xml'.format(src_folder)
 
-    with open(xml_src, 'r') as f:
-        contents = f.read()
-
     parser = ET.XMLParser(recover=True)
     content_tree = ET.parse(xml_src, parser)
 
     found_zero_bytes = False
 
     # find each resource with a file length of 0
-    for item in content_tree.xpath(f".//resource[@content-length='0']"):
+    for item in content_tree.xpath(".//resource[@content-length='0']"):
         filename = os.path.join(src_folder, item.get('body-location'))
         found_zero_bytes = True
         item.getparent().remove(item)
@@ -47,7 +43,7 @@ def run(SITE_ID, APP):
         content_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Remove zero-byte files from content.xml and folder",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

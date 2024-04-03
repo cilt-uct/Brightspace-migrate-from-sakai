@@ -7,27 +7,33 @@ import sys
 import os
 import re
 import shutil
-import copy
 import argparse
 import xml.etree.ElementTree as ET
+import logging
+
 from bs4 import BeautifulSoup
-import cssutils
-from pathlib import Path
 from urllib.parse import urlparse, unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.config
+import config.logging_config
+from lib.utils import remove_unwanted_characters
 
 def fix_unwanted_url_chars(currenturl, url_prefix):
+
+    if not currenturl.startswith(url_prefix):
+        return currenturl
+
     # parse url prefix, get path with https and path parsed_url.netloc + parsed_url.path
     parsed_url = urlparse(url_prefix)
+
     # remove the . but not replace the sakaiurl yet
     urlparts = [s.strip(".") for s in currenturl.split("/") if s != 'https:']
     joined_link = "/".join(urlparts).replace("/", "", 1)
+
     # replacements list below array(k,v)
     replacements = [
         (re.escape(parsed_url.netloc) + re.escape(parsed_url.path), ".."),
@@ -77,7 +83,7 @@ def run(SITE_ID, APP):
         tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script fixes embedded URLs in Lessons content",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

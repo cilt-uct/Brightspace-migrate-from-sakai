@@ -4,25 +4,25 @@ from __future__ import division
 ## This script transfers the 'fixed' zip file for a site to the sftp folder
 
 import sys
+import re
 import os
 import glob
 import argparse
 import time
-import logging
 import pymysql
+import logging
 
 from pymysql.cursors import DictCursor
-from datetime import datetime, timedelta
-from tqdm import tqdm
+from datetime import timedelta
 import paramiko
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+import config.logging_config
+from lib.utils import format_bytes, get_size
+from lib.local_auth import getAuth
 
 def viewBar(a,b):
     # original version
@@ -68,7 +68,7 @@ def set_uploaded_at(db_config, link_id, site_id):
 
             connection.commit()
 
-    except Exception as e:
+    except Exception:
         logging.error(f"Could not update migration record {link_id} : {site_id}")
         return None
 
@@ -122,7 +122,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
     t = paramiko.Transport((SFTP['host'], 22))
     if APP['ftp']['log']:
         logging.getLogger("paramiko").setLevel(logging.DEBUG) # for example
-        paramiko.util.log_to_file(f"{APP['ftp']['log_output']}/{SITE_ID}_ftp.log", level = "DEBUG")
+        paramiko.util.log_to_file(f"{APP['log_folder']}/{SITE_ID}_ftp.log", level = "DEBUG")
 
     try:
         t.connect(username=SFTP['username'], password=SFTP['password'])
@@ -150,7 +150,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
     logging.info("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script transfers a zip file for a site to the sftp folder",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID for which to transfer fixed file")

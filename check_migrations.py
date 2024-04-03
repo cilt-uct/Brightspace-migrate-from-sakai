@@ -11,10 +11,11 @@ import time
 import logging
 
 from pymysql.cursors import DictCursor
-from datetime import datetime, timedelta
+from datetime import timedelta
 from subprocess import Popen
 from pathlib import Path
 
+import config.config
 import lib.local_auth
 import lib.db
 
@@ -22,12 +23,7 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.jira_rest import MyJira
-
-LOG_FILE = 'brightspace_migration_list.log'
+from lib.utils import send_template_email, create_jira
 
 def set_running(db_config, link_id, site_id):
     try:
@@ -84,7 +80,7 @@ def check_migrations(APP):
         if (tmp is not None):
             DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
         else:
-            raise Exception('Authentication required ({}})'.format(APP['auth']['db']))
+            raise Exception('Authentication required ({})'.format(APP['auth']['db']))
 
         # datetime object containing current date and time that the workflow was started
         start_time = time.time()
@@ -135,7 +131,7 @@ def check_migrations(APP):
 
                     logging.info(f"migration started for {site_id} from {link_id}")
 
-                    cmd = "python3 {}/run_workflow.py {} {}".format(SCRIPT_FOLDER, site['link_id'],site['site_id']).split()
+                    cmd = "python3 {}/run_workflow.py {} {}".format(APP['script_folder'],site['link_id'],site['site_id']).split()
                     # if APP['debug']:
                     #     cmd.append("-d")
 
@@ -165,30 +161,15 @@ def check_migrations(APP):
     logging.debug("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This runs periodically - start workflow on sites that want to migrate.",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-d', '--debug', action='store_true')
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
 
-    # create logger
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(process)d %(filename)s(%(lineno)d) %(message)s')
-
-    # create file handler
-    fh = logging.FileHandler(Path(APP['log_folder']) / LOG_FILE)
-    fh.setLevel(logging.INFO)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-
     if APP['debug']:
-        # create stream handler (logging in the console)
-        sh = logging.StreamHandler()
-        sh.setLevel(logging.DEBUG)
-        sh.setFormatter(formatter)
-        logger.addHandler(sh)
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     scan_interval = APP['scan_interval']['workflow']
     exit_flag_file = APP['exit_flag']['workflow']

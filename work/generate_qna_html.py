@@ -8,17 +8,17 @@ import os
 import argparse
 import lxml.etree as ET
 import hashlib
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from bs4 import BeautifulSoup
-from config.logging_config import *
-from lib.utils import *
-from lib.resources import *
-from pathlib import Path
-from urllib.parse import urlparse, quote, unquote
+import config.logging_config
+from lib.utils import replace_wiris
+from lib.resources import move_attachments, add_resource
+from urllib.parse import quote
 
 # def run(SITE_ID, APP):
 def run(SITE_ID, APP):
@@ -47,7 +47,7 @@ def run(SITE_ID, APP):
 
         if root.tag == 'archive':
             if len(root.findall(".//question")) == 0:
-                logging.info(f'\tNothing to do')
+                logging.info('\tNothing to do')
                 return
 
         # Replace wiris content
@@ -102,7 +102,7 @@ def run(SITE_ID, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'qna.xml' file located in a site archive and generates a single HTML output file for possible use in Brightspace",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

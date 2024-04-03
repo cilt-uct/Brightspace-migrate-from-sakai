@@ -6,20 +6,15 @@
 import sys
 import os
 import argparse
-import time
-import json
-import requests
 import lxml.etree as ET
-
-from requests.exceptions import HTTPError
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+import config.logging_config
+from lib.utils import enroll_in_site
 
 
 def run(SITE_ID, APP, import_id):
@@ -47,7 +42,7 @@ def run(SITE_ID, APP, import_id):
                     _eid = details[0].get('eid')
                     _type = details[0].get('type')
                     if (_type in APP['course']['enroll_user_type']):
-                        find_user_and_enroll_in_site(APP, _eid, import_id, APP['course']['enroll_user_role'])
+                        enroll_in_site(APP, _eid, import_id, APP['course']['enroll_user_role'])
 
         except Exception as e:
             raise Exception(f'Could not enroll users from {SITE_ID} in Brightspacd site {import_id}') from e
@@ -55,7 +50,7 @@ def run(SITE_ID, APP, import_id):
         raise Exception(f'XML file does not exist anymore {dir}/site.xml or user.xml')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Workflow operation to enrol site owners of converted site into reference and teaching site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

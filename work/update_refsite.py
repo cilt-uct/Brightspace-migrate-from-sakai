@@ -1,20 +1,15 @@
 import argparse
 import os
 import sys
-import pprint
 import json
-import base64
-from jsonpath_ng.ext import parse
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
-from lib.lessons import *
-from lib.resources import *
+import config.logging_config
+from lib.d2l import middleware_d2l_api, get_course_info
 
 # Updates course info
 # PUT /d2l/api/lp/(version)/courses/(orgUnitId)
@@ -61,7 +56,10 @@ def add_semester_to_course(APP, org_id, semester_id):
                         'method': 'DELETE',
                         'payload': None
                     }
-                    result = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+                    result = middleware_d2l_api(APP, payload_data=payload)
+                    if 'status' not in result or result['status'] != 'success':
+                        raise Exception(f"Failed removing semester from org id {org_id}")
 
         # add new Semester
         payload = {
@@ -69,7 +67,10 @@ def add_semester_to_course(APP, org_id, semester_id):
             'method': 'POST',
             'payload': f'{semester_id}'
         }
-        result = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+        result = middleware_d2l_api(APP, payload_data=payload)
+        if 'status' not in result or result['status'] != 'success':
+            raise Exception(f"Failed adding semester to org id {org_id}")
 
     else:
         raise Exception(f"Cannot get parents: {parents}")
@@ -100,7 +101,7 @@ def run(SITE_ID, APP, import_id):
     return False
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Update reference site status and semester",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")

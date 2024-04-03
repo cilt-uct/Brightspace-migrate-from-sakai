@@ -4,8 +4,9 @@ import unittest
 import argparse
 
 import config.config
-from work.lessonbuilder_rewrite_urls import *
+from work.lessonbuilder_rewrite_urls import main, fix_unwanted_url_chars
 from unittest.mock import patch
+from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
 class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
@@ -54,16 +55,15 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
     def test_unwanted_chars_3(self):
         currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/SCT%20with%20!%20in%20filename/VIELEN%20DANK%20!!!.gif'
         prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
-        expected2 = '../SCT%20with%20%20in%20filename/VIELEN%20DANK%20.gif'
-        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected2)
-
-    # testing folder starts & ends with .. and ! in name
-    def test_unwanted_chars_3(self):
-        currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/..SCT%20with%20!%20in%20filename/VIELEN%20DANK%20!!!.gif'
-        prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
         expected3 = '../SCT%20with%20%20in%20filename/VIELEN%20DANK%20.gif'
         self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected3)
 
+    # testing folder starts & ends with .. and ! in name
+    def test_unwanted_chars_4(self):
+        currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/..SCT%20with%20!%20in%20filename/VIELEN%20DANK%20!!!.gif'
+        prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
+        expected4 = '../SCT%20with%20%20in%20filename/VIELEN%20DANK%20.gif'
+        self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected4)
 
     # testing non vula url with special chars
     def test_unwanted_chars_5(self):
@@ -73,7 +73,7 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
         self.assertEqual(fix_unwanted_url_chars(currenturl, prefix), expected5)
 
     # testing src + in name
-    def test_unwanted_chars_5(self):
+    def test_unwanted_chars_6(self):
         currenturl = 'https://vula.uct.ac.za/access/content/group/site_123456/SCT+with+in+filename+/VIELEN+DANK+.gif'
         prefix = 'https://vula.uct.ac.za/access/content/group/site_123456'
         expected6 ='../SCT_with_in_filename_/VIELEN_DANK_.gif'

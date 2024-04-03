@@ -8,14 +8,15 @@ import os
 import argparse
 import shutil
 import lxml.etree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.lessons import *
+import config.logging_config
+from lib.utils import remove_unwanted_characters
+from lib.lessons import ItemType
 
 def update_page(page, level):
     page_title = page.get("title")
@@ -179,7 +180,7 @@ def run(SITE_ID, APP):
             logging.info('No Lesson pages.')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script will check lessons and restructure the XML so that it does not pass 3 levels",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to change lessons for")

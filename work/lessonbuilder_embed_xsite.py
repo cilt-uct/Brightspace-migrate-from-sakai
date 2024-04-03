@@ -5,18 +5,17 @@
 
 import sys
 import os
-import re
-import shutil
 import copy
 import argparse
 import xml.etree.ElementTree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import remove_unwanted_characters
 
 def run(SITE_ID, APP):
     logging.info('Lessons: Cross-site resources : {}'.format(SITE_ID))
@@ -95,7 +94,7 @@ def run(SITE_ID, APP):
 
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="AMA-367 Cross-site Lessons resources",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

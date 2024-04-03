@@ -980,6 +980,44 @@
         "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.4ordmwpxeyqu",
         "a": "more info"
       }
+    },
+    {
+      "key": "rubric_negative_points",
+      "active": true,
+      "tool": "sakai.rubrics",
+      "actor": ["Lecturer"],
+      "icon-class": "icon-settings",
+      "detail-heading": "Rubric",
+      "description": "Rubrics Negative Points",
+      "found": "Some rubrics criteria use negative points, which are not supported in Amathuba.",
+      "not_found": "Good to go! Your site does not use rubric negative points.",
+      "args": [
+        "rubric_folder",
+        "site_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.4ordmwpxeyqu",
+        "a": "more info"
+      }
+    },
+    {
+      "key": "rubric_truncated",
+      "active": true,
+      "tool": "sakai.rubrics",
+      "actor": ["Lecturer"],
+      "icon-class": "icon-settings",
+      "detail-heading": "Rubric",
+      "description": "Rubrics Shortened",
+      "found": "Rubric criteria descriptions have been shortened.",
+      "not_found": "Good to go! Your site does not use rubric negative points.",
+      "args": [
+        "rubric_folder",
+        "site_soup"
+      ],
+      "info": {
+        "url": "https://docs.google.com/document/d/1m3xSY5gHPZ-Pw2KQcf5vcg73kW7CyuqVFI4fCl7mvvk/edit#heading=h.4ordmwpxeyqu",
+        "a": "more info"
+      }
     }
   ],
   "tools": [

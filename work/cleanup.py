@@ -12,19 +12,17 @@ import shutil
 import glob
 import paramiko
 import time
+import logging
 from stat import S_ISREG
-
-from datetime import datetime, timedelta
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+import config.logging_config
+from lib.local_auth import getAuth
 
-def cleanup_sftp(sftp_folder, site_id):
+def cleanup_sftp(APP, sftp_folder, site_id):
 
     removed = False
 
@@ -32,7 +30,7 @@ def cleanup_sftp(sftp_folder, site_id):
     if (ftpAuth is not None):
         SFTP = {'host' : ftpAuth[0], 'username': ftpAuth[1], 'password' : ftpAuth[2]}
     else:
-        raise Exception(f'SFTP Authentication required [BrightspaceFTP]')
+        raise Exception('SFTP Authentication required [BrightspaceFTP]')
 
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -93,7 +91,7 @@ def run(SITE_ID, APP, **kwargs):
             logging.info(f" - removed {zipfile}")
 
         # FTP logs
-        ftp_log = f"{APP['ftp']['log_output']}/{SITE_ID}_ftp.log"
+        ftp_log = f"{APP['log_folder']}/{SITE_ID}_ftp.log"
         if os.path.exists(ftp_log):
             os.remove(ftp_log)
             logging.info(f" - removed {ftp_log}")
@@ -103,7 +101,7 @@ def run(SITE_ID, APP, **kwargs):
         max_tries = 15
         sleeptime = 60
         while tries <= max_tries:
-            if cleanup_sftp(APP['ftp']['outbox'], SITE_ID):
+            if cleanup_sftp(APP, APP['ftp']['outbox'], SITE_ID):
                 break
             logging.info(f"Sleeping {sleeptime}s for retry {tries} / {max_tries} for cleanup of {SITE_ID} in outbox")
             tries += 1
@@ -112,7 +110,7 @@ def run(SITE_ID, APP, **kwargs):
         if tries > max_tries:
             logging.warning(f"No files for {SITE_ID} found in outbox")
 
-        cleanup_sftp(APP['ftp']['inbox'], SITE_ID)
+        cleanup_sftp(APP, APP['ftp']['inbox'], SITE_ID)
 
     except Exception as e:
         logging.warn(f"Exception during cleanup for {SITE_ID}", e)
@@ -122,7 +120,7 @@ def run(SITE_ID, APP, **kwargs):
     return True
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Workflow operation to remove zip file from sftp inbox and outbox",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

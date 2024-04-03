@@ -8,18 +8,18 @@ import sys
 import os
 import re
 import shutil
-import copy
 import argparse
-# import xml.etree.ElementTree as ET
 import lxml.etree as ET
+import logging
+
 from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import remove_unwanted_characters, make_well_formed
 
 REPLACE_DICT = [', {{firstname}}',
                 ', {{fullname}}',
@@ -79,10 +79,10 @@ def run(SITE_ID, APP):
         item.set('html', str(new_html))
 
     lesson_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
-    logging.info(f'\tDone')
+    logging.info('\tDone')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script takes as input the 'lessonbuilder.xml' file inside the site-archive folder and replace personalize text in Lessons {{firstname}}, {{lastname}}, and {{fullname}}",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

@@ -2,16 +2,16 @@ import os
 import sys
 import base64
 import json
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, quote, unquote
+from urllib.parse import unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.resources import *
+from lib.resources import get_resource_ids
 
 # A1 Lessons pages more than 3 levels
 #  in: site_folder
@@ -38,7 +38,7 @@ def a1(site_folder):
                 for _item in element:
                     type = _item.get('type')
                     name = _item.get('name')
-                    sequence = _item.get('sequence')
+                    #sequence = _item.get('sequence')
                     if type == "2":
                         outline += name if len(outline) == 0 else ";" + name
 
@@ -359,7 +359,7 @@ def b7(site_folder):
 # B8 Assignments model answers
 def b8(assignment_soup):
     if assignment_soup.find("ModelAnswer") or assignment_soup.find("PrivateNote") or assignment_soup.find("AllPurposeItem"):
-        return True;
+        return True
 
 # B9 Assignments linked to Gradebook
 def b9(assignment_soup):
@@ -427,7 +427,6 @@ def c2(site_folder, samigo_soup):
         for collection in items:
             file_path = os.path.join(site_folder, 'qti', 'assessment' + collection.get('id') + '.xml')
             tree = ET.parse(file_path)
-            root = tree.getroot()
             desc = tree.find("./assessment/presentation_material/flow_mat/material/mattext")
             if desc is not None and desc.text and desc.text.strip():
                 return True
@@ -758,25 +757,25 @@ def c19(gradebook_soup):
 # D1 Forum / Topic attachments
 def d1(discussions_soup):
 
-    forums = discussions_soup.find_all("discussion_forum");
+    forums = discussions_soup.find_all("discussion_forum")
     for forum in forums:
         if forum.find("attachment", recursive=False):
-            return True;
+            return True
 
-    topics = discussions_soup.find_all("discussion_topic");
+    topics = discussions_soup.find_all("discussion_topic")
     for topic in topics:
         if topic.find("attachment", recursive=False):
-            return True;
+            return True
 
 # D3 Forum / Topic availability dates
 def d3(discussions_soup):
     if len(discussions_soup.select("[available_open]")) or len(discussions_soup.select("[available_close]")):
-        return True;
+        return True
 
 # D5 Forum and Topic gradebook settings
 def d5(discussions_soup):
     if len(discussions_soup.select("[grade_assignment]")):
-        return True;
+        return True
 
 # AMA-355 Gradebook weightings
 def e1(gradebook_soup):
@@ -960,3 +959,39 @@ def rubrics_used(site_soup, rubric_folder):
         return sorted(data)
     else:
         return None
+
+
+# AMA-443 Check if rubrics have been used in site tools
+# Negative point values replaced with level_value="0"
+def rubric_negative_points(site_soup, rubric_folder):
+
+    rubric_file = f"{rubric_folder}rubrics_d2l.xml"
+
+    if not os.path.exists(rubric_file):
+        return None
+
+    tree = ET.parse(rubric_file)
+    root = tree.getroot()
+
+    if root.find(".//level[@level_value='0']") is not None:
+        return True
+
+    return False
+
+
+# AMA-443 Check if rubric descriptions have been truncated
+def rubric_truncated(site_soup, rubric_folder):
+
+    rubric_file = f"{rubric_folder}rubrics_d2l.xml"
+
+    if not os.path.exists(rubric_file):
+        return None
+
+    tree = ET.parse(rubric_file)
+    root = tree.getroot()
+
+    for el_name in root.xpath(".//criteria_group | .//criterion"):
+        if el_name.get('name').endswith(" ..."):
+            return True
+
+    return False

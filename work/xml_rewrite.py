@@ -2,24 +2,18 @@
 
 # Testing stub for XML rewriting
 
-import json
 import sys
 import os
-import re
 import shutil
-import copy
 import argparse
 import xml.etree.ElementTree as ET
-
-import cssutils
-from bs4 import BeautifulSoup
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
 
 def run(SITE_ID, APP):
 
@@ -32,10 +26,10 @@ def run(SITE_ID, APP):
         tree = ET.parse(xml_src)
         tree.write(xml_src, xml_declaration=True)
 
-        logging.info(f'\tDone')
+        logging.info('\tDone')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="XML rewrite test",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

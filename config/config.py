@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
-from re import T
 from pathlib import Path
-from lib.utils import get_var
-from lib.local_auth import getAuth
+from lib.local_auth import getAuth, get_var
 
 # See base.sh
 SCRIPT_FOLDER = get_var('SCRIPT_FOLDER')
@@ -11,6 +9,7 @@ ARCHIVE_FOLDER = get_var('ARCHIVE_FOLDER')
 OUTPUT_FOLDER = get_var('OUTPUT_FOLDER')
 CONVERSION_REPORT_FOLDER = get_var('CONVERSION_REPORT_FOLDER')
 
+# Persistent logging
 LOG_PATH = Path(SCRIPT_FOLDER) / 'brightspace_migration.log'
 LOG_IN_CONSOLE = True
 LOG_IN_FILE = True
@@ -43,12 +42,13 @@ APP = {
     'semester' : 6653
   },
 
+  # Temporary logs for workflows and operations
   'log_folder' : Path(SCRIPT_FOLDER) / 'log',
 
   # test / production
   'environment': 'production',
-
-  'tmp' : Path(SCRIPT_FOLDER) / 'tmp',
+  'script_folder' : SCRIPT_FOLDER,
+  'config_folder' : Path(SCRIPT_FOLDER) / 'config',
   'template' : Path(SCRIPT_FOLDER) / 'templates',
 
   'archive_folder': ARCHIVE_FOLDER,
@@ -58,6 +58,7 @@ APP = {
 
   # Only accept True or False
   'debug': False,
+  'email_logs' : False,
   'clean_up': True,
 
   'archive' : {
@@ -105,12 +106,19 @@ APP = {
   },
 
   # D2L Brightspace Valence APIs
+  # See https://docs.valence.desire2learn.com/about.html#principal-version-table
+  # TODO find out how to get the tenantId via API
   'brightspace_api': {
-      'base_url' : 'https://amathuba.uct.ac.za/d2l/api',
-      'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74',
+      'base_url' : 'https://amathuba.uct.ac.za',
       'lp_url' : 'https://amathuba.uct.ac.za/d2l/api/lp/1.45',
-      'lp': '1.45',
-      'le': '1.74'
+      'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74',
+      'tenantId': '6d665046-9dc7-49c8-9521-c482b938d31f'
+  },
+
+  # Opencast
+  'opencast': {
+      'base_url' : 'https://media.uct.ac.za',
+      'content_item_path' : '/lti/player/'
   },
 
   # Local middleware
@@ -170,7 +178,6 @@ APP = {
     'limit': 30000000000,
     'show_progress': False,
     'log': True,
-    'log_output' : Path(SCRIPT_FOLDER) / 'log',
     'inbox': '/incoming/BulkCourseImport/Inbox',
     'outbox': '/incoming/BulkCourseImport/Outbox'
   },
@@ -230,7 +237,16 @@ APP = {
             'audio/vnd.wave' : '.wav'
         }
   },
+
+  # Map content item URLs to tool providers
+  'lti': {
+          'content_item_urls': {
+              'https://media.uct.ac.za/lti/player/' : 'opencast'
+          }
+  },
+
   'path': Path().absolute(),
+
   # Here for the config unittest
   'loaded' : True,
 }

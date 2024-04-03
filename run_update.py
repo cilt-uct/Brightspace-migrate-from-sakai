@@ -9,16 +9,10 @@ import re
 import glob
 import json
 import argparse
-from numpy import true_divide
 import pymysql
-import yaml
 import time
 import importlib
-
-import emails
-from emails.template import JinjaTemplate as T
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-from validate_email import validate_email
+import logging
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
@@ -27,15 +21,14 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-import lib.utils
-from lib.local_auth import *
+import config.config
 import lib.local_auth
 import lib.db
+
+from config.logging_config import formatter, logger
+from lib.utils import get_log, send_template_email, send_email, create_jira
 from lib.jira_rest import MyJira
 
-WORKFLOW_FILE = f'{SCRIPT_FOLDER}/config/update.yaml'
 
 def update_record(db_config, link_id, site_id, state, log):
     try:
@@ -49,7 +42,7 @@ def update_record(db_config, link_id, site_id, state, log):
 
             connection.commit()
 
-    except Exception as e:
+    except Exception:
         logging.error(f"Could not update migration record {link_id} : {site_id}")
         return None
 
@@ -61,15 +54,15 @@ def check_log_file_for_errors(filename):
     # number of ERROR log entries
     return len(list(filter(lambda s: re.match(r'.*(\[ERROR\]).*',s), lines)))
 
-def setup_log_file(filename, SITE_ID, logs):
+def setup_log_file(APP, filename, SITE_ID, logs):
 
     # remove previous log files
-    for old_log_files in glob.glob('{}/tmp/{}_workflow_*.log'.format(parent, SITE_ID)):
+    for old_log_files in glob.glob('{}/{}_workflow_*.log'.format(APP['log_folder'], SITE_ID)):
         os.remove(old_log_files)
 
     with open(filename, "w") as f:
-        for l in json.loads(logs):
-            f.write(f'{l}\n')
+        for log_entry in json.loads(logs):
+            f.write(f'{log_entry}\n')
         f.close()
 
     # create a log file so that we can track the progress of the workflow
@@ -78,7 +71,7 @@ def setup_log_file(filename, SITE_ID, logs):
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
-def set_site_property(site_id, key, value):
+def set_site_property(APP, site_id, key, value):
     try:
         mod = importlib.import_module('work.set_site_property')
         func = getattr(mod, 'run')
@@ -92,7 +85,7 @@ def set_site_property(site_id, key, value):
         logging.error("Workflow operation {} = {} ".format('set_site_property', e))
         return False
 
-def close_jira(site_id):
+def close_jira(APP, site_id):
     with MyJira() as j:
         fields = {
             'project': {'key': APP['jira']['key']},
@@ -102,7 +95,7 @@ def close_jira(site_id):
 
         j.closeIssue(fields)
 
-def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
+def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
 
     provider = json.loads(kwargs['provider'])
     provider_count = len(provider)
@@ -154,6 +147,9 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             if 'use_transfer_id' in step:
                 new_kwargs['transfer_id'] = kwargs['transfer_id']
 
+            if 'use_target_site_id' in step:
+                new_kwargs['target_site_id'] = kwargs['target_site_id']
+
             if 'use_import_id' in step:
                 new_kwargs['import_id'] = kwargs['import_id']
 
@@ -172,7 +168,7 @@ def run_workflow_step(step, site_id, log_file, db_config, **kwargs):
             logging.error("Workflow operation {} = {} ".format(step['action'], e))
             return False
 
-def start_workflow(link_id, site_id, APP):
+def start_workflow(workflow_file, link_id, site_id, APP):
     # print(f"{link_id} {site_id}")
 
     tmp = lib.local_auth.getAuth(APP['auth']['db'])
@@ -208,10 +204,10 @@ def start_workflow(link_id, site_id, APP):
         failure_type = record['failure_type']
         failure_detail = record['failure_detail']
 
-        log_file = '{}/tmp/{}_update_{}.log'.format(parent, site_id, now_st)
-        setup_log_file(log_file, site_id, record['workflow'])
+        log_file = '{}/{}_update_{}.log'.format(APP['log_folder'], site_id, now_st)
+        setup_log_file(APP, log_file, site_id, record['workflow'])
 
-        workflow_steps = lib.utils.read_yaml(WORKFLOW_FILE)
+        workflow_steps = lib.utils.read_yaml(workflow_file)
         update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
 
         if workflow_steps['STEPS'] is not None:
@@ -226,7 +222,7 @@ def start_workflow(link_id, site_id, APP):
                 # Read record again to get any updates from prior workflow steps
                 record = lib.db.get_record(db_config=DB_AUTH, link_id=link_id, site_id=site_id)
 
-                if not run_workflow_step(step, site_id, log_file, DB_AUTH,
+                if not run_workflow_step(APP, step, site_id, log_file, DB_AUTH,
                                          to=record['notification'],
                                          started_by=record['started_by_email'],
                                          now_st=now_st,
@@ -246,7 +242,7 @@ def start_workflow(link_id, site_id, APP):
 
                 logging.info("Completed update workflow step: {}".format(step['action']))
 
-            close_jira(site_id=site_id)
+            close_jira(APP, site_id=site_id)
         else:
             logging.warning("There are no workflows steps in this workflow.")
 
@@ -278,19 +274,20 @@ def start_workflow(link_id, site_id, APP):
                     jira_log=log, failure_type=failure_type, failure_detail=failure_detail, user=record['started_by_email'])
 
     finally:
-        BODY = json.loads(get_log(log_file))
-        logging.info("Emailing job log for site {}".format(site_id))
-        send_email(APP['helpdesk-email'], APP['admin_emails'], f"update_run : {site_title} {state}", '\n<br/>'.join(BODY))
+        if APP['email_logs']:
+            BODY = json.loads(get_log(log_file))
+            logging.info("Emailing job log for site {}".format(site_id))
+            send_email(APP['helpdesk-email'], APP['admin_emails'], f"update_run : {site_title} {state}", '\n<br/>'.join(BODY))
 
-        set_site_property(site_id, 'brightspace_conversion_status', state)
+        set_site_property(APP, site_id, 'brightspace_conversion_status', state)
 
         # Clean up log file
         os.remove(log_file)
 
 
 def main():
-    global APP
-    parser = argparse.ArgumentParser(description="This script runs the workflow for a site",
+    APP = config.config.APP
+    parser = argparse.ArgumentParser(description="This script runs the update workflow for a site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("LINK_ID", help="The Link ID to run the update workflow for")
     parser.add_argument("SITE_ID", help="The Site ID to run the update workflow for")
@@ -298,7 +295,8 @@ def main():
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
 
-    start_workflow(args['LINK_ID'], args['SITE_ID'], APP)
+    workflow = os.path.join(APP['config_folder'], "update.yaml")
+    start_workflow(workflow, args['LINK_ID'], args['SITE_ID'], APP)
 
 if __name__ == '__main__':
     main()

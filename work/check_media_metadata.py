@@ -5,19 +5,16 @@
 
 import sys
 import os
-import shutil
 import argparse
-import zipfile
 import lxml.etree as ET
-import base64
-from pathlib import Path
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import read_yaml
 from lib.ffprobe_uct import FFProbe_UCT
 
 def check_resources(src_folder, restricted_ext, paths_map, collection):
@@ -31,7 +28,7 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
     content_tree = ET.parse(xml_src, parser)
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
 
         content_type = item.get('content-type')
         src_id = item.get('id')
@@ -53,7 +50,7 @@ def check_resources(src_folder, restricted_ext, paths_map, collection):
             metadata = None
             try:
                 metadata = FFProbe_UCT(resource_file)
-            except Exception as e:
+            except Exception:
                 raise Exception(f"Unable to read metadata for media file {src_id} body {resource_file}")
 
             if metadata is None:
@@ -78,7 +75,7 @@ def run(SITE_ID, APP):
     check_resources(src_folder, restricted_ext, paths_map, 'content.xml')
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for zero-byte files",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

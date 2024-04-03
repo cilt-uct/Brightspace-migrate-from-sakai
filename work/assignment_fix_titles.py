@@ -8,22 +8,20 @@ import os
 import shutil
 import argparse
 import lxml.etree as ET
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
+from lib.utils import remove_unwanted_characters_html
 
 def run(SITE_ID, APP):
     logging.info('Assignment: fix empty titles and sanitise instruction text: {}'.format(SITE_ID))
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
     xml_src = r'{}/assignment.xml'.format(src_folder)
-
-    with open(xml_src, 'r') as f:
-        contents = f.read()
 
     parser = ET.XMLParser(recover=True)
     asn_tree = ET.parse(xml_src, parser)
@@ -32,13 +30,13 @@ def run(SITE_ID, APP):
     rewrite = False
 
     # find each resource with an id that contains that extension
-    for asn in asn_tree.xpath(f"//Assignment/title[not(text())]"):
+    for asn in asn_tree.xpath("//Assignment/title[not(text())]"):
         asn.text = f"Untitled Assignment {ua}"
         ua += 1
         rewrite = True
 
     # Find all Assignment instruction elements
-    for asn in asn_tree.xpath(f"//Assignment/instructions"):
+    for asn in asn_tree.xpath("//Assignment/instructions"):
         if asn.text:
             asn_html = remove_unwanted_characters_html(asn.text)
             if asn_html != asn.text:
@@ -51,7 +49,7 @@ def run(SITE_ID, APP):
         asn_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Fix empty Assignment titles and sanitise instruction text",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

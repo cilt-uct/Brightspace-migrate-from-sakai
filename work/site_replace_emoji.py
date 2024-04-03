@@ -5,18 +5,16 @@
 
 import sys
 import os
-import shutil
 import argparse
+import logging
 
-from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.logging_config
 
 def run(SITE_ID, APP):
     logging.info('Site: Updating Emoji\'s path: {}'.format(SITE_ID))
@@ -52,7 +50,7 @@ def run(SITE_ID, APP):
     return True
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script replaces emoji's lessons/announcements/discussions/Q&A/Assignments/overview",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")

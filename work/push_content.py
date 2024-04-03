@@ -5,21 +5,17 @@
 
 import sys
 import os
-import re
-import json
-import csv
-import base64
 import argparse
 import requests
-from pathlib import Path
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
-from lib.local_auth import *
+import config.logging_config
+from lib.utils import format_bytes, get_size, zipfolder
+from lib.local_auth import getAuth
 
 def run(SITE_ID, APP, import_id, transfer_id, title):
 
@@ -86,7 +82,7 @@ def run(SITE_ID, APP, import_id, transfer_id, title):
     return
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script will create a topic",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to process")

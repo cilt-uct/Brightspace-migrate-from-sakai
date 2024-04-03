@@ -5,27 +5,24 @@
 
 import sys
 import os
-import shutil
-import yaml
 import argparse
 import lxml.etree as ET
 import base64
 import validators
+import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from config.logging_config import *
-from lib.utils import *
+import config.config
+import config.logging_config
+from lib.utils import site_has_tool
 
 def extensions(base_path, xml_src):
 
     if not os.path.exists(xml_src):
         return
-
-    with open(xml_src, 'r') as f:
-        contents = f.read()
 
     parser = ET.XMLParser(recover=True)
     content_tree = ET.parse(xml_src, parser)
@@ -36,7 +33,7 @@ def extensions(base_path, xml_src):
     print("\n")
 
     # find each resource with an id that contains that extension
-    for item in content_tree.xpath(f".//resource"):
+    for item in content_tree.xpath(".//resource"):
         file_path = item.get('id')
 
         #if len(file_path) > 230:
@@ -80,19 +77,15 @@ def extensions(base_path, xml_src):
 def run(SITE_ID, APP):
     logging.info('Content: identify extensions : {}'.format(SITE_ID))
 
-    # Adhoc
-    logging.info(f"Opencast Series tool: {site_has_tool(APP, SITE_ID, 'sakai.opencast.series')}")
-
-    # restricted extensions
-    restricted_ext = read_yaml(APP['content']['restricted-ext'])
-    disallowed = restricted_ext['RESTRICTED_EXT']
-
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 
     content_src = os.path.join(src_folder, "content.xml")
     if not os.path.exists(content_src):
         print(f"ERROR {content_src} not found")
         return False
+
+    # Adhoc
+    logging.info(f"Opencast Series tool: {site_has_tool(APP, SITE_ID, 'sakai.opencast.series')}")
 
     [ext_set, mime_set]  = extensions(src_folder, content_src)
     if ext_set:
@@ -118,7 +111,7 @@ def run(SITE_ID, APP):
         print("No attachments")
 
 def main():
-    global APP
+    APP = config.config.APP
     parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
