@@ -326,11 +326,22 @@ def run(SITE_ID, APP, import_id, transfer_id):
             # Content links (audio, video)
             if placeholder_type == "lti-content":
 
+                launch_url = None
+
                 if sakai_id.startswith("/blti/"):
                     lti_id = sakai_id.replace("/blti/", "")
                     sakai_link_data = get_archive_lti_link(archive_path, lti_id)
+                    if 'launch' in sakai_link_data:
+                        launch_url = sakai_link_data['launch']
 
-                if sakai_link_data:
+                if not sakai_link_data:
+                    logging.warning(f"LTI placeholder: {sakai_id} '{placeholder_name}' unknown target")
+
+                if sakai_link_data and not launch_url:
+                    # TODO add support for migrating these (e.g. padlet)
+                    logging.warning(f"LTI placeholder: {sakai_id} '{placeholder_name}' unsupported tool embedding")
+
+                if sakai_link_data and launch_url:
                     logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}' {sakai_link_data['launch']}")
 
                     # Create a new quicklink in the target site
@@ -340,7 +351,13 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
                     if content_item:
                         content_json = json.loads(content_item)
-                        tool = content_json['custom']['tool']
+                        if '@graph' in content_json and len(content_json['@graph']) > 0:
+                            ci_0 = content_json['@graph'][0]
+                            if 'custom' in ci_0:
+                                tool = ci_0['custom']['tool']
+                        else:
+                            if 'custom' in content_json:
+                                tool = content_json['custom']['tool']
 
                     if tool is None and custom.startswith("tool="):
                         tool = custom.replace("tool=","")
@@ -370,10 +387,6 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
                         placeholder.replace_with(BeautifulSoup(link_html, 'html.parser'))
                         updated = True
-
-                else:
-                    logging.warning(f"LTI placeholder: {sakai_id} '{placeholder_name}' unknown target")
-
 
         # Replace links
         for link in soup_html.find_all('a'):

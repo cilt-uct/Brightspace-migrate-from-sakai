@@ -1,8 +1,5 @@
 STEPS:
 
-  # LTI Quicklinks
-  # - action: create_lti_quicklinks
-
   # Set the reference site to inactive
   - action: update_refsite
     use_import_id: 1

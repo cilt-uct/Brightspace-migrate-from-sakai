@@ -96,7 +96,7 @@ def create_lti_quicklink(APP, org_id, lti_data):
             logging.warning(f"Unexpected response: {json_response}")
 
     if link_id is None:
-        raise Exception(f"Unable to create LTI link for {lti_data['Url']}")
+        raise Exception(f"Unable to create LTI link: {lti_data}")
 
     # Create a quicklink
     # https://docs.valence.desire2learn.com/res/lti.html#LTI.CreateLtiLinkData
