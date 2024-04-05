@@ -68,7 +68,7 @@ def run(SITE_ID, APP, import_id):
     module_title = APP['qna']['collection']
     module_id = get_module_id(content_toc, module_title)
     if module_id:
-        delete_module(brightspace_url, import_id, module_id, brightspace_session)
+        delete_module(APP, import_id, module_id, brightspace_session)
 
     return
 
