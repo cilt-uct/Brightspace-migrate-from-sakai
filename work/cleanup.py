@@ -50,7 +50,7 @@ def cleanup_sftp(APP, sftp_folder, site_id):
         ssh_client.close()
 
     except paramiko.SSHException:
-        logging.warn(f'sftp connection error cleaning up {site_id} in {sftp_folder}')
+        logging.warning(f'sftp connection error cleaning up {site_id} in {sftp_folder}')
 
     return removed
 
@@ -112,8 +112,8 @@ def run(SITE_ID, APP, **kwargs):
 
         cleanup_sftp(APP, APP['ftp']['inbox'], SITE_ID)
 
-    except Exception as e:
-        logging.warn(f"Exception during cleanup for {SITE_ID}", e)
+    except Exception:
+        logging.exception(f"Exception during cleanup for {SITE_ID} (ignoring)")
         return False
 
     logging.info("Done")
