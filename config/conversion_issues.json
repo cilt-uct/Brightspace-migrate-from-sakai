@@ -881,6 +881,7 @@
       "tool": "sakai.resources",
       "actor": ["Lecturer"],
       "description": "Files with different display names",
+      "detail-heading": "Files",
       "found": "Some files in Resources have different names to the original filename. If you are using Manage Files in Amathuba, you will find these under the original filename.",
       "not_found": "Good to go! Your site does not contain files with different display names.",
       "info": {
@@ -898,6 +899,7 @@
       "tool": "sakai.resources",
       "actor": ["Lecturer"],
       "description": "Folders with different display names",
+      "detail-heading": "Folders",
       "found": "Your site contains folders that have different display names to what you see in Vula. If you are using Manage Files in Amathuba, you will find these under the original folder names.",
       "not_found": "Good to go! Your site does not contain folders with different display names.",
       "args": [

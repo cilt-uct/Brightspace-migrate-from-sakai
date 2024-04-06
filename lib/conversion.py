@@ -846,6 +846,7 @@ def use_of_groups(site_folder):
 
 # AMA-363 displaynames in files
 def content_displayname_files(content_soup, ignored_collections):
+    data = set()
     contents = content_soup.find_all("resource")
     for content in contents:
         filepath, filename = os.path.split(content.get("rel-id"))
@@ -856,21 +857,32 @@ def content_displayname_files(content_soup, ignored_collections):
         displayprop = content.find("property", attrs={"name": "DAV:displayname"})
         displayname = str(base64.b64decode(displayprop.get("value")).decode('utf-8'))
         if filename != "Site Information.html" and filename != displayname:
-            print(f"filename {filename} displays as {displayname}")
-            return True
+            data.add(f"'{displayname}' file name is '{filename}'")
+
+    if len(data) > 0:
+        return sorted(data)
+    else:
+        return None
+
 
 # AMA-363 displaynames in folders
 def content_displayname_folders(content_soup):
+    data = set()
     contents = content_soup.find_all("collection")
     for content in contents:
-        folderpath, foldername = os.path.split("/" + content.get("rel-id")[:-1])
-        if foldername:
+        folder_id = content.get("id")
+        foldername = folder_id.split("/")[-2]
+        if content.get("rel-id") and foldername:
             displayprop = content.find("property", attrs={"name": "DAV:displayname"})
             if displayprop:
                 displayname = str(base64.b64decode(displayprop.get("value")).decode('utf-8'))
                 if foldername != displayname:
-                    # print(f"folder {foldername} displays as {displayname}")
-                    return True
+                    data.add(f"'{displayname}' folder name is '{foldername}'")
+
+    if len(data) > 0:
+        return sorted(data)
+    else:
+        return None
 
 # External Tools
 def external_tools(site_soup, lti_soup):
