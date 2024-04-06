@@ -105,14 +105,16 @@ APP = {
     'path' : Path(SCRIPT_FOLDER) / 'templates' / 'emails',
   },
 
-  # D2L Brightspace Valence APIs
+  # D2L Brightspace Valence and Content Service APIs
   # See https://docs.valence.desire2learn.com/about.html#principal-version-table
+  # org_ou is Identifier from /d2l/api/lp/1.45/organization/info
   # TODO find out how to get the tenantId via API
   'brightspace_api': {
       'base_url' : 'https://amathuba.uct.ac.za',
       'lp_url' : 'https://amathuba.uct.ac.za/d2l/api/lp/1.45',
       'le_url' : 'https://amathuba.uct.ac.za/d2l/api/le/1.74',
-      'tenantId': '6d665046-9dc7-49c8-9521-c482b938d31f'
+      'tenantId': '6d665046-9dc7-49c8-9521-c482b938d31f',
+      'orgId': 6606
   },
 
   # Opencast

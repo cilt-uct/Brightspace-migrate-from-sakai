@@ -17,7 +17,7 @@ from lib.utils import remove_unwanted_characters, middleware_api
 from lib.local_auth import getAuth
 from lib.lessons import get_archive_lti_link, ItemType, supported_media_type
 from lib.resources import resource_exists, get_content_displayname
-from lib.d2l import create_lti_quicklink, web_login, get_toc
+from lib.d2l import create_lti_quicklink, web_login, get_toc, get_instance_org_id
 
 # See https://docs.valence.desire2learn.com/res/content.html
 
@@ -255,6 +255,9 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
     #  'Url': '/content/enforced/43233-81814b18-6ae4-4570-be9d-7459154a94b4_20231003_1202/LessonBuilder/lessonBuilder_2911898.html'},
 
+    # Institution org id
+    org_ou = get_instance_org_id(APP)
+
     for itemid in placeholder_items:
         print(f"Updating HTML file for Lessons item {itemid}")
 
@@ -283,9 +286,6 @@ def run(SITE_ID, APP, import_id, transfer_id):
             raise Exception("Cannot parse HTML from {topic_url}")
 
         updated = False
-
-        # Institution specific
-        org_ou=6606
 
         # Replace the placeholders with embed code
         placeholders = soup_html.find_all('p', attrs={"data-type": "placeholder"})

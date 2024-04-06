@@ -215,3 +215,39 @@ def get_toc(APP, org_id, session):
     api_url = f"{APP['brightspace_api']['le_url']}/{org_id}/content/toc"
     r = session.get(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
+
+# Top-level org id for this instance
+# TODO could get this via API call
+# GET /d2l/api/lp/(version)/organization/info¶
+def get_instance_org_id(APP):
+
+    if 'orgId' in APP['brightspace_api']:
+        return APP['brightspace_api']['orgId']
+
+    return None
+
+
+# Content Service
+def get_contentservice_endpoint(APP):
+
+    # Get the Content Service endpoint
+    payload = {
+        'url': f"{APP['brightspace_api']['le_url']}/contentservice/config/endpoint",
+        'method': 'GET',
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload)
+    if 'status' not in json_response or json_response['status'] != 'success':
+        raise Exception(f"API call {payload} failed: {json_response}")
+
+    cs_endpoint = json_response['data']['Endpoint']
+
+    return cs_endpoint
+
+# TODO get via API
+def get_tenant_id(APP):
+
+    if 'tenantId' in APP['brightspace_api']:
+        return APP['brightspace_api']['tenantId']
+
+    return None
