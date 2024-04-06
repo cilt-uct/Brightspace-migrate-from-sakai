@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
-## This script ...
-## REF:
+## This script runs the update workflow for a site
 
-import sys
 import os
 import re
 import glob
@@ -16,10 +14,6 @@ import logging
 
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
-
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
 
 import config.config
 import lib.local_auth

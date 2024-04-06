@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
-## This script accesses a Sakai DB (config.py) and exports the rubrics of a site to a packaged zip file.
-## REF:
+## This script runs the migration workflow for a site
 
-import sys
 import os
 import re
 import glob
@@ -18,20 +16,17 @@ from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
-from config.logging_config import formatter, logger
-from lib.utils import create_jira, send_email, send_template_email, get_log, get_size, create_folders
-from lib.jira_rest import MyJira
-
 import config.config
 import lib.local_auth
 import lib.utils
 import lib.db
 import work.archive_site
 import work.get_site_title
+
+from config.logging_config import formatter, logger
+from lib.utils import create_jira, send_email, send_template_email, get_log, get_size, create_folders
+from lib.jira_rest import MyJira
+
 
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")
 

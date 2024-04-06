@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-## Execute upload.yaml workflow for uploading to sftp server
+## Executes the upload.yaml workflow for uploading to sftp server
 
-import sys
 import os
 import re
 import glob
@@ -15,17 +14,12 @@ import logging
 from pymysql.cursors import DictCursor
 from datetime import datetime
 
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
-from config.logging_config import formatter, logger
-
 import config.config
 import lib.local_auth
 import lib.utils
 import lib.db
 
+from config.logging_config import formatter, logger
 from lib.jira_rest import MyJira
 
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")

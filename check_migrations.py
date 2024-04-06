@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
-## Checks the DB for sites to be migrated
-## REF:
+## Checks the DB for sites to be migrated and starts the workflow script for new sites
 
-import sys
 import os
 import argparse
 import pymysql
@@ -18,10 +16,6 @@ from pathlib import Path
 import config.config
 import lib.local_auth
 import lib.db
-
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
 
 from lib.utils import send_template_email, create_jira
 

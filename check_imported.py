@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
-## Checks the DB for sites that are imported and need to be updated
-## REF:
+## Checks the import status on Brightspace, and executes update workflow script when an import is complete
 
-import sys
 import os
 import argparse
 import pymysql
@@ -22,10 +20,6 @@ from subprocess import Popen
 import config.config
 import lib.local_auth
 import lib.db
-
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
 
 from lib.utils import send_template_email, create_jira
 from lib.d2l import middleware_d2l_api, web_login, get_import_history, get_first_import_status, get_first_import_job_log
