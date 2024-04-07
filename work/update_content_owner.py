@@ -12,11 +12,26 @@ sys.path.append(parent)
 
 import config.logging_config
 from lib.utils import get_site_creator, get_user_by_email
-from lib.d2l import get_imported_content, update_content_owner
+from lib.d2l import get_imported_content, update_content_owner, get_brightspace_user
+from lib.resources import get_resource_ids, get_content_owner
+
+def find_resource_owner(site_folder, content_ids, filename):
+
+    # There could be multiple videos with the same filename in different parts of the content tree,
+    # owned by different users. We only use the first match here.
+    for sakai_id in content_ids:
+        if sakai_id.endswith("/" + filename):
+            owner_info = get_content_owner(site_folder, sakai_id)
+            if owner_info:
+                return owner_info[1]
+
+    return None
 
 def run(SITE_ID, APP, import_id, started_by):
 
     logging.info(f'Updating content service ownership of media assets from {SITE_ID} in imported site {import_id}')
+
+    site_folder = f"{APP['archive_folder']}{SITE_ID}-archive"
 
     # Options for assigning content item ownership
     # 1. The owner of this item in the site's resources
@@ -24,23 +39,45 @@ def run(SITE_ID, APP, import_id, started_by):
     # 3. The user who started the conversion (resolve from started_by_email)
 
     site_created_by = get_site_creator(APP, SITE_ID)
-    started_by_eid = get_user_by_email(APP, SITE_ID, started_by)
-    logging.info(f"- site {SITE_ID} created by {site_created_by}; conversion started by {started_by_eid}")
+    creator_user = get_brightspace_user(APP, site_created_by)
+    creator_id = creator_user['UserId'] if creator_user else None
 
-    # Get the content items
+    started_by_eid = get_user_by_email(APP, SITE_ID, started_by)
+    started_by_user = get_brightspace_user(APP, started_by_eid)
+    started_by_id = started_by_user['UserId'] if started_by_user else None
+
+    default_owner_id = creator_id if creator_id else started_by_id
+
+    logging.info(f"- site created by {site_created_by}:{creator_id}")
+    logging.info(f"- conversion started by {started_by_eid}:{started_by_id}")
+    logging.info(f"- default owner for content is user id {default_owner_id}")
+
+    # Get the set of files from the Sakai site
+    content_src = f'{site_folder}/content.xml'
+    content_ids = get_resource_ids(content_src)
+
+    # Get the content items from the Brightspace Content Service
     content_items = get_imported_content(APP, import_id)
 
-    default_owner = site_created_by if site_created_by else started_by_eid
-
     for content_id in content_items.keys():
-        # TODO resolve content owner
-        new_owner = default_owner
 
-        if new_owner:
-            if update_content_owner(APP, content_id, new_owner):
-                logging.info(f"Updated owner of {content_id}: {content_items[content_id]} to {new_owner}")
-            else:
-                logging.warning(f"Could not update owner of {content_id}: {content_items[content_id]} to {new_owner}")
+        content_name = content_items[content_id]
+        resource_owner_id = None
+        resource_owner_eid = find_resource_owner(site_folder, content_ids, content_name)
+        if resource_owner_eid:
+            resource_owner_user = get_brightspace_user(APP, resource_owner_eid)
+            if resource_owner_user:
+                resource_owner_id = resource_owner_user['UserId']
+
+        if resource_owner_id:
+            logging.info(f"Updating owner of {content_name} to resource owner {resource_owner_eid}:{resource_owner_id}")
+        else:
+            logging.info(f"Updating owner of {content_name} to default owner {default_owner_id}")
+
+        new_owner_id = resource_owner_id if resource_owner_id else default_owner_id
+
+        if not update_content_owner(APP, content_id, userid=new_owner_id):
+            logging.warning(f"Failed to update owner of {content_id}: {content_name} to {new_owner_id}")
 
     return False
 

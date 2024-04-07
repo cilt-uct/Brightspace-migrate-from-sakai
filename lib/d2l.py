@@ -308,17 +308,18 @@ def get_brightspace_user(APP, username):
     return json_response['data']
 
 # Update content item owner
-def update_content_owner(APP, content_id, username):
+def update_content_owner(APP, content_id, username = None, userid = None):
 
     # Convert the username to a Brightspace id
-    user = get_brightspace_user(APP, username)
+    if userid is None and username is not None:
+        user = get_brightspace_user(APP, username)
+        userid = user['UserId']
 
-    if not user:
+    if not userid:
         logging.warn(f"Skipping ownership update for content id {content_id}: {username} does not exist")
         return None
 
-    owner_id = user['UserId']
-    logging.debug(f"Updating {content_id} ownership to owner {username}:{owner_id}")
+    logging.debug(f"Updating {content_id} ownership to owner {username}:{userid}")
 
     # Content Service identifiers
     tenantId = get_tenant_id(APP)
@@ -326,7 +327,7 @@ def update_content_owner(APP, content_id, username):
 
     # Fields to update
     content_info = {
-        'ownerId' : str(owner_id)
+        'ownerId' : str(userid)
     }
 
     # Update
