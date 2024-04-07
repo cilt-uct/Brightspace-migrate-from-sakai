@@ -251,3 +251,93 @@ def get_tenant_id(APP):
         return APP['brightspace_api']['tenantId']
 
     return None
+
+# Get a dict of imported content service ids and filenames for org_id
+def get_imported_content(APP, org_id):
+
+     # Get this from config
+    tenantId = get_tenant_id(APP)
+
+    # Endpoint
+    cs_endpoint = get_contentservice_endpoint(APP)
+
+    # Users owned by D2L Support for BCI imports
+    # https://amathuba.uct.ac.za//d2l/api/lp/1.45//users/169
+
+    # Search
+    # Could also limit by clientApps=LmsCourseImport
+    payload = {
+        'url': f"{cs_endpoint}/api/{tenantId}/search/content?searchLocations=ou:{org_id}&size=1000&sort=createdAt:asc",
+        'method': 'GET',
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload)
+    if 'status' not in json_response or json_response['status'] != 'success':
+        raise Exception(f"API call {payload} failed: {json_response}")
+
+    search_result = json_response['data']
+
+    if search_result['timed_out']:
+        raise Exception("Search for content for org id {org_id} timed out")
+
+    imported_content = {}
+
+    for result in search_result['hits']['hits']:
+        content_id = result['_source']['id']
+        content_filename = result['_source']['lastRevTitle']
+        imported_content[content_id] = content_filename
+
+    return imported_content
+
+# Map username to internal Brightspace id
+def get_brightspace_user(APP, username):
+
+    payload = {
+        'url': f"{APP['brightspace_api']['lp_url']}/users/?userName={username}",
+        'method': 'GET',
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload)
+
+    if 'status' in json_response and json_response['status'] == "NotFound":
+        return None
+
+    if 'status' not in json_response or json_response['status'] != 'success':
+        raise Exception(f"API call {payload} failed: {json_response}")
+
+    return json_response['data']
+
+# Update content item owner
+def update_content_owner(APP, content_id, username):
+
+    # Convert the username to a Brightspace id
+    user = get_brightspace_user(APP, username)
+
+    if not user:
+        logging.warn(f"Skipping ownership update for content id {content_id}: {username} does not exist")
+        return None
+
+    owner_id = user['UserId']
+    logging.debug(f"Updating {content_id} ownership to owner {username}:{owner_id}")
+
+    # Content Service identifiers
+    tenantId = get_tenant_id(APP)
+    cs_endpoint = get_contentservice_endpoint(APP)
+
+    # Fields to update
+    content_info = {
+        'ownerId' : str(owner_id)
+    }
+
+    # Update
+    payload = {
+        'url': f"{cs_endpoint}/api/{tenantId}/content/{content_id}",
+        'method': 'PUT',
+        'payload': json.dumps(content_info)
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload)
+    if 'status' not in json_response or json_response['status'] != 'success':
+        raise Exception(f"API call {payload} failed: {json_response}")
+
+    return json_response['data']

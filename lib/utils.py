@@ -13,6 +13,7 @@ import logging
 import time
 import requests
 import csv
+import lxml.etree as ET
 
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -473,7 +474,7 @@ def resolve_redirect(url):
 
     return None
 
-# Get the canonical SIS course titl
+# Get the canonical SIS course title for a course code and term from the courseinfo CSV file
 def sis_course_title(APP, course, term):
 
     # AAE2001F,2024,"Special Study Module",AAE,2024-01-02,2024-06-12
@@ -498,6 +499,30 @@ def site_has_tool(APP, SITE_ID, tool_id):
         return True
 
     return False
+
+def get_site_creator(APP, SITE_ID):
+
+    site_folder = os.path.join(APP['archive_folder'], f"{SITE_ID}-archive/")
+
+    site_tree = ET.parse(f'{site_folder}/site.xml')
+    site = site_tree.find(".//site[@created-id]")
+    creator_id = site.get("created-id")
+
+    # Now lookup the eid from user.mxl
+    user_tree = ET.parse(f'{site_folder}/user.xml')
+    user = user_tree.find(f".//user[@id='{creator_id}']")
+    creator_eid = user.get('eid') if user is not None else None
+
+    return creator_eid
+
+def get_user_by_email(APP, SITE_ID, email):
+
+    site_folder = os.path.join(APP['archive_folder'], f"{SITE_ID}-archive/")
+
+    user_tree = ET.parse(f'{site_folder}/user.xml')
+    user = user_tree.find(f".//user[@email='{email}']")
+    return user.get('eid') if user is not None else None
+
 
 # Replace wiris with markup in an HTML blob
 # Used in Lessons, T&Q, Q&A

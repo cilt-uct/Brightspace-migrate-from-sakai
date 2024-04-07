@@ -147,6 +147,9 @@ def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
             if 'use_import_id' in step:
                 new_kwargs['import_id'] = kwargs['import_id']
 
+            if 'use_started_by' in step:
+                new_kwargs['started_by'] = kwargs['started_by']
+
             if 'use_title' in step:
                 new_kwargs['title'] = kwargs['title']
 

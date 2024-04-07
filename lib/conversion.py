@@ -1,3 +1,7 @@
+## Methods for conversion report checks
+## Each issue key in config/conversion_issues.json has a corresponding method here which runs the check
+## Methods here are invoked by work/generate_conversion_report.py
+
 import os
 import sys
 import base64
