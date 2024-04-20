@@ -6,12 +6,10 @@
 import sys
 import os
 import argparse
-import pymysql
 import time
 import logging
 
 from pathlib import Path
-from pymysql.cursors import DictCursor
 from datetime import timedelta
 from subprocess import Popen
 
@@ -23,27 +21,11 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-def set_to_state(db_config, link_id, site_id, new_state):
-
-    try:
-        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
-        with connection:
-            with connection.cursor() as cursor:
-                # Create a new record
-                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, state = %s
-                         WHERE `link_id` = %s and site_id = %s;"""
-                cursor.execute(sql, (new_state, link_id, site_id))
-
-            connection.commit()
-            logging.debug("Set to {} for ({}-{})".format(new_state, link_id, site_id))
-
-    except Exception as e:
-        raise Exception(f'Could not set_to_updating for {link_id} : {site_id}') from e
 
 def upload(APP, db_config, link_id, site_id, title):
 
     try:
-        set_to_state(db_config, link_id, site_id, "uploading")
+        lib.db.set_to_state(db_config, link_id, site_id, "uploading")
 
         cmd = "python3 {}/run_upload.py {} {}".format(APP['script_folder'], link_id, site_id).split()
         if APP['debug']:

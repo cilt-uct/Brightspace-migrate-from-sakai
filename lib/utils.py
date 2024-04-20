@@ -500,6 +500,14 @@ def site_has_tool(APP, SITE_ID, tool_id):
 
     return False
 
+def get_site_providers(APP, SITE_ID):
+
+    site_folder = os.path.join(APP['archive_folder'], f"{SITE_ID}-archive/")
+    site_tree = ET.parse(f'{site_folder}/site.xml')
+    providers = [x.get('providerId') for x in site_tree.findall(".//provider")]
+
+    return providers
+
 def get_site_creator(APP, SITE_ID):
 
     site_folder = os.path.join(APP['archive_folder'], f"{SITE_ID}-archive/")

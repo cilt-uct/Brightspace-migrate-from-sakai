@@ -9,10 +9,8 @@ import os
 import glob
 import argparse
 import time
-import pymysql
 import logging
 
-from pymysql.cursors import DictCursor
 from datetime import timedelta
 import paramiko
 
@@ -23,6 +21,7 @@ sys.path.append(parent)
 import config.logging_config
 from lib.utils import format_bytes, get_size
 from lib.local_auth import getAuth
+from lib.db import set_uploaded_at
 
 def viewBar(a,b):
     # original version
@@ -55,22 +54,6 @@ def rename_to_final_destination(client, old_name, new_name):
     except IOError as io:
         # IOError – if newpath is a folder, or something else goes wrong
         raise Exception(f"Failed to rename: {old_name}") from io
-
-def set_uploaded_at(db_config, link_id, site_id):
-    try:
-        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
-        with connection:
-            with connection.cursor() as cursor:
-                # Create a new record
-                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, uploaded_at = NOW()
-                         WHERE `link_id` = %s and site_id = %s;"""
-                cursor.execute(sql, (link_id, site_id))
-
-            connection.commit()
-
-    except Exception:
-        logging.error(f"Could not update migration record {link_id} : {site_id}")
-        return None
 
 def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
 

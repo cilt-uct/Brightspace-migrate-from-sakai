@@ -25,23 +25,6 @@ from lib.jira_rest import MyJira
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")
 
 
-def set_to_state(db_config, link_id, site_id, new_state):
-
-    try:
-        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
-        with connection:
-            with connection.cursor() as cursor:
-                # Create a new record
-                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, state = %s
-                         WHERE `link_id` = %s and site_id = %s;"""
-                cursor.execute(sql, (new_state, link_id, site_id))
-
-            connection.commit()
-            logging.debug("Set to {} for ({}-{})".format(new_state, link_id, site_id))
-
-    except Exception as e:
-        raise Exception(f'Could not set_to_updating for {link_id} : {site_id}') from e
-
 def update_record(db_config, link_id, site_id, state, log):
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
@@ -238,7 +221,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
                     raise Exception("Workflow failed")
 
                 if new_state:
-                    set_to_state(DB_AUTH, link_id, site_id, new_state)
+                    lib.db.set_to_state(DB_AUTH, link_id, site_id, new_state)
 
             # Completed
             transition_jira(APP, site_id=site_id)

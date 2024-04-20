@@ -132,6 +132,10 @@ https://github.com/sakaiproject/sakai/pull/11816
 https://sakaiproject.atlassian.net/browse/SAK-49813
 https://github.com/sakaiproject/sakai/pull/12417
 
+## AMA-1076 Add providers to the site archive
+https://github.com/cilt-uct/sakai/commit/2671496a80f51316ff85873a281b2a36c6ee5c3a
+
+
 ## Cron Jobs (How to Run it)
 Add these cron jobs on the server running the scripts:
 ```

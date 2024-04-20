@@ -38,22 +38,6 @@ def set_site_property(APP, site_id, key, value):
         logging.error("Workflow operation {} = {} ".format('set_site_property', e))
         return False
 
-def set_to_updating(db_config, link_id, site_id):
-
-    try:
-        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
-        with connection:
-            with connection.cursor() as cursor:
-                # Create a new record
-                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, state = 'updating'
-                         WHERE `link_id` = %s and site_id = %s;"""
-                cursor.execute(sql, (link_id, site_id))
-
-            connection.commit()
-            logging.debug("Set to updating for ({}-{})".format(link_id, site_id))
-
-    except Exception as e:
-        raise Exception(f'Could not set_to_updating for {link_id} : {site_id}') from e
 
 def update_import_id(APP, db_config, link_id, site_id, org_unit_id, log):
 
@@ -230,7 +214,7 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
 
         # if we have an refsite_id and import is complete then let's run the rest of the update workflow
         if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Complete"):
-            set_to_updating(db_config, link_id, site_id)
+            lib.db.set_to_state(db_config, link_id, site_id, "updating")
 
             cmd = "python3 {}/run_update.py {} {}".format(APP['script_folder'], link_id, site_id).split()
             if APP['debug']:

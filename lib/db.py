@@ -1,5 +1,9 @@
+# Methods that use tables in the Tsugi database
+# migration_site
+
 import pymysql
 import pymysql.cursors
+import json
 import config.logging_config
 from pymysql.cursors import DictCursor
 
@@ -72,3 +76,55 @@ def get_state_count(db_config, state):
     except Exception as e:
         config.logging_config.logging.error(f"Could not retrieve state {state}: {e}")
         return None
+
+def set_uploaded_at(db_config, link_id, site_id):
+    try:
+        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                # Create a new record
+                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, uploaded_at = NOW()
+                         WHERE `link_id` = %s and site_id = %s;"""
+                cursor.execute(sql, (link_id, site_id))
+
+            connection.commit()
+
+    except Exception:
+        config.logging_config.logging.error(f"Could not update migration record {link_id} : {site_id}")
+        return None
+
+def update_providers(db_config, link_id, site_id, provider_list):
+    try:
+        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                # Create a new record
+                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, provider = %s
+                         WHERE `link_id` = %s and site_id = %s and (provider is null or length(provider) <= 2);"""
+                cursor.execute(sql, (json.dumps(provider_list), link_id, site_id))
+
+            connection.commit()
+            config.logging_config.logging.debug("Set providers: {} ({}-{})".format(provider_list, link_id, site_id))
+
+    except Exception:
+        config.logging_config.logging.error(f"Could not update migration record {link_id} : {site_id}")
+        return False
+
+    return True
+
+def set_to_state(db_config, link_id, site_id, new_state):
+
+    try:
+        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                # Create a new record
+                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, state = %s
+                         WHERE `link_id` = %s and site_id = %s;"""
+                cursor.execute(sql, (new_state, link_id, site_id))
+
+            connection.commit()
+            config.logging_config.logging.debug("Set to {} for ({}-{})".format(new_state, link_id, site_id))
+
+    except Exception as e:
+        raise Exception(f'Could not set_to_updating for {link_id} : {site_id}') from e

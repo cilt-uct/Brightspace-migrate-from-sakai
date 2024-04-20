@@ -7,62 +7,20 @@
 import sys
 import os
 import argparse
-import pymysql
-import json
 import re
 import logging
-
-from pymysql.cursors import DictCursor
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.logging_config
-from lib.utils import unique
+from lib.utils import get_site_providers
 from lib.local_auth import getAuth
-
-def getProviders(db_config, site_id):
-    db = pymysql.connect(**db_config)
-    cursor = db.cursor()
-
-    SQL = """SELECT `provider`.PROVIDER_ID FROM SAKAI_REALM_PROVIDER `provider`
-            left join SAKAI_REALM `realm` on `realm`.REALM_KEY = `provider`.REALM_KEY
-            where `realm`.REALM_ID = %s;"""
-
-    cursor.execute(SQL, f'/site/{site_id}')
-
-    allRows = list( map(lambda st: re.sub(',\d{4}', '', st), [item[0] for item in cursor.fetchall()]) )
-    return unique(allRows)
-
-def update_providers(db_config, link_id, site_id, provider_list):
-    try:
-        connection = pymysql.connect(**db_config, cursorclass=DictCursor)
-        with connection:
-            with connection.cursor() as cursor:
-                # Create a new record
-                sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, provider = %s
-                         WHERE `link_id` = %s and site_id = %s and (provider is null or length(provider) <= 2);"""
-                cursor.execute(sql, (json.dumps(provider_list), link_id, site_id))
-
-            connection.commit()
-            logging.debug("Set providers: {} ({}-{})".format(provider_list, link_id, site_id))
-
-    except Exception:
-        logging.error(f"Could not update migration record {link_id} : {site_id}")
-        return False
-
-    return True
+from lib.db import update_providers
 
 def run(SITE_ID, APP, link_id):
     logging.info('Update site provider : {}'.format(SITE_ID))
-
-    tmp = getAuth(APP['auth']['sakai_db'])
-    if (tmp is not None):
-        SRC_DB = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        logging.error("Authentication required (SRC)")
-        return 0
 
     tmp = getAuth(APP['auth']['db'])
     if (tmp is not None):
@@ -71,10 +29,10 @@ def run(SITE_ID, APP, link_id):
         logging.error("Authentication required (Target)")
         return 0
 
-    if (APP['debug']):
-        print(f'{SITE_ID}\n{APP}\n{SRC_DB}\n{RUN_DB}')
+    # Site providers (course or program codes) without the year attached
+    provider_set = [ re.sub(',\d{4}', '', p) for p in get_site_providers(APP, SITE_ID) ]
 
-    if update_providers(RUN_DB, link_id, SITE_ID, getProviders(SRC_DB, SITE_ID)):
+    if update_providers(RUN_DB, link_id, SITE_ID, provider_set):
         logging.info('\tDone')
 
 def main():
