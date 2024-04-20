@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
-    @patch('lib.db.get_record', return_value={
+    @patch('lib.db.MigrationDb.get_record', return_value={
             'link_id': 'link_id_12345',
             'notification': 'cilt1@uct.ac.za',
             'site_id': 'site_id_12345',
@@ -161,7 +161,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
 
     # Test an exception in the update workflow
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
-    @patch('lib.db.get_record', return_value={
+    @patch('lib.db.MigrationDb.get_record', return_value={
         'link_id': 'link_id_12345',
         'notification': 'cilt1@uct.ac.za',
         'site_id': 'site_id_12345',
@@ -199,7 +199,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     # This tests an unexpected and unhandled failure in the import check code
     # Triggered by leaving out 'expired' from the result set
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
-    @patch('lib.db.get_records', return_value=[{
+    @patch('lib.db.MigrationDb.get_records', return_value=[{
         'link_id': 'link_id_12345',
         'site_id': 'site_id_12345',
         'active': 'true',
@@ -233,8 +233,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
 
     # This tests the import failure case where the D2L import job has Failed status
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
-    @patch('lib.db.get_state_count', return_value=0)
-    @patch('lib.db.get_records', return_value=[{
+    @patch('lib.db.MigrationDb.get_state_count', return_value=0)
+    @patch('lib.db.MigrationDb.get_records', return_value=[{
         'link_id': 'link_id_12345',
         'notification': 'cilt1@uct.ac.za',
         'site_id': 'site_id_12345',
@@ -269,7 +269,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
 
     # Tests an exception in running the workflow
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
-    @patch('lib.db.get_record', return_value={
+    @patch('lib.db.MigrationDb.get_record', return_value={
         'link_id': 'link_id_12345',
         'notification': 'cilt1@uct.ac.za',
         'site_id': 'site_id_12345',

@@ -18,6 +18,7 @@ from datetime import datetime, timedelta
 from subprocess import Popen
 
 import config.config
+import config.logging_config
 import lib.local_auth
 import lib.db
 
@@ -199,7 +200,7 @@ def check_for_brightspace_id(APP, search_site_id):
     # Error or not found
     return 0
 
-def check_for_update(APP, db_config, link_id, site_id, started_by, notification, search_site_id, refsite_id, expired, files, log, title, url, import_status):
+def check_for_update(APP, mdb, link_id, site_id, started_by, notification, search_site_id, refsite_id, expired, files, log, title, url, import_status):
 
     logging.info(f": check_for_update {site_id} brightspace id {refsite_id} import status {import_status}")
 
@@ -209,12 +210,12 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
             logging.warn(f"The import for site {site_id} has expired")
 
             # log error in database and create corresponding jira
-            migration_site_expired(APP, db_config, link_id, site_id, started_by, notification, log, title, url)
+            migration_site_expired(APP, mdb.db_config, link_id, site_id, started_by, notification, log, title, url)
             return False
 
         # if we have an refsite_id and import is complete then let's run the rest of the update workflow
         if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Complete"):
-            lib.db.set_to_state(db_config, link_id, site_id, "updating")
+            mdb.set_to_state(link_id, site_id, "updating")
 
             cmd = "python3 {}/run_update.py {} {}".format(APP['script_folder'], link_id, site_id).split()
             if APP['debug']:
@@ -226,7 +227,7 @@ def check_for_update(APP, db_config, link_id, site_id, started_by, notification,
             return True
 
         if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Failed"):
-            migration_site_failed(APP, db_config, link_id, site_id, started_by, notification, import_status, title, url)
+            migration_site_failed(APP, mdb.db_config, link_id, site_id, started_by, notification, import_status, title, url)
             return False
 
     except Exception as e:
@@ -258,11 +259,7 @@ def check_imported(APP):
     expiry_minutes = APP['import']['expiry']
     brightspace_url = APP['brightspace_url']
 
-    tmp = lib.local_auth.getAuth(APP['auth']['db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        raise Exception("DB Authentication required")
+    mdb = lib.db.MigrationDb(APP)
 
     webAuth = lib.local_auth.getAuth('BrightspaceWeb')
     if (webAuth is not None):
@@ -272,7 +269,7 @@ def check_imported(APP):
 
     start_time = time.time()
 
-    want_to_process = lib.db.get_records(db_config=DB_AUTH, expiry_minutes=expiry_minutes, state='importing')
+    want_to_process = mdb.get_records(expiry_minutes=expiry_minutes, state='importing')
 
     if not want_to_process:
         logging.debug("----- No sites to check")
@@ -295,7 +292,7 @@ def check_imported(APP):
             refsite_id = check_for_brightspace_id(APP, site['transfer_site_id'])
             if refsite_id > 0:
                 logging.info(f"Site {site_id} has new Brightspace Id {refsite_id}")
-                update_import_id(APP, DB_AUTH, site['link_id'], site_id, refsite_id, json.loads(site['workflow']))
+                update_import_id(APP, mdb.db_config, site['link_id'], site_id, refsite_id, json.loads(site['workflow']))
                 site['imported_site_id'] = refsite_id
 
         # If we have a Brightspace site, add to the import status check list
@@ -332,7 +329,7 @@ def check_imported(APP):
                 continue
 
             # check if it exist in Brightspace and then run update workflow on it.
-            check_for_update(APP, DB_AUTH, site['link_id'], site['site_id'],
+            check_for_update(APP, mdb, site['link_id'], site['site_id'],
                                     site['started_by_email'],
                                     site['notification'],
                                     site['transfer_site_id'],

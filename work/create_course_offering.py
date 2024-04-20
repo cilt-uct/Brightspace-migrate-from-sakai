@@ -21,8 +21,8 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.logging_config
+import lib.db
 from lib.utils import enroll_in_site, middleware_api, sis_course_title, site_has_tool
-from lib.local_auth import getAuth
 from lib.d2l import middleware_d2l_api
 
 def cheap_hash(input_str):
@@ -134,14 +134,9 @@ def copy_default_content(APP, target_site_id):
 def run(SITE_ID, APP, link_id):
     logging.info(f'Create Course Template and Offering for {link_id} {SITE_ID}')
 
-    tmp = getAuth(APP['auth']['db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        logging.error("Authentication required {}".format(APP['auth']['db']))
-        return 0
+    mdb = lib.db.MigrationDb(APP)
 
-    record = get_record(DB_AUTH, link_id, SITE_ID)
+    record = get_record(mdb.db_config, link_id, SITE_ID)
     if record:
         try:
             course = record['course']
@@ -207,7 +202,7 @@ def run(SITE_ID, APP, link_id):
                 target_site_id = json_response['data']['Identifier']
                 target_site_created = json_response['data']['created']
 
-                update_target_site(APP, DB_AUTH, link_id, SITE_ID, target_site_id, target_site_created, name)
+                update_target_site(APP, mdb.db_config, link_id, SITE_ID, target_site_id, target_site_created, name)
 
                 # AMA-983 Enroll users only if a new target site was created
                 if target_site_created:

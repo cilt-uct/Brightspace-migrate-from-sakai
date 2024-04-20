@@ -14,6 +14,7 @@ from subprocess import Popen
 from pathlib import Path
 
 import config.config
+import config.logging_config
 import lib.local_auth
 import lib.db
 
@@ -70,18 +71,15 @@ def check_migrations(APP):
     start_time = time.time()
 
     try:
-        tmp = lib.local_auth.getAuth(APP['auth']['db'])
-        if (tmp is not None):
-            DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-        else:
-            raise Exception('Authentication required ({})'.format(APP['auth']['db']))
+
+        mdb = lib.db.MigrationDb(APP)
 
         # datetime object containing current date and time that the workflow was started
         start_time = time.time()
 
-        want_to_migrate = lib.db.get_records(db_config=DB_AUTH, state='starting')
-        active_exports = lib.db.get_state_count(db_config=DB_AUTH, state='exporting')
-        active_workflows = lib.db.get_state_count(db_config=DB_AUTH, state='running')
+        want_to_migrate = mdb.get_records(state='starting')
+        active_exports = mdb.get_state_count(state='exporting')
+        active_workflows = mdb.get_state_count(state='running')
 
         max_jobs = APP['export']['max_jobs']
         max_workflows = APP['workflow']['max_jobs']
@@ -120,8 +118,8 @@ def check_migrations(APP):
 
             try:
 
-                if (not another_running(DB_AUTH, link_id, site_id)):
-                    set_running(DB_AUTH, link_id, site_id)
+                if (not mdb.another_running(link_id, site_id)):
+                    mdb.set_running(link_id, site_id)
 
                     logging.info(f"migration started for {site_id} from {link_id}")
 

@@ -166,14 +166,8 @@ def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
             return False
 
 def start_workflow(workflow_file, link_id, site_id, APP):
-    # print(f"{link_id} {site_id}")
 
-    tmp = lib.local_auth.getAuth(APP['auth']['db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        logging.error("Authentication required")
-        return 0
+    mdb = lib.db.MigrationDb(APP)
 
     # datetime object containing current date and time that the workflow was started
     now = datetime.now()
@@ -191,7 +185,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
     record = None
 
     try:
-        record = lib.db.get_record(db_config=DB_AUTH, link_id=link_id, site_id=site_id)
+        record = mdb.get_record(link_id=link_id, site_id=site_id)
 
         if (record is None):
             raise Exception(f'Could not find record to start update for {link_id} : {site_id}')
@@ -205,7 +199,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         setup_log_file(APP, log_file, site_id, record['workflow'])
 
         workflow_steps = lib.utils.read_yaml(workflow_file)
-        update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
+        update_record(mdb.db_config, link_id, site_id, state, get_log(log_file))
 
         if workflow_steps['STEPS'] is not None:
 
@@ -217,9 +211,9 @@ def start_workflow(workflow_file, link_id, site_id, APP):
                 failure_type = f"exception:update:{step['action']}"
 
                 # Read record again to get any updates from prior workflow steps
-                record = lib.db.get_record(db_config=DB_AUTH, link_id=link_id, site_id=site_id)
+                record = mdb.get_record(link_id=link_id, site_id=site_id)
 
-                if not run_workflow_step(APP, step, site_id, log_file, DB_AUTH,
+                if not run_workflow_step(APP, step, site_id, log_file, mdb.db_config,
                                          to=record['notification'],
                                          started_by=record['started_by_email'],
                                          now_st=now_st,
@@ -244,7 +238,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
             logging.warning("There are no workflows steps in this workflow.")
 
         logging.info("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
-        update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
+        update_record(mdb.db_config, link_id, site_id, state, get_log(log_file))
 
     except Exception as e:
 
@@ -265,7 +259,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
 
         state = 'error'
         log = get_log(log_file)
-        update_record(DB_AUTH, link_id, site_id, state, log)
+        update_record(mdb.db_config, link_id, site_id, state, log)
 
         create_jira(APP=APP, url=site_url, site_id=site_id, site_title=site_title, jira_state=state,
                     jira_log=log, failure_type=failure_type, failure_detail=failure_detail, user=record['started_by_email'])

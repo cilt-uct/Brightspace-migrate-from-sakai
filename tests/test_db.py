@@ -11,7 +11,7 @@ class QueryTestCase(unittest.TestCase):
                WHERE B.link_id = A.link_id AND B.state='admin'), A.site_id) AS url,
                (SELECT email FROM lti_user C WHERE C.user_id = A.started_by) AS started_by_email
                FROM migration_site A WHERE A.active=1 AND A.state=%s ORDER BY zip_size ASC;"""
-        actual = lib.db.query_get_records(order_by_zip=True)
+        actual = lib.db.MigrationDb.query_get_records(order_by_zip=True)
         self.assertEqual(stripspace(expected), stripspace(actual))
 
     def test_query_get_records_minutes(self):
@@ -20,7 +20,7 @@ class QueryTestCase(unittest.TestCase):
                ifnull((SELECT site_id FROM migration_site B WHERE B.link_id = A.link_id AND B.state='admin'), A.site_id) AS url,
                (SELECT email FROM lti_user C WHERE C.user_id = A.started_by) AS started_by_email
                FROM migration_site A WHERE A.active=1 AND A.state=%s ORDER BY zip_size ASC;"""
-        actual = lib.db.query_get_records(order_by_zip=True, expiry_minutes=1)
+        actual = lib.db.MigrationDb.query_get_records(order_by_zip=True, expiry_minutes=1)
         self.assertEqual(stripspace(expected), stripspace(actual))
 
     def test_query_get_records_no_zip(self):
@@ -30,7 +30,7 @@ class QueryTestCase(unittest.TestCase):
                ifnull((SELECT site_id FROM migration_site B WHERE B.link_id = A.link_id AND B.state='admin'), A.site_id) AS url,
                (SELECT email FROM lti_user C WHERE C.user_id = A.started_by) AS started_by_email
                FROM migration_site A WHERE A.active=1 AND A.state=%s ORDER BY started_at ASC;"""
-        actual = lib.db.query_get_records(order_by_zip=False, expiry_minutes=1)
+        actual = lib.db.MigrationDb.query_get_records(order_by_zip=False, expiry_minutes=1)
         self.assertEqual(stripspace(expected), stripspace(actual))
 
     def test_query_get_record(self):
@@ -39,7 +39,7 @@ class QueryTestCase(unittest.TestCase):
                ifnull((SELECT site_id FROM migration_site B WHERE B.link_id = A.link_id AND B.state='admin'), A.site_id) AS url,
                (SELECT email FROM lti_user C WHERE C.user_id = A.started_by) AS started_by_email
                FROM migration_site A WHERE A.link_id=%s AND A.site_id=%s LIMIT 1;"""
-        actual = lib.db.query_get_record()
+        actual = lib.db.MigrationDb.query_get_record()
         self.assertEqual(stripspace(expected), stripspace(actual))
 
 if __name__ == '__main__':

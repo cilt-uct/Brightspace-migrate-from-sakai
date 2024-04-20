@@ -382,14 +382,10 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
             os.remove(report_content_file)
 
     # update properties in db
-    tmp = lib.local_auth.getAuth(APP['auth']['db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        raise Exception("Tsugi DB Authentication required")
+    mdb = lib.db.MigrationDb(APP)
 
     try:
-        connection = pymysql.connect(**DB_AUTH, cursorclass=DictCursor)
+        connection = pymysql.connect(**mdb.db_config, cursorclass=DictCursor)
         with connection:
             with connection.cursor() as cursor:
                 # Update report url

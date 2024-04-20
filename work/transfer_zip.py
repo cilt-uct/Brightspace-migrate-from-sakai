@@ -19,9 +19,9 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.logging_config
+import lib.db
 from lib.utils import format_bytes, get_size
 from lib.local_auth import getAuth
-from lib.db import set_uploaded_at
 
 def viewBar(a,b):
     # original version
@@ -95,11 +95,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
     else:
         raise Exception("SFTP Authentication required")
 
-    tmp = getAuth(APP['auth']['db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        raise Exception("DB Authentication required")
+    mdb = lib.db.MigrationDb(APP)
 
     # Open the connection
     t = paramiko.Transport((SFTP['host'], 22))
@@ -125,7 +121,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
         t.close()
 
         if int(link_id) > 0:
-            set_uploaded_at(DB_AUTH, link_id, SITE_ID)
+            mdb.set_uploaded_at(link_id, SITE_ID)
 
     except Exception as e:
         raise Exception(f"Error while uploading {src}: {e}")

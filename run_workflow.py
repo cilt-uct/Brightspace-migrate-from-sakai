@@ -242,12 +242,8 @@ def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
 ## enum('init','starting','exporting','running','importing','updating','completed','error')
 
 def start_workflow(workflow_file, link_id, site_id, APP):
-    tmp = lib.local_auth.getAuth(APP['auth']['db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        logging.error("Authentication required")
-        return 0
+
+    mdb = lib.db.MigrationDb(APP)
 
     site_title = site_id
     site_url   = site_id
@@ -268,7 +264,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
     record = None
 
     try:
-        record = lib.db.get_record(db_config=DB_AUTH, link_id=link_id, site_id=site_id)
+        record = mdb.get_record(link_id=link_id, site_id=site_id)
 
         if (record is None):
             raise Exception(f'Could not find record to start workflow for {link_id} : {site_id}')
@@ -287,19 +283,19 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         setup_log_file(APP, log_file, site_id, record['workflow'])
 
         new_id = '{}_{}'.format(site_id, now.strftime("%Y%m%d_%H%M"))
-        update_record_ref_site_id(DB_AUTH, link_id, site_id, new_id)
+        update_record_ref_site_id(mdb.db_config, link_id, site_id, new_id)
 
         set_site_property(APP, site_id, 'brightspace_conversion_date', now.strftime("%Y-%m-%d %H:%M:%S"))
 
         # Get the site title
         site_title = work.get_site_title.get_site_title(site_id, APP)
         if site_title:
-            update_record_title(DB_AUTH, link_id, site_id, site_title)
+            update_record_title(mdb.db_config, link_id, site_id, site_title)
 
         logging.info(f"Starting workflow for {site_id} '{site_title}'")
 
         # run the archiving of the site
-        update_record(DB_AUTH, link_id, site_id, 'exporting', get_log(log_file))
+        update_record(mdb.db_config, link_id, site_id, 'exporting', get_log(log_file))
         state = 'exporting'
 
         if work.archive_site.archive_site_retry(site_id, APP):
@@ -311,7 +307,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
             workflow_steps = lib.utils.read_yaml(workflow_file)
 
             state = 'running'
-            update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
+            update_record(mdb.db_config, link_id, site_id, state, get_log(log_file))
 
             if workflow_steps['STEPS'] is not None:
                 for step in workflow_steps['STEPS']:
@@ -324,7 +320,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
                             step=step,
                             site_id=site_id,
                             log_file=log_file,
-                            db_config=DB_AUTH,
+                            db_config=mdb.db_config,
                             to=record['notification'],
                             started_by=record['started_by_email'],
                             now_st=now_st,
@@ -344,7 +340,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
             raise Exception(f'Archive failed for {link_id} : {site_id}')
 
         logging.info("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
-        update_record(DB_AUTH, link_id, site_id, state, get_log(log_file))
+        update_record(mdb.db_config, link_id, site_id, state, get_log(log_file))
 
     except Exception as e:
 
@@ -371,7 +367,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         failure_type = 'exception:workflow'
         failure_detail = str(e)
 
-        update_record(DB_AUTH, link_id, site_id, state, log)
+        update_record(mdb.db_config, link_id, site_id, state, log)
         create_jira(APP=APP, url=site_url, site_id=site_id, site_title=site_title, jira_state=state,
                     jira_log=log, failure_type=failure_type, failure_detail=failure_detail, user=job_started_by)
 

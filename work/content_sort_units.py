@@ -13,17 +13,13 @@ sys.path.append(parent)
 
 import config.config
 import config.logging_config
+import lib.db
 from lib.utils import middleware_api
 
-
 def run(SITE_ID, LINK_ID, APP):
-    tmp = lib.local_auth.getAuth(APP['auth']['db'])
-    if tmp is not None:
-        DB_AUTH = {'host': tmp[0], 'database': tmp[1], 'user': tmp[2], 'password': tmp[3]}
-    else:
-        raise Exception("DB Authentication required")
 
-    site = lib.db.get_record(db_config=DB_AUTH, link_id=LINK_ID, site_id=SITE_ID)
+    mdb = lib.db.MigrationDb(APP)
+    site = mdb.get_record(link_id=LINK_ID, site_id=SITE_ID)
     org_id = site['transfer_site_id']
 
     course_info = "{}{}?org_id={}".format(APP['middleware']['base_url'],

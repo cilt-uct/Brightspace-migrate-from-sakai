@@ -14,6 +14,7 @@ from datetime import timedelta
 from subprocess import Popen
 
 import config.config
+import config.logging_config
 import lib.local_auth
 import lib.db
 
@@ -22,10 +23,10 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 
-def upload(APP, db_config, link_id, site_id, title):
+def upload(APP, mdb, link_id, site_id, title):
 
     try:
-        lib.db.set_to_state(db_config, link_id, site_id, "uploading")
+        mdb.set_to_state(link_id, site_id, "uploading")
 
         cmd = "python3 {}/run_upload.py {} {}".format(APP['script_folder'], link_id, site_id).split()
         if APP['debug']:
@@ -42,22 +43,18 @@ def check_upload(APP):
 
     logging.debug("##### Checking for uploads")
 
-    tmp = lib.local_auth.getAuth(APP['auth']['db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        raise Exception("DB Authentication required")
+    mdb = lib.db.MigrationDb(APP)
 
     # Max permitted import jobs
     max_jobs = APP['import']['max_jobs']
-    active_imports = lib.db.get_state_count(DB_AUTH, 'importing')
-    active_uploads = lib.db.get_state_count(DB_AUTH, 'uploading')
+    active_imports = mdb.get_state_count('importing')
+    active_uploads = mdb.get_state_count('uploading')
 
     # datetime object containing current date and time that the workflow was started
     start_time = time.time()
 
     # Jobs pending
-    want_to_process = lib.db.get_records(db_config=DB_AUTH, state='queued', order_by_zip=True)
+    want_to_process = mdb.get_records(state='queued', order_by_zip=True)
 
     if (active_uploads + len(want_to_process)) > 0:
         logging.info(f"{len(want_to_process)} site(s) queued, {active_uploads} site(s) uploading, {active_imports} site(s) importing out of maximum {max_jobs}")
@@ -68,8 +65,8 @@ def check_upload(APP):
 
     for site in want_to_process:
 
-        active_imports = lib.db.get_state_count(DB_AUTH, 'importing')
-        active_uploads = lib.db.get_state_count(DB_AUTH, 'uploading')
+        active_imports = mdb.get_state_count('importing')
+        active_uploads = mdb.get_state_count('uploading')
 
         if (active_imports + active_uploads) >= max_jobs:
             break
@@ -89,7 +86,7 @@ def check_upload(APP):
             logging.info(f"Upload for '{site_title}' {site_id}")
 
             # run upload workflow
-            upload(APP, DB_AUTH, site['link_id'], site_id, site_title)
+            upload(APP, mdb, site['link_id'], site_id, site_title)
 
         except Exception as e:
             logging.exception(e)

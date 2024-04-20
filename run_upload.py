@@ -161,13 +161,7 @@ def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
 
 def start_workflow(workflow_file, link_id, site_id, APP):
 
-    tmp = lib.local_auth.getAuth(APP['auth']['db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        logging.error("Authentication required")
-        return 0
-
+    mdb = lib.db.MigrationDb(APP)
     site_title = site_id
 
     # datetime object containing current date and time that the workflow was started
@@ -181,7 +175,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
 
     logging.info(f"Upload workflow starting for {site_id}")
 
-    record = lib.db.get_record(db_config=DB_AUTH, link_id=link_id, site_id=site_id)
+    record = mdb.get_record(link_id=link_id, site_id=site_id)
     if record['state'] != "uploading":
         raise Exception(f"Unexpected state {record['state']} for site {record['site_id']}")
 
@@ -210,7 +204,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
                     new_state = step['state']
                     logging.info(f"New state: {new_state}")
 
-                if run_workflow_step(APP, step=step, site_id=site_id, log_file=log_file, db_config=DB_AUTH,
+                if run_workflow_step(APP, step=step, site_id=site_id, log_file=log_file, db_config=mdb.db_config,
                                          to=record['notification'], started_by=record['started_by_email'],
                                          now_st=now_st, new_id=new_id, import_id=record['imported_site_id'],
                                          link_id=link_id, title=site_title, zip_file=files['file-fixed-zip']):
@@ -221,7 +215,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
                     raise Exception("Workflow failed")
 
                 if new_state:
-                    lib.db.set_to_state(DB_AUTH, link_id, site_id, new_state)
+                    mdb.set_to_state(link_id, site_id, new_state)
 
             # Completed
             transition_jira(APP, site_id=site_id)
@@ -234,7 +228,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         logging.error("Upload workflow did not complete")
 
         # Reset to queued state
-        update_record(DB_AUTH, link_id, site_id, "queued", lib.utils.get_log(log_file))
+        update_record(mdb.db_config, link_id, site_id, "queued", lib.utils.get_log(log_file))
 
 
 def main():
