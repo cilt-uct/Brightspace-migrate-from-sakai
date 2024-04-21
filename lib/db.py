@@ -154,3 +154,39 @@ class MigrationDb:
 
         except Exception as e:
             raise Exception(f'Could not set_to_updating for {link_id} : {site_id}') from e
+
+    def set_running(self, link_id, site_id):
+        try:
+            connection = pymysql.connect(**self.db_config, cursorclass=DictCursor)
+            with connection:
+                with connection.cursor() as cursor:
+                    # Create a new record
+                    sql = """UPDATE `migration_site` SET modified_at = NOW(), modified_by = 1, active = %s, state = %s
+                             WHERE `link_id` = %s and site_id = %s;"""
+                    cursor.execute(sql, ('1', 'exporting', link_id, site_id))
+
+                connection.commit()
+
+        except Exception as e:
+            raise Exception(f'Could not update migration record {link_id} : {site_id}') from e
+
+    def another_running(self, link_id, site_id):
+
+        # Possible states:
+        # ('init','starting','exporting','running','queued','uploading','importing','updating','completed','error','paused','admin')
+
+        try:
+            connection = pymysql.connect(**self.db_config, cursorclass=DictCursor)
+            with connection:
+                with connection.cursor() as cursor:
+                    sql = """SELECT link_id FROM migration_site `A`
+                                where  `A`.link_id <> %s and `A`.site_id = %s and `active` = 1
+                                and `A`.state NOT in ('init', 'starting', 'completed', 'error')"""
+                    cursor.execute(sql, (link_id, site_id))
+                    cursor.fetchall()
+                    return cursor.rowcount
+
+        except Exception as e:
+            raise Exception('Could not check on migration records') from e
+
+        return 0
