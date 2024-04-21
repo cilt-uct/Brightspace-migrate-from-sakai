@@ -166,7 +166,7 @@ APP = {
   'import': {
       'max_jobs' : 10,
       'hold_test_conversions' : False,
-      'expiry' : 1440,
+      'expiry' : 2160,
       'limit' : 2147483648,
       'manifest' : {
           'rubrics' : Path(SCRIPT_FOLDER) / 'templates' / 'manifests' / 'rubrics-import.xml',
