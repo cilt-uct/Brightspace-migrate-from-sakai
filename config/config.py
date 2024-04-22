@@ -98,7 +98,8 @@ APP = {
 
   'content': {
     'mime-types': Path(SCRIPT_FOLDER) / 'config' / 'mime_types.yaml',
-    'restricted-ext': Path(SCRIPT_FOLDER) / 'config' / 'restricted_ext.yaml'
+    'restricted-ext': Path(SCRIPT_FOLDER) / 'config' / 'restricted_ext.yaml',
+    'max_files' : 5000
   },
 
   'email': {
