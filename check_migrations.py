@@ -16,101 +16,69 @@ import config.logging_config
 import lib.local_auth
 import lib.db
 
-from lib.utils import send_template_email, create_jira
-
 def check_migrations(APP):
 
     logging.debug("Checking form migration records")
 
-    site_id = ''
-    site_url = ''
-    site_title = "check_migrations"
-    failure_type = ''
-    failure_detail = ''
-    started_by = ''
-
-    # datetime object containing current date and time that the workflow was started
     start_time = time.time()
 
-    try:
+    # Database connection
+    mdb = lib.db.MigrationDb(APP)
 
-        mdb = lib.db.MigrationDb(APP)
+    want_to_migrate = mdb.get_records(state='starting')
+    active_exports = mdb.get_state_count(state='exporting')
+    active_workflows = mdb.get_state_count(state='running')
 
-        # datetime object containing current date and time that the workflow was started
-        start_time = time.time()
+    max_jobs = APP['export']['max_jobs']
+    max_workflows = APP['workflow']['max_jobs']
 
-        want_to_migrate = mdb.get_records(state='starting')
-        active_exports = mdb.get_state_count(state='exporting')
-        active_workflows = mdb.get_state_count(state='running')
+    if (len(want_to_migrate) + active_exports + active_workflows) > 0:
+        logging.info(f"{len(want_to_migrate)} sites pending, {active_exports} / {max_jobs} sites exporting, {active_workflows} / {max_workflows} workflows running")
 
-        max_jobs = APP['export']['max_jobs']
-        max_workflows = APP['workflow']['max_jobs']
+    if (active_exports >= max_jobs):
+        logging.debug("Too many exports running - pausing")
+        time.sleep(30)
+        return
 
-        if (len(want_to_migrate) + active_exports + active_workflows) > 0:
-            logging.info(f"{len(want_to_migrate)} sites pending, {active_exports} / {max_jobs} sites exporting, {active_workflows} / {max_workflows} workflows running")
+    if (active_workflows >= max_workflows):
+        logging.debug("Too many workflows running - pausing")
+        time.sleep(30)
+        return
 
-        if (active_exports >= max_jobs):
-            logging.debug("Too many exports running - pausing")
-            time.sleep(30)
-            return
+    started = 0
 
-        if (active_workflows >= max_workflows):
-            logging.debug("Too many workflows running - pausing")
-            time.sleep(30)
-            return
+    for site in want_to_migrate:
 
-        started = 0
+        if (active_exports + started) >= max_jobs:
+            break
 
-        for site in want_to_migrate:
+        if (active_workflows + started) >= max_workflows:
+            break
 
-            if (active_exports + started) >= max_jobs:
-                break
+        started += 1
+        site_id = site['site_id']
+        link_id = site['link_id']
 
-            if (active_workflows + started) >= max_workflows:
-                break
+        try:
 
-            started += 1
-            site_id = site['site_id']
-            link_id = site['link_id']
-            site_url = site['url']
-            site_title = site['title']
-            failure_type = site['failure_type']
-            failure_detail = site['failure_detail']
-            started_by = site['started_by_email']
+            if (not mdb.another_running(link_id, site_id)):
+                mdb.set_running(link_id, site_id)
 
-            try:
+                logging.info(f"migration started for {site_id} from {link_id}")
 
-                if (not mdb.another_running(link_id, site_id)):
-                    mdb.set_running(link_id, site_id)
+                cmd = "python3 {}/run_workflow.py {} {}".format(APP['script_folder'],site['link_id'],site['site_id']).split()
+                # if APP['debug']:
+                #     cmd.append("-d")
 
-                    logging.info(f"migration started for {site_id} from {link_id}")
+                p = Popen(cmd)
+                logging.info("\tRunning PID[{}] {} : {}".format(p.pid, site['link_id'],site['site_id']))
 
-                    cmd = "python3 {}/run_workflow.py {} {}".format(APP['script_folder'],site['link_id'],site['site_id']).split()
-                    # if APP['debug']:
-                    #     cmd.append("-d")
+                time.sleep(5)
+            else:
+                logging.info(f"Migration for {site_id} from {link_id} queued, but another task is running for this site")
 
-                    p = Popen(cmd)
-                    logging.info("\tRunning PID[{}] {} : {}".format(p.pid, site['link_id'],site['site_id']))
-
-                    time.sleep(5)
-                else:
-                    logging.info(f"Migration for {site_id} from {link_id} queued, but another task is running for this site")
-
-            except Exception as e:
-                send_template_email(
-                    APP,
-                    template='error_workflow.html',
-                    to=None,
-                    started_by=started_by,
-                    subj='Failed conversion',
-                    title=site_title,
-                    site_id=site_id)
-                raise e
-
-    except Exception as e:
-        logging.exception(e)
-        create_jira(APP=APP, url=site_url, site_id=site_id, site_title=site_title, jira_log=[str(e)],
-                    jira_state='error', failure_type=failure_type, failure_detail=failure_detail, user=started_by)
+        except Exception:
+            logging.exception(f"Error starting workflow for {site_id} from {link_id}")
 
     logging.debug("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
 

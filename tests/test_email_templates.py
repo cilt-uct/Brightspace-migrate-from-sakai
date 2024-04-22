@@ -5,7 +5,6 @@ import run_update
 import run_workflow
 import lib.utils
 from check_imported import check_imported
-from check_migrations import check_migrations
 from unittest.mock import patch
 
 class RunUpdateEmailTemplateTestCase(unittest.TestCase):
@@ -223,47 +222,12 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     def test_check_imported_fail_email(self, mock_send_template_email, *_):
         APP = config.config.APP
         check_imported(APP)
+
         self.assertTrue(mock_send_template_email.called)
         self.assertEqual('error_import.html', mock_send_template_email.call_args.kwargs['template'])
         self.assertEqual('notifyme@gmail.com', mock_send_template_email.call_args.kwargs['to'])
         self.assertEqual('cilt@uct.ac.za', mock_send_template_email.call_args.kwargs['started_by'])
         self.assertEqual(f"{APP['sakai_name']} to {APP['brightspace_name']}: Import workflow error [test_title]", mock_send_template_email.call_args.kwargs['subj'])
-        self.assertEqual('test_title', mock_send_template_email.call_args.kwargs['title'])
-        self.assertEqual('site_id_12345', mock_send_template_email.call_args.kwargs['site_id'])
-
-    # This tests the import failure case where the D2L import job has Failed status
-    @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
-    @patch('lib.db.MigrationDb.get_state_count', return_value=0)
-    @patch('lib.db.MigrationDb.get_records', return_value=[{
-        'link_id': 'link_id_12345',
-        'notification': 'cilt1@uct.ac.za',
-        'site_id': 'site_id_12345',
-        'active': 'true',
-        'expired': 'N',
-        'files': '{}',
-        'state': 'active',
-        'workflow': '{"workflow":"test_workflow"}',
-        'title': 'test_title',
-        'transfer_site_id': 'transfer_site_id_12345',
-        'imported_site_id': 'imported_site_id_12345',
-        'url': 'url.com',
-        'report_url': 'report.com',
-        'started_by_email': 'cilt@uct.ac.za',
-        'failure_type': 'failure_type',
-        'failure_detail': 'failure_detail',
-        'target_site_id': 98765,
-        'target_title': 'New site for 2023'
-    }])
-    @patch('check_migrations.create_jira')
-    @patch('check_migrations.send_template_email')
-    def test_check_migrations_fail_email(self, mock_send_template_email, *_):
-        APP = config.config.APP
-        check_migrations(APP)
-        self.assertTrue(mock_send_template_email.called)
-        self.assertEqual('error_workflow.html', mock_send_template_email.call_args.kwargs['template'])
-        self.assertIsNone(mock_send_template_email.call_args.kwargs['to'])
-        self.assertEqual('cilt@uct.ac.za', mock_send_template_email.call_args.kwargs['started_by'])
-        self.assertEqual('Failed conversion', mock_send_template_email.call_args.kwargs['subj'])
         self.assertEqual('test_title', mock_send_template_email.call_args.kwargs['title'])
         self.assertEqual('site_id_12345', mock_send_template_email.call_args.kwargs['site_id'])
 
@@ -292,6 +256,7 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     def test_run_workflow_fail_email(self, mock_send_template_email, *_):
         APP = config.config.APP
         run_workflow.start_workflow(f"{APP['config_folder']}/workflow.yaml", 'link_id', 'site_id', APP)
+
         self.assertTrue(mock_send_template_email.called)
         self.assertEqual('error_workflow.html', mock_send_template_email.call_args.kwargs['template'])
         self.assertIsNone(mock_send_template_email.call_args.kwargs['to'])
