@@ -11,6 +11,7 @@ import base64
 import lxml.etree as ET
 
 from bs4 import BeautifulSoup
+from urllib.parse import unquote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -18,7 +19,7 @@ sys.path.append(parent)
 
 import config.logging_config
 from lib.resources import add_resource
-from lib.utils import make_well_formed
+from lib.utils import make_well_formed, fix_unwanted_url_chars
 
 def run(SITE_ID, APP):
     logging.info('Site Overview: convert to content page: {}'.format(SITE_ID))
@@ -45,6 +46,17 @@ def run(SITE_ID, APP):
     # Apply the same styling as used for Lessons pages
     body_soup = BeautifulSoup(site_info_html, 'html.parser')
     new_body = make_well_formed(body_soup, "Site Information", "styled")
+
+    # Change img and href links to be relative URLs
+    sakai_url = APP['sakai_url']
+    url_prefix = f"{sakai_url}/access/content/group/{SITE_ID}"
+
+    for attr in ['src', 'href']:
+        for element in new_body.find_all(attrs={attr: True}):
+            currenturl = unquote(element.get(attr))
+            if url_prefix in currenturl:
+                element[attr] = fix_unwanted_url_chars(currenturl, url_prefix).replace("../","")
+
     new_html = str(new_body.prettify())
 
     # Write html

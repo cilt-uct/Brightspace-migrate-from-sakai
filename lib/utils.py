@@ -18,6 +18,7 @@ import lxml.etree as ET
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -557,3 +558,30 @@ def replace_wiris(html_str):
         el.replace_with(math_ml)
 
     return str(html)
+
+# Used for relative URLs in Lessons and Site Info
+def fix_unwanted_url_chars(currenturl, url_prefix):
+
+    if not currenturl.startswith(url_prefix):
+        return currenturl
+
+    # parse url prefix, get path with https and path parsed_url.netloc + parsed_url.path
+    parsed_url = urlparse(url_prefix)
+
+    # remove the . but not replace the sakaiurl yet
+    urlparts = [s.strip(".") for s in currenturl.split("/") if s != 'https:']
+    joined_link = "/".join(urlparts).replace("/", "", 1)
+
+    # replacements list below array(k,v)
+    replacements = [
+        (re.escape(parsed_url.netloc) + re.escape(parsed_url.path), ".."),
+        ("%3A", ""),
+        ("!", ""),
+        (":",""),
+        (re.escape("+"),"_")
+    ]
+
+    for key, value in replacements:
+        joined_link = re.sub(key, value, joined_link)
+
+    return joined_link
