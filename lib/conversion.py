@@ -860,7 +860,7 @@ def content_displayname_files(content_soup, ignored_collections):
             continue
         displayprop = content.find("property", attrs={"name": "DAV:displayname"})
         displayname = str(base64.b64decode(displayprop.get("value")).decode('utf-8'))
-        if filename != "Site Information.html" and filename != displayname:
+        if filename != "siteinfo.html" and filename != displayname:
             data.add(f"'{displayname}' file name is '{filename}'")
 
     if len(data) > 0:

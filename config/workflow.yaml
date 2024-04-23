@@ -81,8 +81,8 @@ STEPS:
   - action: test_and_quiz_QP_replace_wiris
   - action: test_and_quiz_inline_images
 
-  # Resources / Content
-  - action: overview_add_css
+  # Site Information page
+  - action: site_overview
 
   # Content
   # - action: content_sort_units

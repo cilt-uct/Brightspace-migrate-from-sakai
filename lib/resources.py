@@ -188,9 +188,9 @@ def move_attachments(SITE_ID, site_folder, collection, move_list):
 
 # Add a file to content.xml
 # The file should already be in site_folder
-def add_resource(SITE_ID, site_folder, file_path, content_type, collection):
+def add_resource(SITE_ID, site_folder, file_path, display_name, content_type, collection):
 
-    if not collection.endswith("/"):
+    if len(collection) and not collection.endswith("/"):
         collection += "/"
 
     file_name = Path(file_path).name
@@ -235,7 +235,7 @@ def add_resource(SITE_ID, site_folder, file_path, content_type, collection):
 
     props = ET.Element("properties")
     add_prop(props, "CHEF:creator", "admin")
-    add_prop(props, "DAV:displayname", file_name)
+    add_prop(props, "DAV:displayname", display_name)
     add_prop(props, "CHEF:modifiedby", "admin")
     add_prop(props, "CHEF:description", "")
     add_prop(props, "DAV:getlastmodified", "20240309112237083")

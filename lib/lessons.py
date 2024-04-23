@@ -250,7 +250,7 @@ def folder_list_embed(archive_path, collection_id, path_prefix, desc):
                 file_name = displayname if displayname else resource["rel-id"]
 
                 # TODO if this is a .URL, then resolve it and link directly
-                if file_name != 'Site Information.html':
+                if file_name != 'siteinfo.html':
                     href = f'{path_prefix}{resource["id"]}'
                     a_tag = f'<li><a href="{href}">{file_name}</a></li>'
                     html = html + a_tag

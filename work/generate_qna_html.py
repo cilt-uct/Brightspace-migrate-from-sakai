@@ -90,7 +90,7 @@ def run(SITE_ID, APP):
             file.write(html_updated_bytes)
 
         # Add qna.html itself
-        add_resource(SITE_ID, site_folder, output_file, "text/html", collection)
+        add_resource(SITE_ID, site_folder, output_file, output_file, "text/html", collection)
 
         # Move any attachments
         move_attachments(SITE_ID, site_folder, collection, move_list)
