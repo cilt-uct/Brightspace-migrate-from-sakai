@@ -6,6 +6,21 @@ The entire process is tied to the **Migrate to Brightspace [LTI] (tsugi-migrate-
 
 The LTI tool contains the database (see [Database Schema](#database-schema)) that is used to store the state of the conversion process.
 
+## Python dependencies
+
+To install the python module dependencies used by these scripts, use
+
+```
+pip install -r requirements.txt
+```
+
+To regenerate the requirements list, use
+
+```
+pip install pipreqs
+pipreqs
+```
+
 ## Workflow
 The workflows defined in the `config` folder are divided into 3 parts (matching with the task):
 
