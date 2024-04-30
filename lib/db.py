@@ -32,6 +32,14 @@ class MigrationDb:
                 'password' : auth['password']
         }
 
+        # Optional string parameters: https://pymysql.readthedocs.io/en/latest/modules/connections.html
+        opt_params = ['charset', 'ssl_ca', 'ssl_cert', 'ssl_disabled', 'ssl_key', 'ssl_key_password',
+                'ssl_verify_cert', 'ssl_verify_identity', 'server_public_key']
+
+        for opt_param in opt_params:
+            if opt_param in auth:
+                self.db_config[opt_param] = auth[opt_param]
+
         if not self.validate_connection():
             raise Exception(f"Unable to validate connection to mysql db: {auth['hostname']}:{auth['database']}:{auth['username']}")
 
