@@ -50,13 +50,6 @@ inc/
 log/*.log
 tmp/*.log
 
-# project migration files
-!placeholders.csv
-!placeholders/tmp.gz
-!placeholders/tmp.csv
-!placeholders/tmp.zip
-!placeholders/tmp.txt
-
 # Tests
 projects/migrate_to_brightspace/tests/test_files/output.xml
 
@@ -64,4 +57,6 @@ projects/migrate_to_brightspace/tests/test_files/output.xml
 auth.properties
 users.cfg
 
+# Log files
 brightspace_migration.log
+migration_test.log

@@ -11,6 +11,7 @@ CONVERSION_REPORT_FOLDER = get_var('CONVERSION_REPORT_FOLDER')
 
 # Persistent logging
 LOG_PATH = Path(SCRIPT_FOLDER) / 'brightspace_migration.log'
+LOG_TEST_PATH = Path(SCRIPT_FOLDER) / 'migration_test.log'
 LOG_IN_CONSOLE = True
 LOG_IN_FILE = True
 
