@@ -21,9 +21,9 @@ class MyJira(object):
         self._jira = None
 
         try:
-            tmp = getAuth('Jira')
-            if (tmp is not None):
-                self._jira = JIRA(options={'server': tmp[0], 'verify' : False}, basic_auth=(tmp[1], tmp[2]))
+            JIRA_AUTH = getAuth('Jira', ['url', 'username', 'password'])
+            if JIRA_AUTH['valid']:
+                self._jira = JIRA(options={'server': JIRA_AUTH['url'], 'verify' : False}, basic_auth=(JIRA_AUTH['username'], JIRA_AUTH['password']))
         except JIRAError:
             self._jira = None
 

@@ -27,11 +27,9 @@ def main():
 
     org_ids = args['org_ids'].replace(' ', '').split(',')
 
-    webAuth = getAuth('BrightspaceWeb')
-    if (webAuth is not None):
-        WEB = {'username': webAuth[0], 'password' : webAuth[1]}
-    else:
-        raise Exception('Web Authentication required [getBrightspaceWebAuth]')
+    WEB = getAuth('BrightspaceWeb', ['username', 'password'])
+    if not WEB['valid']:
+        raise Exception('Web Authentication required [BrightspaceWeb]')
 
     brightspace_url = APP['brightspace_url']
     logging.info(f"Checking import status for orgids {org_ids} on {brightspace_url}")

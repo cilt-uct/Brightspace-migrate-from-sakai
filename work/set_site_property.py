@@ -29,24 +29,23 @@ def run(SITE_ID, APP, **kwargs):
     succeeded = True
 
     try:
-        tmp = getAuth(APP['auth']['sakai'])
-        if (tmp is not None):
-            auth = {'url' : tmp[0], 'username' : tmp[1], 'password' : tmp[2]}
-        else:
-            raise Exception("Authentication required")
+
+        SAKAI = getAuth(APP['auth']['sakai'], ['url', 'username', 'password'])
+
+        if not SAKAI['valid']:
+            raise Exception("Sakai Authentication required")
 
         # Disable SSL cert validation (for srvubuclexxx direct URLs)
         session = Session()
-        session.verify = False
 
         # Zeep client for running site archive - timeout is 7200 sec = 2 hrs
         transport = zeep.Transport(session=session, timeout=7200)
 
         # Zeep client for login and out
-        login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(auth['url']), transport=transport)
+        login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(SAKAI['url']), transport=transport)
         login_client.transport.session.verify = False
 
-        session_details = login_client.service.loginToServer(auth['username'], auth['password']).split(',')
+        session_details = login_client.service.loginToServer(SAKAI['username'], SAKAI['password']).split(',')
         logging.debug(f'session_details {session_details}')
 
         sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(session_details[1]), transport=transport)
@@ -57,6 +56,8 @@ def run(SITE_ID, APP, **kwargs):
 
             if k in VALID:
                 succeeded = sakai_client.service.setSiteProperty(session_details[0], SITE_ID, k, kwargs[k]) == "success"
+                if succeeded:
+                    logging.info(f"Site {SITE_ID} property {k}={kwargs[k]}")
 
         # logout
         logout = login_client.service.logout(session_details[0])
@@ -66,7 +67,7 @@ def run(SITE_ID, APP, **kwargs):
         return succeeded
 
     except zeep.exceptions.Fault as fault:
-        logging.error("Webservices error calling method on {} with username {}".format(auth['url'], auth['username']))
+        logging.error("Webservices error calling method on {} with username {}".format(SAKAI['url'], SAKAI['username']))
         raise Exception(fault)
 
 def main():
@@ -78,6 +79,8 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
+    if APP['debug']:
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     run(args['SITE_ID'], APP)
 

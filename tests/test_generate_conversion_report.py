@@ -24,7 +24,8 @@ class GenerateConversionReportTestCase(unittest.TestCase):
     @patch('lib.utils.read_yaml', return_value={'STEPS': [{'action': 'mail', 'template': 'finished',
                                                            'subject': 'my email subject'}]})
     @patch('work.generate_conversion_report.html')
-    @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
+    @patch('lib.local_auth.getAuth',
+            return_value={'hostname' : 'host', 'database' : 'db', 'username' : 'user', 'password' : 'pass' })
     @patch('work.generate_conversion_report.do_check', return_value=True)
     @patch('logging.info')
     def test_main(self, mock_log, mock_check, *_):
@@ -42,8 +43,10 @@ class GenerateConversionReportTestCase(unittest.TestCase):
     @patch('lib.utils.read_yaml', return_value={'STEPS': [{'action': 'mail', 'template': 'finished',
                                                            'subject': 'my email subject'}]})
     @patch('work.generate_conversion_report.html')
-    @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
+    @patch('lib.local_auth.getAuth',
+            return_value={'hostname' : 'host', 'database' : 'db', 'username' : 'user', 'password' : 'pass' })
     @patch('pymysql.connect')
+    @patch('lib.db.MigrationDb.validate_connection', return_value=True)
     @patch('work.generate_conversion_report.do_check', return_value=True)
     @patch('logging.info')
     def test_main_no_issue_key(self, mock_log, mock_check, *_):

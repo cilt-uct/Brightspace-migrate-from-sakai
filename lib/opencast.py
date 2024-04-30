@@ -114,9 +114,9 @@ def opencast_update_acls(APP, urls, import_id, target_site_id):
 
     logging.info(f"Updating Opencast ACLs for sites {import_id},{target_site_id} for {len(urls)} items")
 
-    ocAuth = getAuth('Opencast')
-    if (ocAuth is not None):
-        oc_client = Opencast(APP['opencast']['base_url'], ocAuth[0], ocAuth[1])
+    ocAuth = getAuth('Opencast', ['username', 'password'])
+    if ocAuth['valid']:
+        oc_client = Opencast(APP['opencast']['base_url'], ocAuth['username'], ocAuth['password'])
     else:
         raise Exception('Opencast authentication required')
 

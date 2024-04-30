@@ -27,7 +27,13 @@ from lib.local_auth import getAuth
 class SizeExceededError(Exception):
     pass
 
+class SecurityError(Exception):
+    pass
+
 def archive_site(SITE_ID, APP, auth):
+
+    if SITE_ID.startswith("!"):
+        raise SecurityError(f"Not archiving special sites: {SITE_ID}")
 
     succeeded = False
 
@@ -98,12 +104,11 @@ def archive_site(SITE_ID, APP, auth):
 def archive_site_retry(SITE_ID, APP, max_tries=3):
 
     succeeded = False
-    tmp = getAuth(APP['auth']['sakai_archive'])
-    if (tmp is not None):
-        SAKAI = {'url' : tmp[0], 'username' : tmp[1], 'password' : tmp[2]}
-    else:
+
+    SAKAI = getAuth(APP['auth']['sakai_archive'], ['url', 'username', 'password'])
+    if not SAKAI['valid']:
         logging.error("Authentication required")
-        return succeeded
+        return False
 
     if (APP['debug']):
         print(f'{SITE_ID}\n{APP}\n{SAKAI}')
@@ -117,6 +122,9 @@ def archive_site_retry(SITE_ID, APP, max_tries=3):
             logging.warning(se)
             # No point in retrying
             break
+
+        except SecurityError as sec:
+            raise Exception(sec)
 
         except Exception as e:
             logging.warning(f"Error archiving site {SITE_ID}: retry {i} of {max_tries}")

@@ -232,10 +232,8 @@ def run(SITE_ID, APP, import_id, transfer_id):
         return
 
     # Login to fetch files directly
-    webAuth = getAuth('BrightspaceWeb')
-    if (webAuth is not None):
-        WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
-    else:
+    WEB_AUTH = getAuth('BrightspaceWeb', ['username', 'password'])
+    if not WEB_AUTH['valid']:
         raise Exception('Web Authentication required [BrightspaceWeb]')
 
     brightspace_url = APP['brightspace_url']

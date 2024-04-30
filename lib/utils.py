@@ -368,10 +368,8 @@ def stripspace(orig):
 # Call middleware API and return JSON response with optional retries
 def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None, method = None, headers = None):
 
-    tmp = getAuth(APP['auth']['middleware'])
-    if (tmp is not None):
-        AUTH = {'host' : tmp[0], 'user': tmp[1], 'password': tmp[2]}
-    else:
+    AUTH = getAuth(APP['auth']['middleware'], ['username', 'password'])
+    if not AUTH['valid']:
         raise Exception("Middleware Authentication required")
 
     if retries is None:
@@ -398,16 +396,16 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
         try:
             if payload_data is not None:
                 if method == 'PUT':
-                    response = requests.put(url, json=payload_data, auth=(AUTH['user'], AUTH['password']), headers=_headers)
+                    response = requests.put(url, json=payload_data, auth=(AUTH['username'], AUTH['password']), headers=_headers)
                 else:
-                    response = requests.post(url, json=payload_data, auth=(AUTH['user'], AUTH['password']), headers=_headers)
+                    response = requests.post(url, json=payload_data, auth=(AUTH['username'], AUTH['password']), headers=_headers)
             else:
-                response = requests.get(url, auth=(AUTH['user'], AUTH['password']), headers=headers)
+                response = requests.get(url, auth=(AUTH['username'], AUTH['password']), headers=headers)
 
             last_status = response.status_code
 
             if last_status == 401:
-                logging.error(f"API call {url} is 401 Unauthorized (username {AUTH['user']}")
+                logging.error(f"API call {url} is 401 Unauthorized (username {AUTH['username']}")
                 return {'status': 'ERR', 'data': 'Unauthorized'}
 
             if (last_status < 500) and '{' in response.text and '}' in response.text:

@@ -9,7 +9,6 @@ import time
 import logging
 import json
 import importlib
-import paramiko
 
 from pathlib import Path
 from stat import S_ISREG
@@ -135,37 +134,6 @@ def sftp_file_list(sftp, remotedir):
 
     return filelist
 
-# Unused
-def check_sftp(inbox, outbox):
-
-    ftpAuth = lib.local_auth.getAuth('BrightspaceFTP')
-    if (ftpAuth is not None):
-        SFTP = {'host' : ftpAuth[0], 'username': ftpAuth[1], 'password' : ftpAuth[2]}
-    else:
-        raise Exception('SFTP Authentication required [getBrightspaceFTP]')
-
-    ssh_client = paramiko.SSHClient()
-    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    logging.getLogger("paramiko").setLevel(logging.WARNING)
-
-    logging.debug(f"Checking sftp {SFTP['host']}:{inbox}:{outbox}")
-
-    try:
-        ssh_client.connect(SFTP['host'], 22, SFTP['username'], SFTP['password'])
-        sftp = ssh_client.open_sftp()
-
-        inbox_files = sftp_file_list(sftp, inbox)
-        outbox_files = sftp_file_list(sftp, outbox)
-
-        ssh_client.close()
-
-    except paramiko.SSHException:
-        raise Exception(f'sftp connection error checking for files in {inbox} and {outbox}')
-
-    logging.info(f"{SFTP['host']} has size inbox={len(inbox_files)} outbox={len(outbox_files)}")
-
-    return (inbox_files, outbox_files)
-
 def check_for_brightspace_id(APP, search_site_id):
 
     # We want to swallow exceptions and failures here because if we can't search successfully,
@@ -261,10 +229,8 @@ def check_imported(APP):
 
     mdb = lib.db.MigrationDb(APP)
 
-    webAuth = lib.local_auth.getAuth('BrightspaceWeb')
-    if (webAuth is not None):
-        WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
-    else:
+    WEB_AUTH = lib.local_auth.getAuth('BrightspaceWeb', ['username', 'password'])
+    if not WEB_AUTH['valid']:
         raise Exception('Web Authentication required [BrightspaceWeb]')
 
     start_time = time.time()

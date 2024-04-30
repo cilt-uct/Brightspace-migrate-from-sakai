@@ -7,10 +7,10 @@ import lib.d2l
 class GenerateConversionReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
         try:
-            web_auth = lib.local_auth.getAuth('BrightspaceWeb')
-            if web_auth is not None:
-                self.username = web_auth[0]
-                self.password = web_auth[1]
+            web_auth = lib.local_auth.getAuth('BrightspaceWeb', ['username', 'password'])
+            if web_auth['valid']:
+                self.username = web_auth['username']
+                self.password = web_auth['password']
             else:
                 raise Exception("Please update username and password before running the GenerateConversionReportTestCase.")
         except FileNotFoundError:

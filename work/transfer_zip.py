@@ -89,16 +89,14 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
     dest = r'{}/{}'.format(APP['ftp']['inbox'], os.path.basename(src))
     tmp_dest = re.sub('(zip)$', 'tmp', dest)
 
-    tmp = getAuth('BrightspaceFTP')
-    if (tmp is not None):
-        SFTP = {'host' : tmp[0], 'username': tmp[1], 'password' : tmp[2]}
-    else:
+    SFTP = getAuth('BrightspaceFTP', ['hostname', 'username', 'password'])
+    if not SFTP['valid']:
         raise Exception("SFTP Authentication required")
 
     mdb = lib.db.MigrationDb(APP)
 
     # Open the connection
-    t = paramiko.Transport((SFTP['host'], 22))
+    t = paramiko.Transport((SFTP['hostname'], 22))
     if APP['ftp']['log']:
         logging.getLogger("paramiko").setLevel(logging.DEBUG) # for example
         paramiko.util.log_to_file(f"{APP['log_folder']}/{SITE_ID}_ftp.log", level = "DEBUG")

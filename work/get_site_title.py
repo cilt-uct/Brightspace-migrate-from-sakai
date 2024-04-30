@@ -28,21 +28,18 @@ class SizeExceededError(Exception):
 def get_site_title(SITE_ID, APP):
 
     site_title = None
+    SAKAI = getAuth(APP['auth']['sakai'], ['username', 'password'])
 
-    tmp = getAuth(APP['auth']['sakai'])
-    if (tmp is not None):
-        SAKAI = {'url' : tmp[0], 'username' : tmp[1], 'password' : tmp[2]}
-    else:
-        logging.error("Authentication required")
-        return False
+    if not SAKAI['valid']:
+        raise Exception("Authentication required")
 
-    # Disable SSL cert validation (for srvubuclexxx direct URLs)
     session = Session()
-    session.verify = False
     transport = zeep.Transport(session=session, timeout=60)
 
     # Zeep client for login and out
     login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(SAKAI['url']), transport=transport)
+
+    # Disable SSL cert validation (only if needed)
     login_client.transport.session.verify = False
 
     try:
@@ -86,7 +83,7 @@ def main():
     APP['debug'] = APP['debug'] or args['debug']
 
     site_title = get_site_title(args['SITE_ID'], APP)
-    print(f"Site title: {site_title}")
+    print(f"Site {args['SITE_ID']} title: '{site_title}'")
 
 if __name__ == '__main__':
     main()

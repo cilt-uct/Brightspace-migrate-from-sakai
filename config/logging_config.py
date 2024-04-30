@@ -1,5 +1,6 @@
 import logging
 import config.config
+import sys
 
 # create logger
 logger = logging.getLogger()
@@ -8,7 +9,11 @@ formatter = logging.Formatter('%(asctime)s %(levelname)s %(process)d %(filename)
 
 if config.config.LOG_IN_FILE:
     # create file handler
-    fh = logging.FileHandler(config.config.LOG_PATH)
+    if 'unittest' in sys.modules:
+        fh = logging.FileHandler(config.config.LOG_TEST_PATH)
+    else:
+        fh = logging.FileHandler(config.config.LOG_PATH)
+
     fh.setLevel(logging.INFO)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
