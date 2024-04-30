@@ -44,10 +44,8 @@ def run(SITE_ID, APP, import_id):
     logging.info(f'Cleanup topics for site {SITE_ID} import_id: {import_id}')
 
     # Login to fetch files directly
-    webAuth = getAuth('BrightspaceWeb')
-    if (webAuth is not None):
-        WEB_AUTH = {'username': webAuth[0], 'password' : webAuth[1]}
-    else:
+    WEB_AUTH = getAuth('BrightspaceWeb', ['username', 'password'])
+    if not WEB_AUTH['valid']:
         raise Exception('Web Authentication required [BrightspaceWeb]')
 
     brightspace_url = APP['brightspace_url']

@@ -22,24 +22,15 @@ with open(get_var('AUTH_PROPERTIES'), "rb") as f:
 # Dictionary without the optional metadata
 AUTH = {k: v.data for k, v in AUTH_PROP.items()}
 
-# return a tuple of the dictionary values for keys starting with name_
-def getAuth(filter = 'none'):
-
-    # We need to preserve key ordering
-    filtered_auth = []
-    for (k,v) in AUTH.items():
-        if k.startswith(f"{filter}_"):
-            filtered_auth.append(v)
-
-    return filtered_auth
-
-# return a tuple of the dictionary values for keys starting with name_
-def getAuthDict(filter = 'none'):
+# return a filtered dictionary for keys matching the filter
+def getAuth(filter = 'none', required_keys = []):
 
     filtered_auth = {}
     for (k,v) in AUTH.items():
         prefix = f"{filter}_"
         if k.startswith(prefix):
             filtered_auth[k.replace(prefix,"")] = v
+
+    filtered_auth['valid'] = all(x in filtered_auth for x in required_keys) and len(filtered_auth) > 0
 
     return filtered_auth

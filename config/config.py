@@ -15,7 +15,7 @@ LOG_TEST_PATH = Path(SCRIPT_FOLDER) / 'migration_test.log'
 LOG_IN_CONSOLE = True
 LOG_IN_FILE = True
 
-middleware = getAuth('BrightspaceMiddleware')
+middleware = getAuth('BrightspaceMiddleware', ['url'])
 
 APP = {
   'sakai_url' : 'https://vula.uct.ac.za',
@@ -127,7 +127,7 @@ APP = {
 
   # Local middleware
   'middleware': {
-          'base_url': middleware[0],
+          'base_url': middleware['url'],
           'api_proxy_url': '/d2l/api/call',
           'create_url': '/d2l/api/course/new',
           'import_url': '/d2l/api/course/import_package',

@@ -12,15 +12,15 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.local_auth import getAuthDict
+from lib.local_auth import getAuth
 
 class SakaiDb:
 
     def __init__(self, APP):
 
-        auth = getAuthDict(APP['auth']['sakai_db'])
+        auth = getAuth(APP['auth']['sakai_db'], ['hostname', 'database', 'username', 'password'])
 
-        if auth is None:
+        if not auth['valid']:
             raise Exception("Authentication required for Sakai database")
 
         self.db_config = {

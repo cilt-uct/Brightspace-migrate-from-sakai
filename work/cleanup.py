@@ -26,10 +26,8 @@ def cleanup_sftp(APP, sftp_folder, site_id):
 
     removed = False
 
-    ftpAuth = getAuth('BrightspaceFTP')
-    if (ftpAuth is not None):
-        SFTP = {'host' : ftpAuth[0], 'username': ftpAuth[1], 'password' : ftpAuth[2]}
-    else:
+    SFTP = getAuth('BrightspaceFTP', ['hostname', 'username', 'password'])
+    if not SFTP['valid']:
         raise Exception('SFTP Authentication required [BrightspaceFTP]')
 
     ssh_client = paramiko.SSHClient()
@@ -37,7 +35,7 @@ def cleanup_sftp(APP, sftp_folder, site_id):
     logging.getLogger("paramiko").setLevel(logging.WARNING)
 
     try:
-        ssh_client.connect(SFTP['host'], 22, SFTP['username'], SFTP['password'])
+        ssh_client.connect(SFTP['hostname'], 22, SFTP['username'], SFTP['password'])
         sftp = ssh_client.open_sftp()
 
         for entry in sftp.listdir_attr(sftp_folder):

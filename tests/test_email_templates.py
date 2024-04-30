@@ -8,7 +8,8 @@ from check_imported import check_imported
 from unittest.mock import patch
 
 class RunUpdateEmailTemplateTestCase(unittest.TestCase):
-    @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
+    @patch('lib.local_auth.getAuth',
+            return_value={'hostname' : 'host', 'database' : 'db', 'username' : 'user', 'password' : 'pass' })
     @patch('lib.db.MigrationDb.get_record', return_value={
             'link_id': 'link_id_12345',
             'notification': 'cilt1@uct.ac.za',
@@ -159,7 +160,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertEqual('report.com', mock_render.call_args.kwargs['report_url'])
 
     # Test an exception in the update workflow
-    @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
+    @patch('lib.local_auth.getAuth',
+            return_value={'hostname' : 'host', 'database' : 'db', 'username' : 'user', 'password' : 'pass' })
     @patch('lib.db.MigrationDb.get_record', return_value={
         'link_id': 'link_id_12345',
         'notification': 'cilt1@uct.ac.za',
@@ -197,7 +199,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
 
     # This tests an unexpected and unhandled failure in the import check code
     # Triggered by leaving out 'expired' from the result set
-    @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
+    @patch('lib.local_auth.getAuth',
+        return_value={'hostname' : 'host', 'database' : 'db', 'username' : 'user', 'password' : 'pass', 'valid' : True })
     @patch('lib.db.MigrationDb.get_records', return_value=[{
         'link_id': 'link_id_12345',
         'site_id': 'site_id_12345',
@@ -215,7 +218,6 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         'failure_type': 'failure_type',
         'failure_detail': 'failure_detail',
     }])
-    @patch('check_imported.check_sftp', return_value=('1', '2'))
     @patch('check_imported.create_jira')
     @patch('check_imported.get_import_status_collection')
     @patch('check_imported.send_template_email')
@@ -232,7 +234,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
         self.assertEqual('site_id_12345', mock_send_template_email.call_args.kwargs['site_id'])
 
     # Tests an exception in running the workflow
-    @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
+    @patch('lib.local_auth.getAuth',
+        return_value={'hostname' : 'host', 'database' : 'db', 'username' : 'user', 'password' : 'pass', 'valid' : True })
     @patch('lib.db.MigrationDb.get_record', return_value={
         'link_id': 'link_id_12345',
         'notification': 'cilt1@uct.ac.za',
