@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archive date="20220509134621057" server="vula103a" source="9aaeda26-59b8-4ec2-8c19-95797fa8aa43" system="Sakai 2.8">
+    <org.sakaiproject.api.app.syllabus.SyllabusService>
+        <siteArchive siteId="MEC3079S,2021" siteName="9aaeda26-59b8-4ec2-8c19-95797fa8aa43">
+            <syllabus contextId="9aaeda26-59b8-4ec2-8c19-95797fa8aa43" id="14441" redirectUrl="" userID="7195292e-218c-42d3-bb4b-66b9a7b23189">
+                <syllabus_data emailNotification="none" position="1" status="posted" syllabus_id="26568" title="Lesson plan v3.0 - 09/09/21" view="no">
+                    <asset syllabus_body-html="PHAgc3R5bGU9InRleHQtYWxpZ246IGNlbnRlcjsiPjxpbWcgYWx0PSIiIGhlaWdodD0iMTExNiIgc3JjPSJodHRwczovL3Z1bGEudWN0LmFjLnphL2FjY2Vzcy9jb250ZW50L2dyb3VwLzlhYWVkYTI2LTU5YjgtNGVjMi04YzE5LTk1Nzk3ZmE4YWE0My9BZG1pbi9MZXNzb24lMjBwbGFuJTIwdjMucGRmIiB3aWR0aD0iMjAwMCIgLz48L3A+CgoKPGgzPkF0dGFjaG1lbnRzPC9oMz4KCjx1bD4KPGxpPjxhIGhyZWY9Imh0dHBzOi8vdnVsYS51Y3QuYWMuemEvYWNjZXNzL2NvbnRlbnQvYXR0YWNobWVudC85YWFlZGEyNi01OWI4LTRlYzItOGMxOS05NTc5N2ZhOGFhNDMvTGVzc29uIFBsYW4vNzZlMDk2YTQtMjBkMC00YzVmLWI1ZTYtNWY0MDYzOTYyMjg1L0xlc3NvbiBwbGFuIHYzLnBkZiI+TGVzc29uIHBsYW4gdjMucGRmPC9hPjwvbGk+CjwvdWw+Cg=="/>
+                </syllabus_data>
+                <syllabus_data emailNotification="none" position="2" status="posted" syllabus_id="26568" title="Lesson plan v3.0 - 09/09/21" view="no">
+                    <asset syllabus_body-html="PHAgc3R5bGU9InRleHQtYWxpZ246IGNlbnRlcjsiPjxpbWcgYWx0PSIiIGhlaWdodD0iMTExNiIgc3JjPSJodHRwczovL3Z1bGEudWN0LmFjLnphL2FjY2Vzcy9jb250ZW50L2dyb3VwLzlhYWVkYTI2LTU5YjgtNGVjMi04YzE5LTk1Nzk3ZmE4YWE0My9BZG1pbi9MZXNzb24lMjBwbGFuJTIwdjMucGRmIiB3aWR0aD0iMjAwMCIgLz48L3A+CgoKPGgzPkF0dGFjaG1lbnRzPC9oMz4KCjx1bD4KPGxpPjxhIGhyZWY9Imh0dHBzOi8vdnVsYS51Y3QuYWMuemEvYWNjZXNzL2NvbnRlbnQvYXR0YWNobWVudC85YWFlZGEyNi01OWI4LTRlYzItOGMxOS05NTc5N2ZhOGFhNDMvTGVzc29uIFBsYW4vNzZlMDk2YTQtMjBkMC00YzVmLWI1ZTYtNWY0MDYzOTYyMjg1L0xlc3NvbiBwbGFuIHYzLnBkZiI+TGVzc29uIHBsYW4gdjMucGRmPC9hPjwvbGk+CjwvdWw+Cg=="/>
+                </syllabus_data>
+            </syllabus>
+        </siteArchive>
+    </org.sakaiproject.api.app.syllabus.SyllabusService>
+</archive>
