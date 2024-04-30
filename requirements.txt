@@ -8,7 +8,7 @@ jproperties==2.1.1
 jsonpath_ng==1.6.0
 lxml==4.9.1
 numpy==1.22.4
-paramiko==2.10.4
+paramiko==3.4.0
 PyMySQL==1.0.2
 python_oembed==0.2.4
 PyYAML==6.0.1
