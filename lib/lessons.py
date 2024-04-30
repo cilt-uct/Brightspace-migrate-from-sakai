@@ -44,7 +44,7 @@ YOUTUBE_RE = "^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?
 YOUTUBE_PARAMS_RE = "t=([0-9]+)"
 
 # https://stackoverflow.com/questions/4138483/twitter-status-url-regex
-TWITTER_RE = "^https?:\/\/(www.|m.|mobile.)?twitter\.com\/(?:#!\/)?\w+\/status?\/\d+"
+TWITTER_RE = "^https?:\/\/(www\.|m\.|mobile\.)?twitter\.com\/(?:#!\/)?\w+\/status?\/\d+"
 
 def is_image(att, content_type):
 
