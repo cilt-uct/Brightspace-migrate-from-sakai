@@ -32,3 +32,14 @@ def getAuth(filter = 'none'):
             filtered_auth.append(v)
 
     return filtered_auth
+
+# return a tuple of the dictionary values for keys starting with name_
+def getAuthDict(filter = 'none'):
+
+    filtered_auth = {}
+    for (k,v) in AUTH.items():
+        prefix = f"{filter}_"
+        if k.startswith(prefix):
+            filtered_auth[k.replace(prefix,"")] = v
+
+    return filtered_auth

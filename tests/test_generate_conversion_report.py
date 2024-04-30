@@ -44,6 +44,7 @@ class GenerateConversionReportTestCase(unittest.TestCase):
     @patch('work.generate_conversion_report.html')
     @patch('lib.local_auth.getAuth', return_value=['host', 'db', 'user', 'pass'])
     @patch('pymysql.connect')
+    @patch('lib.db.MigrationDb.validate_connection', return_value=True)
     @patch('work.generate_conversion_report.do_check', return_value=True)
     @patch('logging.info')
     def test_main_no_issue_key(self, mock_log, mock_check, *_):

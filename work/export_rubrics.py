@@ -19,7 +19,7 @@ sys.path.append(parent)
 
 import config.config
 import config.logging_config
-from lib.local_auth import getAuth
+import lib.sakai_db
 
 def truncate(txt):
 
@@ -309,18 +309,14 @@ def run(SITE_ID, APP):
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
 
-    tmp = getAuth(APP['auth']['sakai_db'])
-    if (tmp is not None):
-        DB_AUTH = {'host' : tmp[0], 'database': tmp[1], 'user': tmp[2], 'password' : tmp[3]}
-    else:
-        raise Exception("db authentication required")
-
-    rubrics_file = os.path.join(output_folder, "rubrics_d2l.xml")
+    # Connect to the Sakai database for the rubrics tables
+    sdb = lib.sakai_db.SakaiDb(APP)
 
     # generate the rubrics export file
-    if exportSakaiRubric(DB_AUTH, SITE_ID, rubrics_file):
+    rubrics_file = os.path.join(output_folder, "rubrics_d2l.xml")
+    if exportSakaiRubric(sdb.db_config, SITE_ID, rubrics_file):
         logging.info(f"Created {rubrics_file}")
-        exportRubricAssociations(DB_AUTH, SITE_ID, output_folder)
+        exportRubricAssociations(sdb.db_config, SITE_ID, output_folder)
     else:
         logging.info("Rubrics XML not created")
 
