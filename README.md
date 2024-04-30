@@ -8,10 +8,10 @@ The LTI tool contains the database (see [Database Schema](#database-schema)) tha
 
 ## Python dependencies
 
-To install the python module dependencies used by these scripts, use
+To install the required versions of the python module dependencies used by these scripts, use
 
 ```
-pip install -r requirements.txt
+pip install --upgrade -r requirements.txt
 ```
 
 To regenerate the requirements list, use
@@ -135,21 +135,36 @@ https://github.com/sakaiproject/sakai/pull/11441/commits/18de2e623b2ad7f4a68cf90
 https://sakaiproject.atlassian.net/browse/SAK-47948
 https://github.com/sakaiproject/sakai/pull/11506
 
-## SAK-47901 Use ISO8601 for archive date formats
+### SAK-47901 Use ISO8601 for archive date formats
 https://sakaiproject.atlassian.net/browse/SAK-47901
 https://github.com/sakaiproject/sakai/pull/11443
 
-## SAK-49164 Samigo escape label filename attribute for EMI QTI export
+### SAK-49164 Samigo escape label filename attribute for EMI QTI export
 https://sakaiproject.atlassian.net/browse/SAK-49164
 https://github.com/sakaiproject/sakai/pull/11816
 
-## SAK-49813 Use XML 1.1 serialization
+### SAK-49813 Use XML 1.1 serialization
 https://sakaiproject.atlassian.net/browse/SAK-49813
 https://github.com/sakaiproject/sakai/pull/12417
 
-## AMA-1076 Add providers to the site archive
-https://github.com/cilt-uct/sakai/commit/2671496a80f51316ff85873a281b2a36c6ee5c3a
+### SAK-50020 Add providers to the site archive
+https://sakaiproject.atlassian.net/browse/SAK-50020
+https://github.com/sakaiproject/sakai/pull/12552
 
+### SAK-50021 Special handling for attachment archiving for T&Q and user files
+https://sakaiproject.atlassian.net/browse/SAK-50021
+
+### SAK-50022 Archive embedded and cross-site files for Lessons content
+https://sakaiproject.atlassian.net/browse/SAK-50022
+
+### SAK-50023 Improve error checking for chat archiving
+https://sakaiproject.atlassian.net/browse/SAK-50023
+
+### SAK-50024 Archive assignment attachments and supplementary items
+https://sakaiproject.atlassian.net/browse/SAK-50024
+
+### SAK-48939 Archive published assessments and question pools
+https://sakaiproject.atlassian.net/browse/SAK-48939
 
 ## Cron Jobs (How to Run it)
 Add these cron jobs on the server running the scripts:
@@ -175,7 +190,7 @@ cp users.cfg.sample users.cfg
 
 Helps with committing code on the server for the logged in user.
 
-## Running tests
+### Running tests
 In order to run the full test suite you can use the `run_test.py` script:
 ```
 python run_test.py
@@ -189,7 +204,7 @@ In order to run a specific test case, use the `run_test.py` script and the `--tc
 python run_test.py --tc test_query_get_records
 ```
 
-## Code quality
+### Code quality
 
 To check python lint-style issues, use:
 
