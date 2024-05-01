@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
-## Checks the import status on Brightspace, and executes update workflow script when an import is complete
+## Checks the import status on Brightspace for uploaded sites (state=importing)
+## Executes the update workflow for completed sites, or set error state if the import
+## has failed or timed out.
 
 import os
 import argparse

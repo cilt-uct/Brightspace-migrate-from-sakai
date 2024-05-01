@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-## Checks the DB for sites to be migrated and starts the workflow script for new sites
+## Checks for sites to be migrated (state=starting) and starts the workflow script for each
 
 import os
 import argparse

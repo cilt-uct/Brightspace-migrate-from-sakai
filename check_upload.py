@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
-## Checks the DB for sites that are imported and need to be updated
-## REF:
+## Checks for sites that have been processed (state=queued) and runs the upload script for each
 
 import sys
 import os
