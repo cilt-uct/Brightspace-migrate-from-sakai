@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-## This script takes as input the syllabus-archive.xml file inside the site-archive folder.
+## This script takes as input the syllabus.xml file inside the site-archive folder.
 ## https://jira.cilt.uct.ac.za/browse/AMA-700
 
 import sys
@@ -79,7 +79,7 @@ def run(SITE_ID, APP):
 
 def main():
     APP = config.config.APP
-    parser = argparse.ArgumentParser(description="This script applies an HTML template to syllabus-archive.xml",
+    parser = argparse.ArgumentParser(description="This script applies an HTML template to syllabus.xml",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
