@@ -5,7 +5,6 @@ import shutil
 import copy
 import json
 import yaml
-import numpy as np
 import zipfile
 import bs4
 import emails
@@ -47,10 +46,6 @@ def init__soup(site_folder, file):
 def has_doctype(soup):
     items = [item for item in soup.contents if isinstance(item, bs4.Doctype)]
     return items[0] if items else None
-
-def unique(list1):
-    x = np.array(list1)
-    return np.unique(x).tolist()
 
 ## Current Templates:
 #   - styled : [DEFAULT] includes styles, and scripts
