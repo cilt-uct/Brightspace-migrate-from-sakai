@@ -60,8 +60,8 @@ def run(SITE_ID, APP, **kwargs):
         logging.info("Skipping cleanup")
         return False
 
-    if len(SITE_ID) != 36:
-        logging.warning(f"Unexpected site ID {SITE_ID} - skipping cleanup")
+    if '/' in SITE_ID:
+        logging.warning(f"Unexpected site ID '{SITE_ID}' - skipping cleanup")
         return False
 
     try:
