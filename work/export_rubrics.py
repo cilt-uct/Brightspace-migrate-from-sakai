@@ -311,6 +311,13 @@ def run(SITE_ID, APP):
 
     # Connect to the Sakai database for the rubrics tables
     sdb = lib.sakai_db.SakaiDb(APP)
+    rubrics_tables = sdb.table_count("rbc_")
+
+    logging.info(f"Sakai database has {rubrics_tables} rbc_ tables")
+
+    if rubrics_tables != 13:
+        logging.warning("Unexpected rbc_ table count (possibly Sakai 22+), unable to proceed.")
+        return
 
     # generate the rubrics export file
     rubrics_file = os.path.join(output_folder, "rubrics_d2l.xml")

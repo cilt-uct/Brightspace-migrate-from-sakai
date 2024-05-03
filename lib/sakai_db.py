@@ -44,20 +44,24 @@ class SakaiDb:
 
     def validate_connection(self):
 
-        # Validate db connection and tables rbc_*
-        # We expect 13 tables in a Sakai 21 database
-
+        # Validate db connection and tables
+        # We expect at least 40 SAKAI_* tables in a Sakai database
         try:
-            connection = pymysql.connect(**self.db_config, cursorclass=DictCursor)
-            with connection:
-                with connection.cursor() as cursor:
-                    sql = "SHOW TABLES LIKE 'rbc_%'"
-                    cursor.execute(sql)
-                    if len(cursor.fetchall()) != 13:
-                        return False
+            if self.table_count("SAKAI_") < 40:
+                logging.error(f"Expected tables not found in mysql db: {self.db_config['host']}:{self.db_config['database']}")
+                return False
 
         except Exception as e:
-            logging.exception(f"Could not valid mysql connection: {e}")
+            logging.error(f"Could not validate mysql connection: {e}")
             return False
 
         return True
+
+    def table_count(self, prefix):
+        # Count of tables matching prefix
+        connection = pymysql.connect(**self.db_config, cursorclass=DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                sql = "SHOW TABLES LIKE %s"
+                cursor.execute(sql, f"{prefix}%")
+                return len(cursor.fetchall())
