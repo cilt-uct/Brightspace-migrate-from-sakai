@@ -95,34 +95,38 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
 
     mdb = lib.db.MigrationDb(APP)
 
-    # Open the connection
-    t = paramiko.Transport((SFTP['hostname'], 22))
+    ssh_client = paramiko.SSHClient()
+    ssh_client.load_system_host_keys()
+    ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
+
     if APP['ftp']['log']:
         logging.getLogger("paramiko").setLevel(logging.DEBUG) # for example
         paramiko.util.log_to_file(f"{APP['log_folder']}/{SITE_ID}_ftp.log", level = "DEBUG")
 
     try:
-        t.connect(username=SFTP['username'], password=SFTP['password'])
+        ssh_client.connect(SFTP['hostname'], 22, SFTP['username'], SFTP['password'])
+        sftp = ssh_client.open_sftp()
+        sftp.get_channel().settimeout(300)
 
         if APP['ftp']['show_progress']:
-            sftp = paramiko.SFTPClient.from_transport(t)
-            sftp.get_channel().settimeout(300)
             cbk, pbar = tqdmWrapViewBar(ascii=True, unit='b', unit_scale=True)
             sftp.put(src, tmp_dest, callback=cbk)
             pbar.close()
         else:
-            sftp = paramiko.SFTPClient.from_transport(t)
-            sftp.get_channel().settimeout(300)
             sftp.put(src, tmp_dest)
 
-        rename_to_final_destination(t.open_sftp_client(), tmp_dest, dest)
-        t.close()
+        rename_to_final_destination(sftp, tmp_dest, dest)
 
-        if int(link_id) > 0:
+        if link_id and int(link_id) > 0:
             mdb.set_uploaded_at(link_id, SITE_ID)
 
     except Exception as e:
         raise Exception(f"Error while uploading {src}: {e}")
+
+    finally:
+        if ssh_client:
+            ssh_client.close()
 
     logging.info("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
@@ -138,7 +142,7 @@ def main():
     APP['debug'] = APP['debug'] or args['debug']
     APP['ftp']['show_progress'] = args['progress']
 
-    run(args['SITE_ID'], APP, args)
+    run(args['SITE_ID'], APP)
 
 if __name__ == '__main__':
     main()

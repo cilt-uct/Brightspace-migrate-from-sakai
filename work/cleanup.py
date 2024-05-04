@@ -31,7 +31,8 @@ def cleanup_sftp(APP, sftp_folder, site_id):
         raise Exception('SFTP Authentication required [BrightspaceFTP]')
 
     ssh_client = paramiko.SSHClient()
-    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh_client.load_system_host_keys()
+    ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
     logging.getLogger("paramiko").setLevel(logging.WARNING)
 
     try:
