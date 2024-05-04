@@ -223,7 +223,8 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
     @patch('check_imported.send_template_email')
     def test_check_imported_fail_email(self, mock_send_template_email, *_):
         APP = config.config.APP
-        check_imported(APP)
+        sakai_ws = lib.sakai.Sakai(APP)
+        check_imported(APP, sakai_ws)
 
         self.assertTrue(mock_send_template_email.called)
         self.assertEqual('error_import.html', mock_send_template_email.call_args.kwargs['template'])
