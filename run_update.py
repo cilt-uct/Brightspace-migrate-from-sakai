@@ -18,6 +18,7 @@ from datetime import datetime, timedelta
 import config.config
 import lib.local_auth
 import lib.db
+import lib.sakai
 
 from config.logging_config import formatter, logger
 from lib.utils import get_log, send_template_email, send_email, create_jira
@@ -140,8 +141,8 @@ def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
                 new_kwargs['title'] = kwargs['title']
 
             if 'conversion_success' in step:
-                new_kwargs['conversion_success'] = kwargs['now_st']
-                new_kwargs['conversion_status'] = 'completed'
+                new_kwargs['brightspace_conversion_success'] = kwargs['now_st']
+                new_kwargs['brightspace_conversion_status'] = 'completed'
 
             func(**new_kwargs)  # this runs the steps - and writes to log file
             return True
@@ -249,17 +250,15 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         state = 'error'
         log = get_log(log_file)
         update_record(mdb.db_config, link_id, site_id, state, log)
-
         create_jira(APP=APP, url=site_url, site_id=site_id, site_title=site_title, jira_state=state,
                     jira_log=log, failure_type=failure_type, failure_detail=failure_detail, user=record['started_by_email'])
+        sakai_ws.set_site_property(site_id, 'brightspace_conversion_status', state)
 
     finally:
         if APP['email_logs']:
             BODY = json.loads(get_log(log_file))
             logging.info("Emailing job log for site {}".format(site_id))
             send_email(APP['helpdesk-email'], APP['admin_emails'], f"update_run : {site_title} {state}", '\n<br/>'.join(BODY))
-
-        sakai_ws.set_site_property(site_id, 'brightspace_conversion_status', state)
 
         # Clean up log file
         os.remove(log_file)

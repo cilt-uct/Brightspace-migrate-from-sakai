@@ -52,7 +52,7 @@ class Sakai:
             if not self.SAKAI['valid']:
                 raise Exception("Authentication required")
 
-            logging.info(f"Connected to Sakai server at {self.base_url}")
+            logging.debug(f"Connected to Sakai server at {self.base_url}")
 
         except Exception as e:
             logging.error(f"Unable to connect to Sakai instance at {self.base_url}: {e}")
@@ -227,7 +227,8 @@ class Sakai:
     def set_site_properties(self, SITE_ID, property_set):
 
         succeeded = True
-        ALLOWED_PROPS = ['brightspace_conversion_success', 'brightspace_conversion_date', 'brightspace_conversion_status', 'brightspace_imported_site_id']
+        ALLOWED_PROPS = [ 'brightspace_conversion_success', 'brightspace_conversion_date', 'brightspace_conversion_status',
+                'brightspace_imported_site_id', 'brightspace_course_site_id' ]
 
         try:
 

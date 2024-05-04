@@ -207,14 +207,11 @@ def get_import_status_collection(brightspace_url, WEB_AUTH, orgunit_ids):
 
     return status_list
 
-def check_imported(APP):
+def check_imported(APP, sakai_ws):
 
     # Number of hours for Brightspace to import a site - longer than that and we assume it failed
     expiry_minutes = APP['import']['expiry']
     brightspace_url = APP['brightspace_url']
-
-    # Sakai webservices
-    sakai_ws = lib.sakai.Sakai(APP)
 
     # Migration database
     mdb = lib.db.MigrationDb(APP)
@@ -344,8 +341,11 @@ def main():
 
     logging.info(f"Scanning for new imports every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
 
+    # Sakai webservices
+    sakai_ws = lib.sakai.Sakai(APP)
+
     while not os.path.exists(exit_flag_file):
-        check_imported(APP)
+        check_imported(APP, sakai_ws)
         time.sleep(scan_interval)
 
     os.remove(exit_flag_file)
