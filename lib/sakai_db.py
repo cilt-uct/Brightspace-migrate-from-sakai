@@ -1,4 +1,4 @@
-# Direct read access to the Sakai database
+# Direct queries to the Sakai database. Only read access is required.
 
 import pymysql
 import pymysql.cursors

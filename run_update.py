@@ -65,20 +65,6 @@ def setup_log_file(APP, filename, SITE_ID, logs):
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
-def set_site_property(APP, site_id, key, value):
-    try:
-        mod = importlib.import_module('work.set_site_property')
-        func = getattr(mod, 'run')
-        new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-
-        new_kwargs[key] = value
-        func(**new_kwargs)  # this runs the steps - and writes to log file
-
-    except Exception as e:
-        logging.exception(e)
-        logging.error("Workflow operation {} = {} ".format('set_site_property', e))
-        return False
-
 def close_jira(APP, site_id):
     with MyJira() as j:
         fields = {
@@ -168,6 +154,9 @@ def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
 def start_workflow(workflow_file, link_id, site_id, APP):
 
     mdb = lib.db.MigrationDb(APP)
+
+    # Sakai webservices
+    sakai_ws = lib.sakai.Sakai(APP)
 
     # datetime object containing current date and time that the workflow was started
     now = datetime.now()
@@ -270,7 +259,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
             logging.info("Emailing job log for site {}".format(site_id))
             send_email(APP['helpdesk-email'], APP['admin_emails'], f"update_run : {site_title} {state}", '\n<br/>'.join(BODY))
 
-        set_site_property(APP, site_id, 'brightspace_conversion_status', state)
+        sakai_ws.set_site_property(site_id, 'brightspace_conversion_status', state)
 
         # Clean up log file
         os.remove(log_file)

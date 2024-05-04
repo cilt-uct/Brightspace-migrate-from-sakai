@@ -10,7 +10,6 @@ import argparse
 import pymysql
 import json
 import lxml.etree as ET
-import importlib
 import hashlib
 import logging
 
@@ -22,6 +21,7 @@ sys.path.append(parent)
 
 import config.logging_config
 import lib.db
+import lib.sakai
 from lib.utils import enroll_in_site, middleware_api, sis_course_title, site_has_tool
 from lib.d2l import middleware_d2l_api
 
@@ -78,22 +78,7 @@ def get_record(db_config, link_id, site_id):
         logging.error(f"Could not retrieve migration record {link_id} : {site_id}")
         return None
 
-def set_site_property(APP, site_id, key, value):
-    try:
-        mod = importlib.import_module('work.set_site_property')
-        func = getattr(mod, 'run')
-        new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-
-        new_kwargs[key] = value
-        func(**new_kwargs)  # this runs the steps - and writes to log file
-
-    except Exception as e:
-        logging.exception(e)
-        logging.error("Workflow operation {} = {} ".format('set_site_property', e))
-        return False
-
 def update_target_site(APP, db_config, link_id, site_id, org_unit_id, is_created, target_title):
-    set_site_property(APP, site_id, 'brightspace_course_site_id', org_unit_id)
 
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
@@ -134,7 +119,11 @@ def copy_default_content(APP, target_site_id):
 def run(SITE_ID, APP, link_id):
     logging.info(f'Create Course Template and Offering for {link_id} {SITE_ID}')
 
+    # Migration db
     mdb = lib.db.MigrationDb(APP)
+
+    # Sakai webservices
+    sakai_ws = lib.sakai.Sakai(APP)
 
     record = get_record(mdb.db_config, link_id, SITE_ID)
     if record:
@@ -203,6 +192,7 @@ def run(SITE_ID, APP, link_id):
                 target_site_created = json_response['data']['created']
 
                 update_target_site(APP, mdb.db_config, link_id, SITE_ID, target_site_id, target_site_created, name)
+                sakai_ws.set_site_property(SITE_ID, 'brightspace_course_site_id', target_site_id)
 
                 # AMA-983 Enroll users only if a new target site was created
                 if target_site_created:

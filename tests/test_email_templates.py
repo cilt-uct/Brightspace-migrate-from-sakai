@@ -34,10 +34,10 @@ class RunUpdateEmailTemplateTestCase(unittest.TestCase):
             'target_title': 'New site for 2023',
             'provider': '[]'
         })
-    @patch('work.archive_site.archive_site_retry', return_value=True)
+    @patch('lib.sakai.Sakai.archive_site_retry', return_value=True)
     @patch('lib.utils.read_yaml', return_value={'STEPS': [{'action': 'mail', 'template': 'finished',
                                                            'subject': 'my email subject'}]})
-    @patch('run_update.set_site_property')
+    @patch('lib.sakai.Sakai.set_site_property')
     @patch('jinja2.environment.Environment.get_template')
     @patch('run_update.close_jira')
     @patch('jinja2.environment.Template.render')

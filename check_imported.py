@@ -10,7 +10,6 @@ import pymysql
 import time
 import logging
 import json
-import importlib
 
 from pathlib import Path
 from stat import S_ISREG
@@ -22,28 +21,13 @@ import config.config
 import config.logging_config
 import lib.local_auth
 import lib.db
+import lib.sakai
 
 from lib.utils import send_template_email, create_jira
 from lib.d2l import middleware_d2l_api, web_login, get_import_history, get_first_import_status, get_first_import_job_log
 
-def set_site_property(APP, site_id, key, value):
-    try:
-        mod = importlib.import_module('work.set_site_property')
-        func = getattr(mod, 'run')
-        new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-
-        new_kwargs[key] = value
-        func(**new_kwargs)  # this runs the steps - and writes to log file
-
-    except Exception as e:
-        logging.exception(e)
-        logging.error("Workflow operation {} = {} ".format('set_site_property', e))
-        return False
-
 
 def update_import_id(APP, db_config, link_id, site_id, org_unit_id, log):
-
-    set_site_property(APP, site_id, 'brightspace_imported_site_id', org_unit_id)
 
     try:
         connection = pymysql.connect(**db_config, cursorclass=DictCursor)
@@ -229,6 +213,10 @@ def check_imported(APP):
     expiry_minutes = APP['import']['expiry']
     brightspace_url = APP['brightspace_url']
 
+    # Sakai webservices
+    sakai_ws = lib.sakai.Sakai(APP)
+
+    # Migration database
     mdb = lib.db.MigrationDb(APP)
 
     WEB_AUTH = lib.local_auth.getAuth('BrightspaceWeb', ['username', 'password'])
@@ -261,6 +249,7 @@ def check_imported(APP):
             if refsite_id > 0:
                 logging.info(f"Site {site_id} has new Brightspace Id {refsite_id}")
                 update_import_id(APP, mdb.db_config, site['link_id'], site_id, refsite_id, json.loads(site['workflow']))
+                sakai_ws.set_site_property(site_id, 'brightspace_imported_site_id', refsite_id)
                 site['imported_site_id'] = refsite_id
 
         # If we have a Brightspace site, add to the import status check list

@@ -20,8 +20,7 @@ import config.config
 import lib.local_auth
 import lib.utils
 import lib.db
-import work.archive_site
-import work.get_site_title
+import lib.sakai
 
 from config.logging_config import formatter, logger
 from lib.utils import create_jira, send_email, send_template_email, get_log, get_size, create_folders
@@ -146,20 +145,6 @@ def get_title(site_xml):
 
     return None
 
-def set_site_property(APP, site_id, key, value):
-    try:
-        mod = importlib.import_module('work.set_site_property')
-        func = getattr(mod, 'run')
-        new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
-
-        new_kwargs[key] = value
-        func(**new_kwargs)  # this runs the steps - and writes to log file
-
-    except Exception as e:
-        logging.exception(e)
-        logging.error("Workflow operation {} = {} ".format('set_site_property', e))
-        return False
-
 def transition_jira(APP, site_id):
     with MyJira() as j:
         fields = {
@@ -263,6 +248,9 @@ def start_workflow(workflow_file, link_id, site_id, APP):
 
     record = None
 
+    # Sakai webservices
+    sakai_ws = lib.sakai.Sakai(APP)
+
     try:
         record = mdb.get_record(link_id=link_id, site_id=site_id)
 
@@ -285,10 +273,10 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         new_id = '{}_{}'.format(site_id, now.strftime("%Y%m%d_%H%M"))
         update_record_ref_site_id(mdb.db_config, link_id, site_id, new_id)
 
-        set_site_property(APP, site_id, 'brightspace_conversion_date', now.strftime("%Y-%m-%d %H:%M:%S"))
+        sakai_ws.set_site_property(site_id, 'brightspace_conversion_date', now.strftime("%Y-%m-%d %H:%M:%S"))
 
         # Get the site title
-        site_title = work.get_site_title.get_site_title(site_id, APP)
+        site_title = sakai_ws.get_site_title(site_id)
         if site_title:
             update_record_title(mdb.db_config, link_id, site_id, site_title)
 
@@ -298,7 +286,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         update_record(mdb.db_config, link_id, site_id, 'exporting', get_log(log_file))
         state = 'exporting'
 
-        if work.archive_site.archive_site_retry(site_id, APP):
+        if sakai_ws.archive_site_retry(site_id):
 
             # Create some output files which workflow steps may need
             output_folder = "{}/{}-content".format(APP['output'], site_id)
@@ -377,7 +365,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
             logging.info("Emailing job log for site {}".format(site_id))
             send_email(APP['helpdesk-email'], APP['admin_emails'], f"workflow_run : {site_title} {state}", '\n<br/>'.join(BODY))
 
-        set_site_property(APP, site_id, 'brightspace_conversion_status', state)
+        sakai_ws.set_site_property(site_id, 'brightspace_conversion_status', state)
 
 def main():
     APP = config.config.APP

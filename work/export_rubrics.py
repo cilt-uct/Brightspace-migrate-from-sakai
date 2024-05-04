@@ -19,6 +19,7 @@ sys.path.append(parent)
 
 import config.config
 import config.logging_config
+import lib.sakai
 import lib.sakai_db
 
 def truncate(txt):
@@ -308,6 +309,16 @@ def run(SITE_ID, APP):
     output_folder = r'{}{}-rubrics/'.format(APP['output'], SITE_ID)
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
+
+    # Check which version of Sakai
+    sakai_ws = lib.sakai.Sakai(APP)
+    version = sakai_ws.config("version.sakai")
+
+    if version is None:
+        logging.warning("Unknown Sakai version, unable to proceed.")
+        return
+
+    logging.info(f"Sakai system version is {version}")
 
     # Connect to the Sakai database for the rubrics tables
     sdb = lib.sakai_db.SakaiDb(APP)

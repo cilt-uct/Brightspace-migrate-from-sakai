@@ -6,69 +6,30 @@
 import sys
 import os
 import argparse
-import zeep
 import logging
-
-from requests import Session
-
-from urllib3.exceptions import InsecureRequestWarning
-from urllib3 import disable_warnings
-
-disable_warnings(InsecureRequestWarning)
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.logging_config
-from lib.local_auth import getAuth
-
-VALID = ['brightspace_conversion_success', 'brightspace_conversion_date', 'brightspace_conversion_status', 'brightspace_imported_site_id']
+import lib.sakai
 
 def run(SITE_ID, APP, **kwargs):
-    succeeded = True
 
-    try:
+    # Sakai webservices
+    sakai_ws = lib.sakai.Sakai(APP)
 
-        SAKAI = getAuth(APP['auth']['sakai'], ['url', 'username', 'password'])
+    succeeded = False
 
-        if not SAKAI['valid']:
-            raise Exception("Sakai Authentication required")
+    for k in kwargs:
+        if sakai_ws.set_site_property(SITE_ID, k, kwargs[k]):
+            logging.info(f"Site {SITE_ID} property {k}={kwargs[k]}")
+            succeeded = True
 
-        # Disable SSL cert validation (for srvubuclexxx direct URLs)
-        session = Session()
+    logging.info('Updated site_properties : {} {}'.format(SITE_ID, succeeded))
 
-        # Zeep client for running site archive - timeout is 7200 sec = 2 hrs
-        transport = zeep.Transport(session=session, timeout=7200)
-
-        # Zeep client for login and out
-        login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(SAKAI['url']), transport=transport)
-        login_client.transport.session.verify = False
-
-        session_details = login_client.service.loginToServer(SAKAI['username'], SAKAI['password']).split(',')
-        logging.debug(f'session_details {session_details}')
-
-        sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(session_details[1]), transport=transport)
-        sakai_client.transport.session.verify = False
-
-        for k in kwargs:
-            logging.debug(f'{k} : {kwargs[k]} : {k in VALID}')
-
-            if k in VALID:
-                succeeded = sakai_client.service.setSiteProperty(session_details[0], SITE_ID, k, kwargs[k]) == "success"
-                if succeeded:
-                    logging.info(f"Site {SITE_ID} property {k}={kwargs[k]}")
-
-        # logout
-        logout = login_client.service.logout(session_details[0])
-        logging.debug(f'logout: {logout}')
-
-        logging.info('Updated site_properties : {} {}'.format(SITE_ID, succeeded))
-        return succeeded
-
-    except zeep.exceptions.Fault as fault:
-        logging.error("Webservices error calling method on {} with username {}".format(SAKAI['url'], SAKAI['username']))
-        raise Exception(fault)
+    return succeeded
 
 def main():
     APP = config.config.APP
@@ -76,13 +37,16 @@ def main():
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument("name", help="Property name")
+    parser.add_argument("value", help="Property value")
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
     if APP['debug']:
         config.logging_config.logger.setLevel(logging.DEBUG)
 
-    run(args['SITE_ID'], APP)
+    new_kwargs = {'SITE_ID' : args['SITE_ID'], 'APP': APP, args['name'] : args['value']}
+    run(**new_kwargs)
 
 if __name__ == '__main__':
     main()
