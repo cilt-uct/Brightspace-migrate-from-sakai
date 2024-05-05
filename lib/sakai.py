@@ -52,6 +52,11 @@ class Sakai:
             if not self.SAKAI['valid']:
                 raise Exception("Authentication required")
 
+            # For archiving, Use the archive server configuration rather than general Sakai configuration
+            self.ARCHIVE = getAuth(APP['auth']['sakai_archive'], ['url', 'username', 'password'])
+            if not self.ARCHIVE['valid']:
+                raise Exception("Authentication required")
+
             logging.debug(f"Connected to Sakai server at {self.base_url}")
 
         except Exception as e:
@@ -118,7 +123,8 @@ class Sakai:
     ## Archive a site
     def archive_site(self, SITE_ID):
 
-        auth = self.SAKAI
+        # Use the archive server configuration rather than general Sakai configuration
+        auth = self.ARCHIVE
 
         if SITE_ID.startswith("!"):
             raise SecurityError(f"Not archiving special sites: {SITE_ID}")
