@@ -42,13 +42,23 @@ def sanitize(txt):
 # this function adds one or more multiple criteria_group elements
 #  in:  rubric criteria ID
 #       XML CriteriaGroups element
-def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
+def fetchCriteriaGroups(db, rbc_schema, rubric_id, RowCriteria_Groups):
+
+    if rbc_schema == 21:
+        sql = """
+            SELECT id, title, description, order_index
+            FROM rbc_rubric_criterions
+            INNER JOIN rbc_criterion ON rbc_rubric_criterions.criterions_id = rbc_criterion.id
+            WHERE rbc_rubric_id = %s"""
+    else:
+        sql = """
+            SELECT id, title, description, order_index
+            FROM rbc_criterion
+            WHERE rubric_id = %s"""
+
+    logging.debug(f"Fetching criteria groups for rubric id {rubric_id}: {sql}")
 
     cursor_criterions = db.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT criterions_id, title, description, order_index " \
-          "FROM rbc_rubric_criterions " \
-          "INNER JOIN rbc_criterion ON rbc_rubric_criterions.criterions_id = rbc_criterion.id " \
-          "WHERE rbc_rubric_id = %s"
     cursor_criterions.execute(sql, rubric_id)
 
     count = 0
@@ -60,8 +70,8 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
 
     for row in cursor_criterions.fetchall():
 
-        criterions_id = row['criterions_id']
-        levels_info = getLevelsHash(db, criterions_id)
+        criterions_id = row['id']
+        levels_info = getLevelsHash(db, rbc_schema, criterions_id)
 
         if levels_info['levels'] == 0:
             # Use this as the title for the next criteria group
@@ -70,7 +80,7 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
                 next_cg_title += ": " + sanitize(row['description'].strip())
             continue
 
-        logging.debug(f"Criterion {row['criterions_id']} '{row['title']}'")
+        logging.debug(f"Criterion {criterions_id} '{row['title']}'")
 
         if (levels_info['levels_hash'] != last_levels):
 
@@ -93,19 +103,19 @@ def fetchCriteriaGroups(db, rubric_id, RowCriteria_Groups):
 
             RowLevelSet = ET.SubElement(RowCriteria_Group, "level_set")
             RowLevels = ET.SubElement(RowLevelSet, "levels")
-            fetchLevels(db, criterions_id, RowLevels)
+            fetchLevels(db, rbc_schema, criterions_id, RowLevels)
 
             RowCriteria = ET.SubElement(RowCriteria_Group, "criteria")
 
         count+=1
 
         # add sub-element(s)
-        fetchCriteria(db, row['criterions_id'], RowCriteria, row, level_ids)
+        fetchCriteria(db, rbc_schema, criterions_id, RowCriteria, row, level_ids)
 
 # this function handles data within the Criteria XML element
 #  in:  rubric criteria ID
 #       XML row object - updated in function
-def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
+def fetchCriteria(db, rbc_schema, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
 
     Row = ET.SubElement(xmlRow, "criterion")
 
@@ -128,10 +138,19 @@ def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
     #    </feedback>
     #  </cell>
 
+    if rbc_schema == 21:
+        sql = """
+            SELECT title, description FROM rbc_criterion_ratings
+            INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id
+            WHERE rbc_criterion_id = %s"""
+    else:
+        sql = """
+            SELECT title, description FROM rbc_rating
+            WHERE criterion_id = %s ORDER BY order_index"""
+
+    logging.debug(f"Fetching criteria for rubric criterion id {rbc_criterion_id}: {sql}")
+
     cursor_criterions = db.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT * FROM rbc_criterion_ratings " \
-          "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
-          "WHERE rbc_criterion_id = %s"
     cursor_criterions.execute(sql, rbc_criterion_id)
 
     cell = 0
@@ -160,12 +179,21 @@ def fetchCriteria(db, rbc_criterion_id, xmlRow, rowCriteria, level_ids):
     return
 
 # return { count: #, hash: string, ids: [list] }
-def getLevelsHash(db, rbc_criterion_id):
-    cursor_levels = db.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT rbc_criterion_id, ratings_id, order_index, points, title FROM rbc_criterion_ratings " \
-          "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
-          "WHERE rbc_criterion_id = %s ORDER BY order_index"
+def getLevelsHash(db, rbc_schema, rbc_criterion_id):
 
+    if rbc_schema == 21:
+        sql = """
+            SELECT id, order_index, points, title FROM rbc_criterion_ratings
+            INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id
+            WHERE rbc_criterion_id = %s ORDER BY order_index"""
+    else:
+        sql = """
+            SELECT id, order_index, points, title
+            FROM rbc_rating WHERE criterion_id = %s ORDER BY order_index"""
+
+    logging.debug(f"Fetching levels hash for rubric criterion id {rbc_criterion_id}: {sql}")
+
+    cursor_levels = db.cursor(pymysql.cursors.DictCursor)
     cursor_levels.execute(sql, rbc_criterion_id)
     allRows = cursor_levels.fetchall()
 
@@ -176,7 +204,7 @@ def getLevelsHash(db, rbc_criterion_id):
     for row in allRows:
         levels += 1
         levels_hash += f"{row['order_index']}:{row['points']}:{sanitize(row['title'].strip())}|"
-        level_ids.append(row['ratings_id'])
+        level_ids.append(row['id'])
 
     return { 'levels' : levels, 'levels_hash' : levels_hash, 'level_ids' : level_ids }
 
@@ -184,12 +212,21 @@ def getLevelsHash(db, rbc_criterion_id):
 #  in:  rubric criteria ID
 #       XML row object - updated in function
 
-def fetchLevels(db, rbc_criterion_id, xmlRow):
-    cursor_levels = db.cursor(pymysql.cursors.DictCursor)
-    sql = "SELECT rbc_criterion_id, ratings_id, order_index, points, title FROM rbc_criterion_ratings " \
-          "INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id " \
-          "WHERE rbc_criterion_id = %s ORDER BY order_index"
+def fetchLevels(db, rbc_schema, rbc_criterion_id, xmlRow):
 
+    if rbc_schema == 21:
+        sql = """
+            SELECT id, order_index, points, title FROM rbc_criterion_ratings
+            INNER JOIN rbc_rating ON rbc_criterion_ratings.ratings_id = rbc_rating.id
+            WHERE rbc_criterion_id = %s ORDER BY order_index"""
+    else:
+        sql = """
+            SELECT id, order_index, points, title
+            FROM rbc_rating WHERE criterion_id = %s ORDER BY order_index"""
+
+    logging.debug(f"Fetching levels for rubric criterion id {rbc_criterion_id}: {sql}")
+
+    cursor_levels = db.cursor(pymysql.cursors.DictCursor)
     cursor_levels.execute(sql, rbc_criterion_id)
     allRows = cursor_levels.fetchall()
 
@@ -207,7 +244,7 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
             row_points = 0
 
         Row = ET.SubElement(xmlRow, "level")
-        Row.set('level_id', str(row['ratings_id']))
+        Row.set('level_id', str(row['id']))
         Row.set('sort_order', str(row['order_index']))
         Row.set('level_value', str(row_points))
         Row.set('name', sanitize(row['title'].strip()))
@@ -216,11 +253,11 @@ def fetchLevels(db, rbc_criterion_id, xmlRow):
 #  in: site_id
 # out: rubric.xml
 
-def exportSakaiRubric(db_config, site_id, rubrics_file):
+def exportSakaiRubric(db_config, rbc_schema, site_id, rubrics_file):
     db = pymysql.connect(**db_config)
     cursor = db.cursor(pymysql.cursors.DictCursor)
 
-    SQL = "SELECT * FROM rbc_rubric WHERE ownerId = %s"
+    SQL = "SELECT id, title FROM rbc_rubric WHERE ownerId = %s"
     cursor.execute(SQL, site_id)
 
     siteRubrics = cursor.fetchall()
@@ -252,13 +289,14 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
         Row.set('enabled_feedback_copy', 'False')
         Row.set('usage_restrictions', 'Competency')
 
-        # add sub-element(s)
+        # Brightspace rubrics have a description but we don't have anything to put here
         RowDesc = ET.SubElement(Row, "description")
-        ET.SubElement(RowDesc, 'text').text = row['description']
+        ET.SubElement(RowDesc, 'text').text = ""
         RowDesc.set('text_type', 'text')
 
+        # Rubric detail
         RowCriteria_Groups = ET.SubElement(Row, "criteria_groups")
-        fetchCriteriaGroups(db, row['id'], RowCriteria_Groups)
+        fetchCriteriaGroups(db, rbc_schema, row['id'], RowCriteria_Groups)
 
     # Write the XML to file
     xmlstr = ET.tostring(xmlDoc, encoding='unicode', method='xml', pretty_print=True)
@@ -268,13 +306,16 @@ def exportSakaiRubric(db_config, site_id, rubrics_file):
     return os.path.exists(rubrics_file)
 
 # Export rubric details for conversion report
-def exportRubricAssociations(db_config, site_id, output_folder):
+def exportRubricAssociations(db_config, rbc_schema, site_id, output_folder):
     db = pymysql.connect(**db_config)
     cursor = db.cursor(pymysql.cursors.DictCursor)
 
-    sql = "SELECT rubric_id, title, toolId " \
-          "FROM rbc_tool_item_rbc_assoc RA inner join rbc_rubric RR on RA.rubric_id = RR.id " \
-          "WHERE RA.ownerId = %s and RA.ownerType = 'site'"
+    sql = """
+        SELECT rubric_id, title, toolId
+        FROM rbc_tool_item_rbc_assoc RA inner join rbc_rubric RR on RA.rubric_id = RR.id
+        WHERE RR.ownerId = %s ORDER BY rubric_id"""
+
+    logging.debug(f"Fetching rubric associations for rubrics in site {site_id}: {sql}")
 
     cursor.execute(sql, site_id)
     siteRubricAssoc = cursor.fetchall()
@@ -312,13 +353,13 @@ def run(SITE_ID, APP):
 
     # Check which version of Sakai
     sakai_ws = lib.sakai.Sakai(APP)
-    version = sakai_ws.config("version.sakai")
+    sakai_version = sakai_ws.config("version.sakai")
 
-    if version is None:
+    if sakai_version is None:
         logging.warning("Unknown Sakai version, unable to proceed.")
         return
 
-    logging.info(f"Sakai system version is {version}")
+    logging.info(f"Sakai system {sakai_ws.url()} version is {sakai_version}")
 
     # Connect to the Sakai database for the rubrics tables
     sdb = lib.sakai_db.SakaiDb(APP)
@@ -326,15 +367,25 @@ def run(SITE_ID, APP):
 
     logging.info(f"Sakai database has {rubrics_tables} rbc_ tables")
 
-    if rubrics_tables != 13:
-        logging.warning("Unexpected rbc_ table count (possibly Sakai 22+), unable to proceed.")
+    rbc_schema = None
+
+    if sakai_version.startswith("21") and rubrics_tables == 13:
+        rbc_schema = 21
+
+    if sakai_version.startswith("23") and rubrics_tables == 11:
+        rbc_schema = 23
+
+    if rbc_schema is None:
+        logging.warning(f"Unexpected rbc_ table count {rubrics_tables} for Sakai version {sakai_version}, unable to proceed.")
         return
+
+    logging.info(f"Using rbc schema {rbc_schema}")
 
     # generate the rubrics export file
     rubrics_file = os.path.join(output_folder, "rubrics_d2l.xml")
-    if exportSakaiRubric(sdb.db_config, SITE_ID, rubrics_file):
+    if exportSakaiRubric(sdb.db_config, rbc_schema, SITE_ID, rubrics_file):
         logging.info(f"Created {rubrics_file}")
-        exportRubricAssociations(sdb.db_config, SITE_ID, output_folder)
+        exportRubricAssociations(sdb.db_config, rbc_schema, SITE_ID, output_folder)
     else:
         logging.info("Rubrics XML not created")
 
@@ -349,6 +400,9 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
+
+    if APP['debug']:
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     run(args['SITE_ID'], APP)
 

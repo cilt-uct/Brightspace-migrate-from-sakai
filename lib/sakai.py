@@ -67,6 +67,9 @@ class Sakai:
 
         return None
 
+    def url(self):
+        return self.base_url
+
     ## Get a site's title
     def get_site_title(self, SITE_ID):
 
