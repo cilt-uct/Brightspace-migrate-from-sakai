@@ -371,15 +371,10 @@ def run(SITE_ID, APP):
 
     if sakai_version.startswith("21") and rubrics_tables == 13:
         rbc_schema = 21
+    else:
+        rbc_schema = 22
 
-    if sakai_version.startswith("23") and rubrics_tables == 11:
-        rbc_schema = 23
-
-    if rbc_schema is None:
-        logging.warning(f"Unexpected rbc_ table count {rubrics_tables} for Sakai version {sakai_version}, unable to proceed.")
-        return
-
-    logging.info(f"Using rbc schema {rbc_schema}")
+    logging.info(f"Using rubrics table schema {rbc_schema}")
 
     # generate the rubrics export file
     rubrics_file = os.path.join(output_folder, "rubrics_d2l.xml")
