@@ -15,6 +15,9 @@ class LessonbuilderUpdateUrlRewriteTestCase(unittest.TestCase):
         self.ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
         config.config.APP['archive_folder'] = self.ROOT_DIR + '/test_files/'
 
+        # Match the URL in the test case data
+        config.config.APP['sakai_url'] = "https://vula.uct.ac.za"
+
     @patch('argparse.ArgumentParser.parse_args', return_value=argparse.Namespace(SITE_ID='site_123456', debug=True))
 
     def test_url_rewrite_chars_fix(self, *_):
