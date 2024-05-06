@@ -108,9 +108,14 @@ Define a regular expression for `webservices.allow` that includes the IP for the
 The ARCHIVE_FOLDER path specified in `base.sh` should provide access to the `archive.storage.path` location. Typically this means that both the Sakai application server and the migration server will mount the same shared network filesystem.
 
 ## Sakai Code Dependencies
-For reference, see the UCT 21.x Sakai branch https://github.com/cilt-uct/sakai/tree/21.x
 
-Sakai 21.x builds may need to backport these changes:
+The migration code depends on a number of fixes and improvements to the Sakai archive code, listed here:
+
+https://docs.google.com/spreadsheets/d/1iGDYmwoFYNu5BAgB-OG-RsyfjL7msScfCtqj8Z-IfaI/edit?usp=sharing
+
+Check the Fix version for each JIRA to see which you need, and merge the commits for each issue into your Sakai 21, 22 or 23 build.
+
+The migration code is tested with UCT 21.x Sakai branch: https://github.com/cilt-uct/sakai/tree/21.x
 
 ### SAK-47123 Add SakaiScript method for archiving a site
 https://sakaiproject.atlassian.net/browse/SAK-47123
