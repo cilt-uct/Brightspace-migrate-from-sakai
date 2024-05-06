@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<archive date="20220509134621057" server="vula103a" source="9aaeda26-59b8-4ec2-8c19-95797fa8aa43" system="Sakai 2.8">
+<archive date="20240505135413010" server="vula201a" source="a964ed47-ecb6-4692-a85a-8cade4ea3180" system="Sakai 2.8" xmlns:CHEF="https://www.sakailms.org/xmlns/archive/CHEF" xmlns:DAV="https://www.sakailms.org/xmlns/archive/DAV" xmlns:sakai="https://www.sakailms.org/xmlns/archive/">
     <org.sakaiproject.api.app.syllabus.SyllabusService>
-        <siteArchive siteId="MEC3079S,2021" siteName="9aaeda26-59b8-4ec2-8c19-95797fa8aa43">
-            <syllabus contextId="9aaeda26-59b8-4ec2-8c19-95797fa8aa43" id="14441" redirectUrl="" userID="7195292e-218c-42d3-bb4b-66b9a7b23189">
-                <syllabus_data emailNotification="none" position="1" status="posted" syllabus_id="26568" title="Lesson plan v3.0 - 09/09/21" view="no">
-                    <asset syllabus_body-html="PHAgc3R5bGU9InRleHQtYWxpZ246IGNlbnRlcjsiPjxpbWcgYWx0PSIiIGhlaWdodD0iMTExNiIgc3JjPSJodHRwczovL3Z1bGEudWN0LmFjLnphL2FjY2Vzcy9jb250ZW50L2dyb3VwLzlhYWVkYTI2LTU5YjgtNGVjMi04YzE5LTk1Nzk3ZmE4YWE0My9BZG1pbi9MZXNzb24lMjBwbGFuJTIwdjMucGRmIiB3aWR0aD0iMjAwMCIgLz48L3A+CgoKPGgzPkF0dGFjaG1lbnRzPC9oMz4KCjx1bD4KPGxpPjxhIGhyZWY9Imh0dHBzOi8vdnVsYS51Y3QuYWMuemEvYWNjZXNzL2NvbnRlbnQvYXR0YWNobWVudC85YWFlZGEyNi01OWI4LTRlYzItOGMxOS05NTc5N2ZhOGFhNDMvTGVzc29uIFBsYW4vNzZlMDk2YTQtMjBkMC00YzVmLWI1ZTYtNWY0MDYzOTYyMjg1L0xlc3NvbiBwbGFuIHYzLnBkZiI+TGVzc29uIHBsYW4gdjMucGRmPC9hPjwvbGk+CjwvdWw+Cg=="/>
+        <siteArchive siteId="MVP Syllabus" siteName="a964ed47-ecb6-4692-a85a-8cade4ea3180">
+            <syllabus contextId="a964ed47-ecb6-4692-a85a-8cade4ea3180" id="17751" redirectUrl="" userID="marquard">
+                <syllabus_data emailNotification="none" position="1" status="posted" syllabus_id="42589" title="Item one" view="no">
+                    <attachment relative-url="/content/attachment/a964ed47-ecb6-4692-a85a-8cade4ea3180/Course Outline/689dc617-a830-47fe-950f-3d1bab138afa/012 - Know your Course and Students.pdf"/>
+                    <attachment relative-url="/content/attachment/a964ed47-ecb6-4692-a85a-8cade4ea3180/Course Outline/03b0b5f8-0b7d-44e0-a44d-ec59a8cc500c/migration_ssl.patch"/>
+                    <asset syllabus_body-html="PHA+Rklyc3QgaXRlbTwvcD4KCjxwPsKgPC9wPgo="/>
                 </syllabus_data>
-                <syllabus_data emailNotification="none" position="2" status="posted" syllabus_id="26568" title="Lesson plan v3.0 - 09/09/21" view="no">
-                    <asset syllabus_body-html="PHAgc3R5bGU9InRleHQtYWxpZ246IGNlbnRlcjsiPjxpbWcgYWx0PSIiIGhlaWdodD0iMTExNiIgc3JjPSJodHRwczovL3Z1bGEudWN0LmFjLnphL2FjY2Vzcy9jb250ZW50L2dyb3VwLzlhYWVkYTI2LTU5YjgtNGVjMi04YzE5LTk1Nzk3ZmE4YWE0My9BZG1pbi9MZXNzb24lMjBwbGFuJTIwdjMucGRmIiB3aWR0aD0iMjAwMCIgLz48L3A+CgoKPGgzPkF0dGFjaG1lbnRzPC9oMz4KCjx1bD4KPGxpPjxhIGhyZWY9Imh0dHBzOi8vdnVsYS51Y3QuYWMuemEvYWNjZXNzL2NvbnRlbnQvYXR0YWNobWVudC85YWFlZGEyNi01OWI4LTRlYzItOGMxOS05NTc5N2ZhOGFhNDMvTGVzc29uIFBsYW4vNzZlMDk2YTQtMjBkMC00YzVmLWI1ZTYtNWY0MDYzOTYyMjg1L0xlc3NvbiBwbGFuIHYzLnBkZiI+TGVzc29uIHBsYW4gdjMucGRmPC9hPjwvbGk+CjwvdWw+Cg=="/>
+                <syllabus_data emailNotification="none" position="2" status="posted" syllabus_id="42592" title="Item twoA" view="no">
+                    <asset syllabus_body-html="PHA+QW5vdGhlciBvbmU8L3A+Cg=="/>
+                </syllabus_data>
+                <syllabus_data emailNotification="none" position="3" status="posted" syllabus_id="42595" title="Item 3" view="no">
+                    <attachment relative-url="/content/attachment/a964ed47-ecb6-4692-a85a-8cade4ea3180/Course Outline/1f9eacef-b884-4359-8e56-10c268b8b2f3/MAM2083F - Know your Course and Students Report - 2024.pdf"/>
+                    <asset syllabus_body-html="PHA+VGhpcmQgaXRlbTwvcD4KCjxwPsKgPC9wPgo="/>
                 </syllabus_data>
             </syllabus>
         </siteArchive>

@@ -74,6 +74,56 @@ def run(SITE_ID, APP):
     root = tree.getroot()
 
     # TODO don't replace if the template is already applied
+    # Merge all
+    syllabus_data = root.findall(".//siteArchive/syllabus/syllabus_data")
+
+    # Nothing to do here
+    if len(syllabus_data) == 0:
+        logging.info(f'Site {SITE_ID} has no syllabus data.')
+        return
+
+    content = []
+
+    syllabus_data_index = 0
+
+    # Build up content
+    for merge_me in syllabus_data:
+        title = merge_me.get("title")
+        content.append(f"<h2>{title}</h2>\n\n")
+
+        attachment_paths = []
+        for child in merge_me:
+            if child.tag == "asset":
+                decoded = base64.b64decode(child.get("syllabus_body-html")).decode("utf-8")
+                content.append(decoded)
+            elif child.tag == "attachment":
+                attachment_paths.append(child.get("relative-url").replace("/content", ""))
+
+        if attachment_paths:
+            content.append("\n\n<h3>Attachments</h3>\n")
+            content.append("<ul>\n")
+            for attachment in attachment_paths:
+                content.append(f"<li><a href=\"{attachment}\">{os.path.basename(attachment)}</a></li>\n")
+            content.append("</ul>\n")
+
+        # Remove merged nodes
+        if syllabus_data_index > 0:
+            merge_me.getparent().remove(merge_me)
+
+        syllabus_data_index = syllabus_data_index + 1
+
+    # Page title
+    root.set("title", "Course Outline")
+
+    # Add modified content to the first syllabus_data node
+    if syllabus_data:
+        asset_node = syllabus_data[0].find(".//asset")
+        if asset_node is not None:
+            asset_node.set("syllabus_body-html", base64.b64encode("".join(content).encode("utf-8")).decode("utf-8"))
+
+    # Write the modified XML to a new file
+    logging.info(f'Site {SITE_ID} syllabus data has been updated.')
+    tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
     # Really expecting only one here
     for item in root.findall(".//asset"):
