@@ -100,7 +100,6 @@ def run(SITE_ID, APP):
                 attachment_paths.append(child.get("relative-url").replace("/content", ""))
 
         if attachment_paths:
-            content.append("\n\n<h3>Attachments</h3>\n")
             content.append("<ul>\n")
             for attachment in attachment_paths:
                 content.append(f"<li><a href=\"{attachment}\">{os.path.basename(attachment)}</a></li>\n")
