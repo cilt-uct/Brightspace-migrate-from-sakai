@@ -66,11 +66,9 @@ def run(SITE_ID, APP):
             attachment_tree.write(attachment_src, xml_declaration=True)
 
     # Now rewrite the Syllabus file
-    # TODO read/write syllabus.xml when Sakai archive code is updated.
-    xml_src = r'{}{}-archive/syllabus.xml.pre_rewrite'.format(APP['archive_folder'], SITE_ID)
-    xml_new = r'{}{}-archive/syllabus.xml'.format(APP['archive_folder'], SITE_ID)
-    #xml_old = r'{}{}-archive/syllabus.old'.format(APP['archive_folder'], SITE_ID)
-    #shutil.copyfile(xml_src, xml_old)
+    xml_src = r'{}{}-archive/syllabus.xml'.format(APP['archive_folder'], SITE_ID)
+    xml_old = r'{}{}-archive/syllabus.old'.format(APP['archive_folder'], SITE_ID)
+    shutil.copyfile(xml_src, xml_old)
 
     tree = ET.parse(xml_src)
     root = tree.getroot()
@@ -120,10 +118,7 @@ def run(SITE_ID, APP):
     # Apply the template
     body_soup = BeautifulSoup(content, 'html.parser')
     new_body = make_well_formed(body_soup, "Course Outline", "styled")
-
     content = str(new_body)
-
-    print(f"new content: {content}")
 
     # Add the modified content to the first syllabus_data node
     if syllabus_data:
@@ -133,7 +128,7 @@ def run(SITE_ID, APP):
 
     # Write the modified XML to a new file
     logging.info(f'Site {SITE_ID} syllabus data has been updated.')
-    tree.write(xml_new, encoding='utf-8', xml_declaration=True)
+    tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
     APP = config.config.APP
