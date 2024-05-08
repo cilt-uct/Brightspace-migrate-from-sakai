@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archive date="20240505135413010" server="vula201a" source="a964ed47-ecb6-4692-a85a-8cade4ea3180" system="Sakai 2.8" xmlns:CHEF="https://www.sakailms.org/xmlns/archive/CHEF" xmlns:DAV="https://www.sakailms.org/xmlns/archive/DAV" xmlns:sakai="https://www.sakailms.org/xmlns/archive/">
+    <org.sakaiproject.api.app.syllabus.SyllabusService>
+        <siteArchive siteId="MVP Syllabus" siteName="a964ed47-ecb6-4692-a85a-8cade4ea3180">
+            <syllabus contextId="a964ed47-ecb6-4692-a85a-8cade4ea3180" id="17751" redirectUrl="" userID="marquard">
+                <syllabus_data emailNotification="none" position="1" status="posted" syllabus_id="42589" title="Item one" view="no">
+                    <attachment relative-url="/content/attachment/a964ed47-ecb6-4692-a85a-8cade4ea3180/Course Outline/689dc617-a830-47fe-950f-3d1bab138afa/012 - Know your Course and Students.pdf"/>
+                    <attachment relative-url="/content/attachment/a964ed47-ecb6-4692-a85a-8cade4ea3180/Course Outline/03b0b5f8-0b7d-44e0-a44d-ec59a8cc500c/migration_ssl.patch"/>
+                    <asset syllabus_body-html="PHA+Rklyc3QgaXRlbTwvcD4KCjxwPsKgPC9wPgo="/>
+                </syllabus_data>
+                <syllabus_data emailNotification="none" position="2" status="posted" syllabus_id="42592" title="Item twoA" view="no">
+                    <asset syllabus_body-html="PHA+QW5vdGhlciBvbmU8L3A+Cg=="/>
+                </syllabus_data>
+                <syllabus_data emailNotification="none" position="3" status="posted" syllabus_id="42595" title="Item 3" view="no">
+                    <attachment relative-url="/content/attachment/a964ed47-ecb6-4692-a85a-8cade4ea3180/Course Outline/1f9eacef-b884-4359-8e56-10c268b8b2f3/MAM2083F - Know your Course and Students Report - 2024.pdf"/>
+                    <asset syllabus_body-html="PHA+VGhpcmQgaXRlbTwvcD4KCjxwPsKgPC9wPgo="/>
+                </syllabus_data>
+            </syllabus>
+        </siteArchive>
+    </org.sakaiproject.api.app.syllabus.SyllabusService>
+</archive>

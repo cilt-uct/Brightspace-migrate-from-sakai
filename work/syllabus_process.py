@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
-## This script takes as input the syllabus.xml file inside the site-archive folder and:
-## 1. applies an HTML template to base64-encoded html in syllabus_body-html: decode, update, encode, store
-## https://jira.cilt.uct.ac.za/browse/AMA-213
+## AMA-213 AMA-700 This script takes as input the syllabus.xml file and
+## 1. merges multiple syllabus items into a single document
+## 2. rewrites attachment paths
+## 3. applies the html page template
+## 4. updates the syllabus.xml with the resulting html content
 
 import sys
 import os
@@ -14,22 +16,23 @@ import logging
 
 from bs4 import BeautifulSoup
 from pathlib import Path
+from html import escape
+from urllib.parse import quote
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.logging_config
+from lib.utils import make_well_formed
 
 def run(SITE_ID, APP):
-    logging.info('Syllabus: Attachments, export  html: {}'.format(SITE_ID))
-
-    # Folder for html for packaging and import
-    output_folder = "{}/{}-content".format(APP['output'], SITE_ID)
+    logging.info('Syllabus: rewrite into one page: {}'.format(SITE_ID))
 
     attachment_src = r'{}{}-archive/attachment.xml'.format(APP['archive_folder'], SITE_ID)
     have_attachments = False
 
+    # Shorten the attachment paths
     if os.path.exists(attachment_src):
         # Update the paths (ids) for Course Outline attachment IDs
         attachment_tree = ET.parse(attachment_src)
@@ -39,14 +42,14 @@ def run(SITE_ID, APP):
         for item in attachment_tree.xpath(".//resource[contains(@id,'/Course Outline/')]"):
             path = Path(item.get('id'))
             filename = path.name
-            new_path = f"/attachment/Course Outline/{filename}"
+            new_path = f"/attachment/course_outline/{filename}"
 
             if filename in attachment_names:
                 path_parts = os.path.normpath(str(path)).split(os.sep)
                 if len(path_parts) >= 2:
                     id = path_parts[-2]
                     filename = f'{id}_{filename}'
-                    new_path = f"/attachment/Course Outline/{filename}"
+                    new_path = f"/attachment/course_outline/{filename}"
                     attachment_names[filename] = 'used'
                 else:
                     raise Exception(f"Could not rename file {filename} to resolve file name collision.")
@@ -56,16 +59,13 @@ def run(SITE_ID, APP):
             item.set('id', new_path)
             have_attachments = True
 
-        # Save attachments if needed
+        # Update attachment.xml if needed
         if have_attachments:
             attachment_old = r'{}{}-archive/attachment.old'.format(APP['archive_folder'], SITE_ID)
             shutil.copyfile(attachment_src, attachment_old)
             attachment_tree.write(attachment_src, xml_declaration=True)
 
-    # Now rewrite the html
-    with open(f'{parent}/templates/syllabus.html', 'r')as f:
-        tmpl_contents = f.read()
-
+    # Now rewrite the Syllabus file
     xml_src = r'{}{}-archive/syllabus.xml'.format(APP['archive_folder'], SITE_ID)
     xml_old = r'{}{}-archive/syllabus.old'.format(APP['archive_folder'], SITE_ID)
     shutil.copyfile(xml_src, xml_old)
@@ -73,43 +73,62 @@ def run(SITE_ID, APP):
     tree = ET.parse(xml_src)
     root = tree.getroot()
 
-    # TODO don't replace if the template is already applied
+    # Find all syllabus items
+    syllabus_data = root.findall(".//siteArchive/syllabus/syllabus_data")
 
-    # Really expecting only one here
-    for item in root.findall(".//asset"):
+    # Nothing to do here
+    if len(syllabus_data) == 0:
+        logging.info(f'Site {SITE_ID} has no syllabus data.')
+        return
 
-        # Original syllabus content
-        syllabus_body_html = item.attrib['syllabus_body-html']
-        html_bytes = base64.b64decode(syllabus_body_html)
-        html = BeautifulSoup(html_bytes.decode('utf-8'), 'html.parser')
+    content = "<h1>Course Outline</h1>\n"
 
-        # Change the attachment paths in html tree
-        for a in html.find_all('a'):
-            href = a.get('href')
-            if href and href.startswith("/attachment/") and "Course Outline" in href:
-                filename = Path(href).name
-                a['href'] = f"attachment/Course Outline/{filename}"
+    syllabus_data_index = 0
 
-        # Template
-        tmpl_dom = BeautifulSoup(tmpl_contents, "html.parser")
-        syllabus_content = tmpl_dom.find("div", id="content")
+    # Build up content
+    for syllabus_item in syllabus_data:
 
-        # Add original content to the template
-        syllabus_content.string.replace_with(html)
+        # Item
+        title = syllabus_item.get("title")
+        content += f"<h2>{title}</h2>\n"
 
-        # Write the html to the output folder for later import again
-        new_html = tmpl_dom.prettify()
-        html_updated_bytes = new_html.encode('utf-8')
-        with open(os.path.join(output_folder, "Course Outline.html"), "wb") as file:
-            file.write(html_updated_bytes)
+        # Item content
+        asset = syllabus_item.find(".//asset")
+        if asset is not None:
+            decoded = base64.b64decode(asset.get("syllabus_body-html")).decode("utf-8")
+            content += decoded
 
-        # Replace base64-encoded contents
-        b64_bytes = base64.b64encode(html_updated_bytes)
-        b64_str = b64_bytes.decode('utf-8')
+        # List of attachments
+        if syllabus_item.find(".//attachment") is not None:
+            content += "<ul>\n"
+            for attachment in syllabus_item.findall(".//attachment"):
+                filename = Path(attachment.get("relative-url")).name
+                content += f"<li><a href=\"attachment/course_outline/{quote(filename)}\">{escape(filename)}</a></li>\n"
+                syllabus_item.remove(attachment)
+            content += "</ul>\n"
 
-        item.attrib['syllabus_body-html'] = b64_str
+        # Remove merged nodes
+        if syllabus_data_index == 0:
+            syllabus_item.set("title", "Course Outline")
+        else:
+            syllabus_item.getparent().remove(syllabus_item)
 
-        tree.write(xml_src, encoding='utf-8', xml_declaration=True)
+        syllabus_data_index = syllabus_data_index + 1
+
+    # Apply the template
+    body_soup = BeautifulSoup(content, 'html.parser')
+    new_body = make_well_formed(body_soup, "Course Outline", "styled")
+    content = str(new_body)
+
+    # Add the modified content to the first syllabus_data node
+    if syllabus_data:
+        asset_node = syllabus_data[0].find(".//asset")
+        if asset_node is not None:
+            asset_node.set("syllabus_body-html", base64.b64encode("".join(content).encode("utf-8")).decode("utf-8"))
+
+    # Write the modified XML to a new file
+    logging.info(f'Site {SITE_ID} syllabus data has been updated.')
+    tree.write(xml_src, encoding='utf-8', xml_declaration=True)
 
 def main():
     APP = config.config.APP
