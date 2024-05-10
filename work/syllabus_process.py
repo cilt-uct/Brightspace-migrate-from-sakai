@@ -95,8 +95,9 @@ def run(SITE_ID, APP):
         # Item content
         asset = syllabus_item.find(".//asset")
         if asset is not None:
-            decoded = base64.b64decode(asset.get("syllabus_body-html")).decode("utf-8")
-            content += decoded
+            if asset.get("syllabus_body-html"):
+                decoded = base64.b64decode(asset.get("syllabus_body-html")).decode("utf-8")
+                content += decoded
 
         # List of attachments
         if syllabus_item.find(".//attachment") is not None:
@@ -119,6 +120,9 @@ def run(SITE_ID, APP):
     body_soup = BeautifulSoup(content, 'html.parser')
     new_body = make_well_formed(body_soup, "Course Outline", "styled")
     content = str(new_body)
+
+    if (APP['debug']):
+        print(f"Content:\n{content}")
 
     # Add the modified content to the first syllabus_data node
     if syllabus_data:
