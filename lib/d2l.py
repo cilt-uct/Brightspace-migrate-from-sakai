@@ -21,6 +21,32 @@ def middleware_d2l_api(APP, payload_data = None, retries = None, retry_delay = N
     api_proxy_url = f"{APP['middleware']['base_url']}{APP['middleware']['api_proxy_url']}"
     return middleware_api(APP, api_proxy_url, method='POST', payload_data = payload_data, retries = retries, retry_delay = retry_delay, headers = headers)
 
+# Get product version. This doesn't require authentication but will verify basic URL and connection
+def d2l_api_version(APP, product):
+
+    # get existing LTI links
+    payload = {
+        'url': f"{APP['brightspace_api']['base_url']}/d2l/api/{product}/versions/",
+        'method': 'GET',
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+    if not json_response:
+        raise Exception(f'Unable to get product {product} version')
+
+    if 'status' not in json_response:
+        raise Exception(f'Unable to get product {product} version: {json_response}')
+
+    if json_response['status'] != 'success':
+        raise Exception(f'Unable to get product {product} version: {json_response}')
+
+    if 'data' not in json_response or 'LatestVersion' not in json_response['data']:
+        raise Exception(f'Unable to get product {product} version: {json_response}')
+
+    return json_response['data']['LatestVersion']
+
+
 # Get a list of LTI links in a site
 def get_lti_links(APP, org_id):
 

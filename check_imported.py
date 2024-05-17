@@ -24,7 +24,7 @@ import lib.db
 import lib.sakai
 
 from lib.utils import send_template_email, create_jira
-from lib.d2l import middleware_d2l_api, web_login, get_import_history, get_first_import_status, get_first_import_job_log
+from lib.d2l import middleware_d2l_api, d2l_api_version, web_login, get_import_history, get_first_import_status, get_first_import_job_log
 
 
 def update_import_id(APP, db_config, link_id, site_id, org_unit_id, log):
@@ -339,10 +339,18 @@ def main():
     scan_interval = APP['scan_interval']['import']
     exit_flag_file = APP['exit_flag']['import']
 
-    logging.info(f"Scanning for new imports every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
-
     # Sakai webservices
     sakai_ws = lib.sakai.Sakai(APP)
+    sakai_version = sakai_ws.config("version.sakai")
+    logging.info(f"Sakai at {sakai_ws.url()} version is version {sakai_version}")
+
+    # Brightspace webservices
+    base_url = APP['brightspace_api']['base_url']
+    le_version = d2l_api_version(APP, "le")
+    lp_version = d2l_api_version(APP, "lp")
+    logging.info(f"Brightspace at {base_url} has API versions le:{le_version} lp:{lp_version}")
+
+    logging.info(f"Scanning for new imports every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
 
     while not os.path.exists(exit_flag_file):
         check_imported(APP, sakai_ws)
