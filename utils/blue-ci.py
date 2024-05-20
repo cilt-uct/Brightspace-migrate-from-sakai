@@ -165,7 +165,11 @@ def main():
 
     # 2024 semester = 13128
     # UCT top-level = 6606
-    ou_set = get_orgids_by_tree(APP, 6606)
+    ou_2023 = get_orgids_by_tree(APP, 8585)
+    ou_2024 = get_orgids_by_tree(APP, 13128)
+    ou_other = get_orgids_by_tree(APP, 12144)
+
+    ou_set = ou_2023 + ou_2024 + ou_other
 
     # All course offerings
     # ou_set = get_orgids_for_type(APP, 3)
@@ -175,7 +179,7 @@ def main():
 
     result_set = []
 
-    logging.info(f"Course offerings: {len(ou_set)}")
+    logging.info(f"Course offerings: {len(ou_set)} 2023={len(ou_2023)} 2024={len(ou_2024)} other={len(ou_other)}")
 
     for ou in ou_set:
         org_id = ou['Identifier']
