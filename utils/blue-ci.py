@@ -3,6 +3,7 @@ import os
 import sys
 import logging
 import csv
+from datetime import datetime
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -163,6 +164,9 @@ def main():
     if args['debug']:
         logger.setLevel(logging.DEBUG)
 
+    now = datetime.now()
+    now_st = now.strftime("%Y%m%d_%H%M")
+
     # 2024 semester = 13128
     # UCT top-level = 6606
     ou_2023 = get_orgids_by_tree(APP, 8585)
@@ -202,9 +206,10 @@ def main():
 
         sys.stdout.flush()
 
-    logging.info("Writing CSV")
+    csv_file = f"courses-instructors.{now_st}.csv"
+    logging.info(f"Writing CSV to {csv_file} with {len(result_set)} rows")
 
-    with open('courses-instructors.csv', 'w', newline='') as csv_f:
+    with open(csv_file, 'w', newline='') as csv_f:
         w = csv.DictWriter(csv_f, result_set[0].keys(), dialect='unix')
         w.writeheader()
         w.writerows(result_set)
