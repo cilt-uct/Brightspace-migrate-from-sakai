@@ -5,6 +5,7 @@ import os
 import sys
 import oembed
 import requests
+import logging
 from bs4 import BeautifulSoup
 from html import escape
 
@@ -180,12 +181,15 @@ def is_twitter(url):
 
 def is_url_html(url):
 
-    # Disable SSL cert validation
-    url_head = requests.head(url, verify=False, allow_redirects=True)
+    try:
+        # Disable SSL cert validation
+        url_head = requests.head(url, verify=False, allow_redirects=True, timeout = 30)
 
-    if 'Content-Type' in url_head.headers:
-        if url_head.headers['Content-Type'].startswith('text/html'):
-            return True
+        if 'Content-Type' in url_head.headers:
+            if url_head.headers['Content-Type'].startswith('text/html'):
+                return True
+    except Exception as e:
+        logging.warning(f"Unable to connect to {url} to check content type: {str(e)}")
 
     return False
 
