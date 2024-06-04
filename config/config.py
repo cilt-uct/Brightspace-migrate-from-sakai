@@ -159,7 +159,7 @@ APP = {
   # Max size of Resources collection
   'export': {
         'max_jobs': 10,
-        'limit': 30000000000
+        'limit': 35000000000
   },
 
   # Max jobs to allow in uploading and import states  before uploading new jobs,
@@ -179,7 +179,7 @@ APP = {
   # D2L Bulk Course Import service
   'ftp': {
      # Max zip file upload size in bytes as per D2L BCI limits
-    'limit': 30000000000,
+    'limit': 35000000000,
     'show_progress': False,
     'log': True,
     'inbox': '/incoming/BulkCourseImport/Inbox',
