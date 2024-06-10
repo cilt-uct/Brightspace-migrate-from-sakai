@@ -89,27 +89,29 @@ def run(SITE_ID, APP, **kwargs):
             os.remove(zipfile)
             logging.info(f" - removed {zipfile}")
 
-        # FTP logs
+        # FTP logs and SFTP inbox and outbox
         ftp_log = f"{APP['log_folder']}/{SITE_ID}_ftp.log"
         if os.path.exists(ftp_log):
+
+            # Remove logs
             os.remove(ftp_log)
             logging.info(f" - removed {ftp_log}")
 
-        # SFTP inbox and outbox
-        tries = 1
-        max_tries = 15
-        sleeptime = 60
-        while tries <= max_tries:
-            if cleanup_sftp(APP, APP['ftp']['outbox'], SITE_ID):
-                break
-            logging.info(f"Sleeping {sleeptime}s for retry {tries} / {max_tries} for cleanup of {SITE_ID} in outbox")
-            tries += 1
-            time.sleep(sleeptime)
+            # SFTP inbox and outbox
+            tries = 1
+            max_tries = 15
+            sleeptime = 60
+            while tries <= max_tries:
+                if cleanup_sftp(APP, APP['ftp']['outbox'], SITE_ID):
+                    break
+                logging.info(f"Sleeping {sleeptime}s for retry {tries} / {max_tries} for cleanup of {SITE_ID} in outbox")
+                tries += 1
+                time.sleep(sleeptime)
 
-        if tries > max_tries:
-            logging.warning(f"No files for {SITE_ID} found in outbox")
+            if tries > max_tries:
+                logging.warning(f"No files for {SITE_ID} found in outbox")
 
-        cleanup_sftp(APP, APP['ftp']['inbox'], SITE_ID)
+            cleanup_sftp(APP, APP['ftp']['inbox'], SITE_ID)
 
     except Exception:
         logging.exception(f"Exception during cleanup for {SITE_ID} (ignoring)")

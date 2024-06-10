@@ -22,7 +22,7 @@ import lib.sakai
 
 from config.logging_config import formatter, logger
 from lib.utils import get_log, send_template_email, send_email, create_jira
-from lib.jira_rest import MyJira
+from lib.jira_rest import close_jira
 
 
 def update_record(db_config, link_id, site_id, state, log):
@@ -65,16 +65,6 @@ def setup_log_file(APP, filename, SITE_ID, logs):
     fh.setLevel(logging.INFO)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
-
-def close_jira(APP, site_id):
-    with MyJira() as j:
-        fields = {
-            'project': {'key': APP['jira']['key']},
-            'site_id': str(site_id),
-            'comment': 'Update workflow complete'
-        }
-
-        j.closeIssue(fields)
 
 def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
 
@@ -223,7 +213,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
 
                 logging.info("Completed update workflow step: {}".format(step['action']))
 
-            close_jira(APP, site_id=site_id)
+            close_jira(APP, site_id=site_id, comment='Update workflow complete')
         else:
             logging.warning("There are no workflows steps in this workflow.")
 

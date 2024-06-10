@@ -1,7 +1,15 @@
 STEPS:
+
   - action: mail
+    condition: full_conversion
     template: 'start'
     subject: 'Vula to Amathuba: Started [{{ title }}]'
+    state: 'running'
+
+  - action: mail
+    condition: test_conversion
+    template: 'start_test'
+    subject: 'Vula to Amathuba: Test Conversion Started [{{ title }}]'
     state: 'running'
 
   # Initial cleanup
@@ -116,3 +124,13 @@ STEPS:
   # Transition to upload state
   - action: get_files
     state: 'queued'
+
+  # Except for test conversions, which end here
+  - action: mail
+    condition: test_conversion
+    template: 'finished_test'
+    subject: 'Vula to Amathuba: Test Conversion Finished [{{ title }}]'
+
+  - action: cleanup
+    condition: test_conversion
+    state: "completed"

@@ -24,7 +24,7 @@ import lib.sakai
 
 from config.logging_config import formatter, logger
 from lib.utils import create_jira, send_email, send_template_email, get_log, get_size, create_folders
-from lib.jira_rest import MyJira
+from lib.jira_rest import MyJira, close_jira
 
 
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")
@@ -157,6 +157,7 @@ def transition_jira(APP, site_id):
 
 def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
 
+    ## mail
     if step['action'] == "mail":
         if 'template' in step:
 
@@ -170,10 +171,16 @@ def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
                 subj=step['subject'],
                 title=kwargs['title'],
                 site_id=site_id,
-                import_id=kwargs['import_id']
+                import_id=kwargs['import_id'],
+                report_url=kwargs['report_url']
             )
 
-    elif step['action'] == "get_files":
+        else:
+            logging.warning("Workflow operation 'mail' missing template perameter")
+            return False
+
+    ## get_files
+    if step['action'] == "get_files":
         # print("getting files from log file and adding them to DB")
 
         _file = open(log_file, "r")
@@ -197,31 +204,32 @@ def run_workflow_step(APP, step, site_id, log_file, db_config, **kwargs):
         update_record_files(db_config, kwargs['link_id'], site_id, output_files, zip_size)
 
         return True
-    else:
 
-        try:
-            mod = importlib.import_module('work.{}'.format(step['action']))
-            func = getattr(mod, 'run')
-            new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
+    ## all other operations defined in work/ modules
 
-            if 'use_date' in step:
-                new_kwargs['now_st'] = kwargs['now_st']
+    try:
+        mod = importlib.import_module('work.{}'.format(step['action']))
+        func = getattr(mod, 'run')
+        new_kwargs = {'SITE_ID' : site_id, 'APP': APP}
 
-            if 'use_new_id' in step:
-                new_kwargs['new_id'] = kwargs['new_id']
+        if 'use_date' in step:
+            new_kwargs['now_st'] = kwargs['now_st']
 
-            if 'use_link_id' in step:
-                new_kwargs['link_id'] = kwargs['link_id']
+        if 'use_new_id' in step:
+            new_kwargs['new_id'] = kwargs['new_id']
 
-            func(**new_kwargs)  # this runs the steps - and writes to log file
+        if 'use_link_id' in step:
+            new_kwargs['link_id'] = kwargs['link_id']
 
-            # after execution of workflow step check log to see if it contains an error
-            return not check_log_file_for_errors(log_file)
+        func(**new_kwargs)  # this runs the steps - and writes to log file
 
-        except Exception as e:
-            logging.exception(e)
-            logging.error("Workflow operation {} = {} ".format(step['action'], e))
-            return False
+        # after execution of workflow step check log to see if it contains an error
+        return not check_log_file_for_errors(log_file)
+
+    except Exception as e:
+        logging.exception(e)
+        logging.error("Workflow operation {} = {} ".format(step['action'], e))
+        return False
 
 # States
 ## enum('init','starting','exporting','running','importing','updating','completed','error')
@@ -260,8 +268,12 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         if record['state'] != "exporting":
             raise Exception(f"Unexpected state {record['state']} for site {record['site_id']}")
 
+        test_conversion = False
+
         if (record['test_conversion'] == 1):
             APP['site']['prefix'] = APP['site']['test_prefix']
+            logging.info(f"{site_id} is a test conversion")
+            test_conversion = True
 
         site_url = record['url']
         failure_type = record['failure_type']
@@ -299,9 +311,25 @@ def start_workflow(workflow_file, link_id, site_id, APP):
 
             if workflow_steps['STEPS'] is not None:
                 for step in workflow_steps['STEPS']:
+
+                    condition = step['condition'] if 'condition' in step else None
+
+                    # Skip workflow steps if condition does not match
+                    if condition and condition == "test_conversion" and not test_conversion:
+                        logging.info(f"Skipping workflow step: {step['action']} (only for test conversions)")
+                        continue
+
+                    if condition and condition == "full_conversion" and test_conversion:
+                        logging.info(f"Skipping workflow step: {step['action']} (only for full conversions)")
+                        continue
+
                     logging.info("Executing workflow step: {}".format(step['action']))
+
                     if 'state' in step:
                         state = step['state']
+
+                    # Read db record for updates from workflow steps
+                    record = mdb.get_record(link_id=link_id, site_id=site_id)
 
                     if run_workflow_step(
                             APP,
@@ -314,8 +342,10 @@ def start_workflow(workflow_file, link_id, site_id, APP):
                             now_st=now_st,
                             new_id=new_id,
                             import_id=record['imported_site_id'],
+                            report_url=record['report_url'],
                             link_id=link_id,
                             title=site_title):
+
                         logging.info("Completed workflow step: {}".format(step['action']))
                     else:
                         # something went wrong while processing this step
@@ -329,6 +359,9 @@ def start_workflow(workflow_file, link_id, site_id, APP):
 
         logging.info("\t{}".format(str(timedelta(seconds=(time.time() - start_time)))))
         update_record(mdb.db_config, link_id, site_id, state, get_log(log_file))
+
+        if test_conversion:
+            close_jira(APP, site_id=site_id, comment='Test conversion workflow complete')
 
     except Exception as e:
 

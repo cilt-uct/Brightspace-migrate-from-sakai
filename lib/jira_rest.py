@@ -14,6 +14,17 @@ sys.path.append(parent)
 
 from lib.local_auth import getAuth
 
+## Util methods
+def close_jira(APP, site_id, comment):
+    with MyJira() as j:
+        fields = {
+            'project': {'key': APP['jira']['key']},
+            'site_id': str(site_id),
+            'comment': str(comment)
+        }
+
+        j.closeIssue(fields)
+
 ## https://jira.readthedocs.io/examples.html
 class MyJira(object):
 
