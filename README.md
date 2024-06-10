@@ -220,7 +220,8 @@ ruff check
 Ruff configuration is in `ruff.toml`
 
 ## Size limits
-The D2L Bulk Course Import Service accepts zip packages up to 30GB (30,000,000,000 bytes).
+The D2L [Bulk Course Import Service](https://community.d2l.com/brightspace/kb/articles/23502-introducing-bulk-course-import)
+accepts zip packages up to 35GB (35,000,000,000 bytes).
 
 Archive size limits are enforced in 3 places:
 * in the LTI migration tool, before the archive operation starts (size of site Resources)
