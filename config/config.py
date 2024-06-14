@@ -167,7 +167,6 @@ APP = {
   # limit for zip file size for package uploads in update workflow
   'import': {
       'max_jobs' : 10,
-      'hold_test_conversions' : False,
       'expiry' : 2160,
       'limit' : 2147483648,
       'manifest' : {

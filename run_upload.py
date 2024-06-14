@@ -230,6 +230,10 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         # Reset to queued state
         update_record(mdb.db_config, link_id, site_id, "queued", lib.utils.get_log(log_file))
 
+    finally:
+
+        # Clean up log file
+        os.remove(log_file)
 
 def main():
     APP = config.config.APP

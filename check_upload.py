@@ -74,10 +74,6 @@ def check_upload(APP):
         site_title = site['title']
         try:
 
-            if APP['import']['hold_test_conversions'] and site['test_conversion']:
-                logging.info(f"Skipping {site_id} {site_title} - test conversion")
-                continue
-
             if not site['files'] or not site['workflow']:
                 logging.warning(f"Skipping {site_id} {site_title} - missing files and/or workflow")
                 continue

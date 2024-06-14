@@ -400,6 +400,9 @@ def start_workflow(workflow_file, link_id, site_id, APP):
 
         sakai_ws.set_site_property(site_id, 'brightspace_conversion_status', state)
 
+        # Clean up log file
+        os.remove(log_file)
+
 def main():
     APP = config.config.APP
     parser = argparse.ArgumentParser(description="This script runs the workflow for a site",
