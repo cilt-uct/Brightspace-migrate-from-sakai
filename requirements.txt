@@ -13,6 +13,6 @@ python_oembed==0.2.4
 PyYAML==6.0.1
 Requests==2.32.0
 tqdm==4.66.3
-urllib3==1.26.18
+urllib3==1.26.19
 validators==0.22.0
 zeep==4.1.0
