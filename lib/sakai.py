@@ -37,7 +37,7 @@ class Sakai:
         self.APP = APP
 
         try:
-            # Unauthentication access
+            # Unauthenticated access
             config_url = f"{self.base_url}/direct/server-config.json"
             response = requests.get(config_url)
 
@@ -121,7 +121,7 @@ class Sakai:
             raise Exception(fault)
 
     ## Archive a site
-    def archive_site(self, SITE_ID):
+    def archive_site(self, SITE_ID, force:bool = False):
 
         # Use the archive server configuration rather than general Sakai configuration
         auth = self.ARCHIVE
@@ -163,8 +163,11 @@ class Sakai:
                 if (size_result < max_size):
                     logging.info(f"Resources size for {SITE_ID} is {format_bytes(size_result)}")
                 else:
-                    logout = login_client.service.logout(session_details[0])
-                    raise SizeExceededError(f"Resources size in {SITE_ID} of {format_bytes(size_result)} exceeds limit {format_bytes(max_size)}")
+                    if force:
+                        logging.warning(f"Resources size in {SITE_ID} of {format_bytes(size_result)} exceeds limit {format_bytes(max_size)}, [{force=}] proceeeding ...")
+                    else:
+                        logout = login_client.service.logout(session_details[0])
+                        raise SizeExceededError(f"Resources size in {SITE_ID} of {format_bytes(size_result)} exceeds limit {format_bytes(max_size)}")
 
             # Go ahead with archive
             archive_ws = self.APP['archive']['endpoint']
@@ -197,7 +200,7 @@ class Sakai:
             raise Exception(fault)
 
     ## Archive site with retry
-    def archive_site_retry(self, SITE_ID, max_tries=3):
+    def archive_site_retry(self, SITE_ID, force:bool = False, max_tries:int = 3):
 
         succeeded = False
 
@@ -205,7 +208,7 @@ class Sakai:
 
         for i in range(max_tries):
             try:
-               succeeded = self.archive_site(SITE_ID)
+               succeeded = self.archive_site(SITE_ID, force=force)
                break
 
             except SizeExceededError as se:
