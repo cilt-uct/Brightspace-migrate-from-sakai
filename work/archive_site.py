@@ -18,7 +18,9 @@ def main():
     parser = argparse.ArgumentParser(description="This script will try and archive a Sakai site - this will create a ZIP file and return True if success",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID for which to transfer fixed file")
+    parser.add_argument('-f', '--force', help="Archive the site by ignoring size restrictions", action='store_true')
     parser.add_argument('-d', '--debug', action='store_true')
+
     args = vars(parser.parse_args())
     APP['debug'] = APP['debug'] or args['debug']
 
@@ -26,7 +28,7 @@ def main():
     sakai_ws = lib.sakai.Sakai(APP)
 
     # Archive site
-    sakai_ws.archive_site_retry(args['SITE_ID'])
+    sakai_ws.archive_site_retry(args['SITE_ID'], args['force'])
 
 if __name__ == '__main__':
     main()
