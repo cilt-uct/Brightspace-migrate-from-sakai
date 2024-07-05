@@ -318,6 +318,9 @@ def get_imported_content(APP, org_id):
 # Map username to internal Brightspace id
 def get_brightspace_user(APP, username):
 
+    if username is None:
+        return None
+
     payload = {
         'url': f"{APP['brightspace_api']['lp_url']}/users/?userName={username}",
         'method': 'GET',

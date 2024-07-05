@@ -50,7 +50,11 @@ def run(SITE_ID, APP, import_id, started_by):
 
     logging.info(f"- site created by {site_created_by}:{creator_id}")
     logging.info(f"- conversion started by {started_by_eid}:{started_by_id}")
-    logging.info(f"- default owner for content is user id {default_owner_id}")
+
+    if default_owner_id:
+        logging.info(f"- default owner for content is user id {default_owner_id}")
+    else:
+        logging.warning(f"- no default owner id is available")
 
     # Get the set of files from the Sakai site
     content_src = f'{site_folder}/content.xml'
@@ -76,8 +80,11 @@ def run(SITE_ID, APP, import_id, started_by):
 
         new_owner_id = resource_owner_id if resource_owner_id else default_owner_id
 
-        if not update_content_owner(APP, content_id, userid=new_owner_id):
-            logging.warning(f"Failed to update owner of {content_id}: {content_name} to {new_owner_id}")
+        if new_owner_id:
+            if not update_content_owner(APP, content_id, userid=new_owner_id):
+                logging.warning(f"Failed to update owner of {content_id}: {content_name} to {new_owner_id}")
+        else:
+            logging.info("Not updating owner of {content_name}: no target owner available")
 
     return False
 
