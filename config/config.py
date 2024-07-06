@@ -28,9 +28,9 @@ APP = {
   # Key prefixes for authentication secrets in auth.properties
   'auth' : {
     'db' : 'Tsugi',
-    'sakai': 'Vula',
-    'sakai_archive' : 'VulaArchive',
-    'sakai_db': 'VulaDb',
+    'sakai': 'Sakai',
+    'sakai_archive' : 'SakaiArchive',
+    'sakai_db': 'SakaiDb',
     'middleware': 'BrightspaceMiddleware',
     'webAuth': 'BrightspaceWeb',
   },

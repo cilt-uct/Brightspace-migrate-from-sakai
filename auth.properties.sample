@@ -6,21 +6,21 @@ Jira_url=https://jira.some.domain
 Jira_username=USERNAME
 Jira_password=PASSWORD
 
-# Vula Production
-Vula_url=https://sakai.some.domain
-Vula_username=admin
-Vula_password=SECRET
+# Sakai Production
+Sakai_url=https://sakai.some.domain
+Sakai_username=admin
+Sakai_password=SECRET
 
-# Vula Site Archive webservice endpoint
-VulaArchive_url=https://sakai.some.domain
-VulaArchive_username=admin
-VulaArchive_password=SECRET
+# Sakai Site Archive webservice endpoint
+SakaiArchive_url=https://sakai.some.domain
+SakaiArchive_username=admin
+SakaiArchive_password=SECRET
 
-# Vula Production mysql database
-VulaDb_hostname=HOST
-VulaDb_database=sakai
-VulaDb_username=sakaiuser
-VulaDb_password=SECRET
+# Sakai Production mysql database
+SakaiDb_hostname=HOST
+SakaiDb_database=sakai
+SakaiDb_username=sakaiuser
+SakaiDb_password=SECRET
 
 # Local Brightspace Middleware service
 BrightspaceMiddleware_url=https://middleware.some.domain
