@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-## Workflow operation to enrol site owners of converted site into reference and teaching site
+## Workflow operation to enroll users into the converted site
 ## REF: AMA-375
 
 import sys
@@ -23,26 +23,32 @@ def run(SITE_ID, APP, import_id):
     site_xml_src = f'{dir}/site.xml'
     user_xml_src = f'{dir}/user.xml'
 
-    # it would be beter to split this out into the original workflow and
-    # create a column entry for this field so that even if the archive folder disapears
-    # it can still be processed
+    # Types to enroll
+    enroll_types = APP['users']['enroll_account_type']
+
+    # Sakai to Brightspace role map
+    enroll_map = APP['users']['enroll_role_map']
+
     if os.path.exists(site_xml_src) and os.path.exists(user_xml_src):
         site_tree = ET.parse(site_xml_src)
         user_tree = ET.parse(user_xml_src)
 
         try:
-            # get a array of role abilities for which the role is 'Support staff' or 'Site owner'
-            # return the userId's in a list
-            user_ids = list(map( lambda el: el.get('userId'), site_tree.xpath(".//ability[@roleId='Support staff']") + \
-                                                            site_tree.xpath(".//ability[@roleId='Site owner']")))
-            for user_id in user_ids:
-                details = user_tree.xpath(".//user[@id='{}']".format(user_id))
+            # Enroll users whose role is in enroll_map and account_type in enroll_types
+            for user_el in site_tree.xpath(".//ability"):
+                user_id = user_el.get('userId')
+                user_role = user_el.get('roleId')
 
-                if len(details) > 0:
-                    _eid = details[0].get('eid')
-                    _type = details[0].get('type')
-                    if (_type in APP['course']['enroll_user_type']):
-                        enroll_in_site(APP, _eid, import_id, APP['course']['enroll_user_role'])
+                if user_role in enroll_map.keys():
+                    details = user_tree.xpath(".//user[@id='{}']".format(user_id))
+
+                    if len(details) > 0:
+                        _eid = details[0].get('eid')
+                        _type = details[0].get('type')
+                        if (_type in enroll_types):
+                            target_role = enroll_map[user_role]
+                            logging.info(f"Enrolling user eid {_eid} (type={_type}, role={user_role}) in Brightspace site {import_id} (role={target_role})")
+                            enroll_in_site(APP, _eid, import_id, target_role)
 
         except Exception as e:
             raise Exception(f'Could not enroll users from {SITE_ID} in Brightspacd site {import_id}') from e
@@ -51,7 +57,7 @@ def run(SITE_ID, APP, import_id):
 
 def main():
     APP = config.config.APP
-    parser = argparse.ArgumentParser(description="Workflow operation to enrol site owners of converted site into reference and teaching site",
+    parser = argparse.ArgumentParser(description="Workflow operation to enroll users in the converted site",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument("IMPORT_ID", help="The Brightspace ID to enroll the users into")

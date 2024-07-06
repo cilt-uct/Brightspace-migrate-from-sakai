@@ -142,12 +142,21 @@ APP = {
           'retry_delay': 180,
   },
 
-  'course': {
-    # Sakai account types to enroll in Amathuba
-    'enroll_user_type': ['staff', 'thirdparty', 'student'],
+  # Mapping Sakai users to Brightspace users in converted sites
+  # Sakai users who have both a matching account type and role will be enrolled
+  # in the converted Brightspace site ("reference site")
+  'users': {
+    # Sakai account types to enroll in Brightspace
+    'enroll_account_type': ['staff', 'thirdparty', 'student'],
 
-    # Possible roles : "Designer", "Lecturer", "Support Staff", "Tutor", "Student", "Member", "Guest", "Observer", "Staff", "Owner"
-    'enroll_user_role': 'Owner',
+    # Map of Sakai roles to Brightspace role
+    'enroll_role_map': {
+            # UCT roles
+            'Site owner' : 'Owner',
+            'Support staff' : 'Owner',
+            # Generic Sakai roles to Brightspace
+            # 'Instructor' : 'Instructor'
+    },
   },
 
   # Max workflows to run concurrently

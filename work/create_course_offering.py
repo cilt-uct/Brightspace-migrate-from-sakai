@@ -38,19 +38,31 @@ def enroll(SITE_ID, APP, import_id, role):
         site_tree = ET.parse(site_xml_src)
         user_tree = ET.parse(user_xml_src)
 
-        try:
-            # get a array of role abilities for which the role is 'Support staff' or 'Site owner'
-            # return the userId's in a list
-            user_ids = list(map( lambda el: el.get('userId'), site_tree.xpath(".//ability[@roleId='Support staff']") + \
-                                                            site_tree.xpath(".//ability[@roleId='Site owner']")))
-            for user_id in user_ids:
-                details = user_tree.xpath(".//user[@id='{}']".format(user_id))
+        # Types to enroll
+        enroll_types = APP['users']['enroll_account_type']
 
-                if len(details) > 0:
-                    _eid = details[0].get('eid')
-                    _type = details[0].get('type')
-                    if (_type in APP['course']['enroll_user_type']):
-                        enroll_in_site(APP, _eid, import_id, role)
+    # Sakai to Brightspace role map
+    enroll_map = APP['users']['enroll_role_map']
+
+    if os.path.exists(site_xml_src) and os.path.exists(user_xml_src):
+        site_tree = ET.parse(site_xml_src)
+        user_tree = ET.parse(user_xml_src)
+
+        try:
+            # Enroll users whose role is in enroll_map and account_type in enroll_types
+            for user_el in site_tree.xpath(".//ability"):
+                user_id = user_el.get('userId')
+                user_role = user_el.get('roleId')
+
+                if user_role in enroll_map.keys():
+                    details = user_tree.xpath(".//user[@id='{}']".format(user_id))
+
+                    if len(details) > 0:
+                        _eid = details[0].get('eid')
+                        _type = details[0].get('type')
+                        if (_type in enroll_types):
+                            logging.info(f"Enrolling user eid {_eid} (type={_type}, role={user_role}) in Brightspace site {import_id} (role={role})")
+                            enroll_in_site(APP, _eid, import_id, role)
 
         except Exception as e:
             raise Exception(f'Could not enroll users in {SITE_ID}') from e
