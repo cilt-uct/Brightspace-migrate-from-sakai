@@ -48,13 +48,13 @@ def run(SITE_ID, APP, import_id, started_by):
 
     default_owner_id = creator_id if creator_id else started_by_id
 
-    logging.info(f"- site created by {site_created_by}:{creator_id}")
+    logging.info(f"- Sakai site created by {site_created_by}:{creator_id}")
     logging.info(f"- conversion started by {started_by_eid}:{started_by_id}")
 
     if default_owner_id:
         logging.info(f"- default owner for content is user id {default_owner_id}")
     else:
-        logging.warning(f"- no default owner id is available")
+        logging.warning("- no default owner id is available")
 
     # Get the set of files from the Sakai site
     content_src = f'{site_folder}/content.xml'
@@ -62,6 +62,8 @@ def run(SITE_ID, APP, import_id, started_by):
 
     # Get the content items from the Brightspace Content Service
     content_items = get_imported_content(APP, import_id)
+
+    logging.info(f"Imported site {import_id} has {len(content_items)} content-service item(s)")
 
     for content_id in content_items.keys():
 
