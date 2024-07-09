@@ -14,7 +14,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.logging_config
-from lib.utils import enroll_in_site
+from lib.d2l import get_brightspace_roles, enroll_in_site
 
 
 def run(SITE_ID, APP, import_id):
@@ -28,6 +28,10 @@ def run(SITE_ID, APP, import_id):
 
     # Sakai to Brightspace role map
     enroll_map = APP['users']['enroll_role_map']
+
+    # Sanity check on the defined Brightspace roles
+    target_role_set = get_brightspace_roles(APP)
+    logging.info(f"Available roles in Brightspace: {target_role_set}")
 
     if os.path.exists(site_xml_src) and os.path.exists(user_xml_src):
         site_tree = ET.parse(site_xml_src)
@@ -47,11 +51,15 @@ def run(SITE_ID, APP, import_id):
                         _type = details[0].get('type')
                         if (_type in enroll_types):
                             target_role = enroll_map[user_role]
-                            logging.info(f"Enrolling user eid {_eid} (type={_type}, role={user_role}) in Brightspace site {import_id} (role={target_role})")
-                            enroll_in_site(APP, _eid, import_id, target_role)
+                            if target_role in target_role_set.keys():
+                                target_role_id = target_role_set[target_role]
+                                logging.info(f"Enrolling user eid {_eid} (type={_type}, role={user_role}) in Brightspace site {import_id} (role={target_role} : {target_role_id})")
+                                enroll_in_site(APP, _eid, import_id, target_role_id)
+                            else:
+                                logging.warning(f"Skipping enrolling user eid {_eid} (type={_type}, role={user_role}) in Brightspace site {import_id}: role {target_role} not found")
 
         except Exception as e:
-            raise Exception(f'Could not enroll users from {SITE_ID} in Brightspacd site {import_id}') from e
+            raise Exception(f'Could not enroll users from {SITE_ID} in Brightspace site {import_id}') from e
     else:
         raise Exception(f'XML file does not exist anymore {dir}/site.xml or user.xml')
 

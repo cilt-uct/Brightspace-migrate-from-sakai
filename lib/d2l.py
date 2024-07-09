@@ -315,6 +315,32 @@ def get_imported_content(APP, org_id):
 
     return imported_content
 
+# Get Brightspace roles
+# https://docs.valence.desire2learn.com/res/user.html#get--d2l-api-lp-(version)-roles-
+# Return a dictionary of role name to id
+def get_brightspace_roles(APP):
+
+    payload = {
+        'url': f"{APP['brightspace_api']['lp_url']}/roles/",
+        'method': 'GET',
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload)
+
+    if 'status' in json_response and json_response['status'] == "NotFound":
+        return None
+
+    if 'status' not in json_response or json_response['status'] != 'success':
+        raise Exception(f"API call {payload} failed: {json_response}")
+
+    role_set = json_response['data']
+
+    role_dict = {}
+    for role in role_set:
+        role_dict[role['DisplayName']] = role['Identifier']
+
+    return role_dict
+
 # Map username to internal Brightspace id
 def get_brightspace_user(APP, username):
 
@@ -371,3 +397,53 @@ def update_content_owner(APP, content_id, username = None, userid = None):
         raise Exception(f"API call {payload} failed: {json_response}")
 
     return json_response['data']
+
+# Add user to this
+def enroll_in_site(APP, eid, import_id, role_id):
+
+    logging.info(f"enroll_in_site: {import_id} {eid} with role id {role_id}")
+
+    # Resolve the user to a Brightspace user id
+    user = get_brightspace_user(APP, eid)
+    if not user:
+        logging.warn(f"No Brightspace user found for {eid}")
+        return True
+
+    user_id = user['UserId']
+
+    payload_data = {
+            "OrgUnitId": int(import_id),
+            "UserId": int(user_id),
+            "RoleId": int(role_id),
+            "IsCascading": False
+        }
+
+    payload = {
+        'url': f"{APP['brightspace_api']['lp_url']}/enrollments/",
+        'method': 'POST',
+        'payload': json.dumps(payload_data)
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload)
+
+    logging.info(f"Enrollment: got {json_response}")
+
+    if 'status' not in json_response or json_response['status'] != 'success':
+        raise Exception(f"API call {payload} failed: {json_response}")
+
+    if json_response is not None and 'data' in json_response and 'UserId' in json_response['data']:
+        # Success
+        user_id = json_response['data']['UserId']
+        logging.info(f"Enrolled username {eid} userid {user_id} in {import_id}")
+        return True
+
+    # {'data': 'User NNN (###) is Inactive', 'status': 'ERR'}
+    valid_return = json_response is not None
+    status_error = valid_return and 'status' in json_response and json_response['status'] == 'ERR' and 'data' in json_response
+    user_inactive = status_error and 'is Inactive' in json_response['data']
+
+    if user_inactive:
+        logging.warning(f"Ignoring enrolment for {eid}, user is inactive in Brightspace")
+        return True
+
+    raise Exception(f"Could not enroll user {eid} in {import_id}: {json_response}")

@@ -131,7 +131,6 @@ APP = {
           'api_proxy_url': '/d2l/api/call',
           'create_url': '/d2l/api/course/new',
           'import_url': '/d2l/api/course/import_package',
-          'enroll_user_url': '/d2l/api/course/enroll/user',
           'course_info_order_url': '/d2l/api/content/order/course_info',
           'course_outline_order_url': '/d2l/api/content/order/course_outline',
           'add_opencast_url': '/d2l/api/series/',

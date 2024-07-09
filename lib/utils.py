@@ -426,38 +426,6 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
     logging.error(f"API call {url} failed: {last_status} {json_response}")
     return None
 
-def enroll_in_site(APP, eid, import_id, role):
-
-    enroll_user_url = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['enroll_user_url'])
-
-    logging.info(f"enroll_in_site: {import_id} {eid} using endpoint {enroll_user_url}")
-    json_response = middleware_api(APP, enroll_user_url, payload_data={'org_id': import_id, 'eid': eid, 'role': role})
-
-    if json_response is not None and 'data' in json_response and 'UserId' in json_response['data']:
-        user_id = json_response['data']['UserId']
-        logging.info(f"Enrolled username {eid} userid {user_id} in {import_id}")
-        return True
-
-    if json_response is not None and 'status' in json_response and 'NotFound' in json_response['status']:
-        logging.warning(f"Ignoring enrolment for {eid}, not found in Brightspace")
-        return True
-
-    # {'data': 'User NNN (###) is Inactive', 'status': 'ERR'}
-    valid_return = json_response is not None
-    status_error = valid_return and 'status' in json_response and json_response['status'] == 'ERR' and 'data' in json_response
-    user_inactive = status_error and 'is Inactive' in json_response['data']
-    user_not_found = status_error and 'User not found' in json_response['data']
-
-    if user_not_found:
-        logging.warning(f"Ignoring enrolment for {eid}, user not found in Brightspace")
-        return True
-
-    if user_inactive:
-        logging.warning(f"Ignoring enrolment for {eid}, user is inactive in Brightspace")
-        return True
-
-    raise Exception(f"Could not enroll user {eid} in {import_id}: {json_response}")
-
 def resolve_redirect(url):
 
     # Sakai shortened URLs like /x/ are resolved with redirects

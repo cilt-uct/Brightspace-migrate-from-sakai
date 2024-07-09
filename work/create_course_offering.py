@@ -22,8 +22,8 @@ sys.path.append(parent)
 import config.logging_config
 import lib.db
 import lib.sakai
-from lib.utils import enroll_in_site, middleware_api, sis_course_title, site_has_tool
-from lib.d2l import middleware_d2l_api
+from lib.utils import middleware_api, sis_course_title, site_has_tool
+from lib.d2l import middleware_d2l_api, enroll_in_site, get_brightspace_roles
 
 def cheap_hash(input_str):
     return hashlib.md5(input_str.encode('utf-8')).hexdigest()[:8]
@@ -43,6 +43,13 @@ def enroll(SITE_ID, APP, import_id, role):
 
     # Sakai to Brightspace role map
     enroll_map = APP['users']['enroll_role_map']
+    target_role_set = get_brightspace_roles(APP)
+
+    if role in target_role_set.keys():
+        target_role_id = target_role_set[role]
+    else:
+        logging.warning(f"Skipping enrolling users in Brightspace site {import_id}: role {role} not found")
+        return
 
     if os.path.exists(site_xml_src) and os.path.exists(user_xml_src):
         site_tree = ET.parse(site_xml_src)
@@ -62,7 +69,7 @@ def enroll(SITE_ID, APP, import_id, role):
                         _type = details[0].get('type')
                         if (_type in enroll_types):
                             logging.info(f"Enrolling user eid {_eid} (type={_type}, role={user_role}) in Brightspace site {import_id} (role={role})")
-                            enroll_in_site(APP, _eid, import_id, role)
+                            enroll_in_site(APP, _eid, import_id, target_role_id)
 
         except Exception as e:
             raise Exception(f'Could not enroll users in {SITE_ID}') from e
