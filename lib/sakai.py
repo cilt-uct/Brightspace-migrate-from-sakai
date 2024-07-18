@@ -80,22 +80,24 @@ class Sakai:
 
         site_title = None
 
+        # Use the archive server configuration rather than general Sakai configuration
+        archive_url = self.ARCHIVE['url']
+
         session = Session()
+        # Disable SSL cert validation (only if needed)
+        session.verify = False
+
         transport = zeep.Transport(session=session, timeout=60)
 
         # Zeep client for login and out
-        login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(self.SAKAI['url']), transport=transport)
-
-        # Disable SSL cert validation (only if needed)
-        login_client.transport.session.verify = False
+        login_client = zeep.Client(wsdl=f"{archive_url}/sakai-ws/soap/login?wsdl", transport=transport)
 
         try:
-            session_id = login_client.service.login(self.SAKAI['username'], self.SAKAI['password'])
+            session_id = login_client.service.login(self.ARCHIVE['username'], self.ARCHIVE['password'])
 
-            sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(self.SAKAI['url']), transport=transport)
-            sakai_client.transport.session.verify = False
+            sakai_client = zeep.Client(wsdl=f"{archive_url}/sakai-ws/soap/sakai?wsdl", transport=transport)
 
-            logging.debug("Getting Sakai site title for {} on server {}" .format(SITE_ID, self.SAKAI['url']))
+            logging.debug("Getting Sakai site title for {} on server {}" .format(SITE_ID, self.ARCHIVE['url']))
 
             title_result = sakai_client.service.getSiteTitle(session_id, SITE_ID)
 
@@ -115,15 +117,14 @@ class Sakai:
             return site_title
 
         except zeep.exceptions.Fault as fault:
-            logging.error("Webservices error calling method on {} with username {}".format(self.SAKAI['url'], self.SAKAI['username']))
+            logging.error("Webservices error calling method on {} with username {}".format(self.ARCHIVE['url'], self.ARCHIVE['username']))
             raise Exception(fault)
 
     ## Archive a site
     def archive_site(self, SITE_ID, force:bool = False):
 
         # Use the archive server configuration rather than general Sakai configuration
-        auth = self.ARCHIVE
-        archive_url = auth['url']
+        archive_url = self.ARCHIVE['url']
 
         if SITE_ID.startswith("!"):
             raise SecurityError(f"Not archiving special sites: {SITE_ID}")
@@ -139,16 +140,14 @@ class Sakai:
 
         # Zeep client for login and out
         login_client = zeep.Client(wsdl=f"{archive_url}/sakai-ws/soap/login?wsdl", transport=transport)
-        login_client.transport.session.verify = False
 
         try:
-            session_id = login_client.service.login(auth['username'], auth['password'])
+            session_id = login_client.service.login(self.ARCHIVE['username'], self.ARCHIVE['password'])
 
             # Check max permitted content size
             max_size = self.APP['export']['limit']
 
             sakai_content = zeep.Client(wsdl=f"{archive_url}/sakai-ws/soap/contenthosting?wsdl", transport=transport)
-            sakai_content.transport.session.verify = False
 
             logging.info(f"Checking Sakai site resources size for {SITE_ID} on server {archive_url}")
 
@@ -169,7 +168,6 @@ class Sakai:
             # Go ahead with archive
             archive_ws = self.APP['archive']['endpoint']
             sakai_client = zeep.Client(wsdl=f"{archive_url}/{archive_ws}?wsdl", transport=transport)
-            sakai_client.transport.session.verify = False
 
             logging.info(f"Archiving Sakai site {SITE_ID} on server {archive_url}")
 
@@ -193,7 +191,7 @@ class Sakai:
             return succeeded
 
         except zeep.exceptions.Fault as fault:
-            logging.error("Webservices error calling method on {} with username {}".format(auth['url'], auth['username']))
+            logging.error("Webservices error calling method on {} with username {}".format(self.ARCHIVE['url'], self.ARCHIVE['username']))
             raise Exception(fault)
 
     ## Archive site with retry
@@ -242,19 +240,18 @@ class Sakai:
         try:
 
             session = Session()
+            session.verify = False
+
             props_updated = 0
 
             # Zeep client for running site archive - timeout is 7200 sec = 2 hrs
             transport = zeep.Transport(session=session, timeout=7200)
 
             # Zeep client for login and out
-            login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(self.SAKAI['url']), transport=transport)
-            login_client.transport.session.verify = False
+            login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(self.ARCHIVE['url']), transport=transport)
+            session_id = login_client.service.login(self.ARCHIVE['username'], self.ARCHIVE['password'])
 
-            session_id = login_client.service.login(self.SAKAI['username'], self.SAKAI['password'])
-
-            sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(self.SAKAI['url']), transport=transport)
-            sakai_client.transport.session.verify = False
+            sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(self.ARCHIVE['url']), transport=transport)
 
             for k in property_set:
                 if k['name'] in ALLOWED_PROPS:
@@ -274,7 +271,7 @@ class Sakai:
             return (props_updated > 0)
 
         except zeep.exceptions.Fault as fault:
-            logging.error("Webservices error calling method on {} with username {}".format(self.SAKAI['url'], self.SAKAI['username']))
+            logging.error("Webservices error calling method on {} with username {}".format(self.ARCHIVE['url'], self.ARCHIVE['username']))
             raise Exception(fault)
 
     ## Set a single site property
