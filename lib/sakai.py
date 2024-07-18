@@ -90,16 +90,14 @@ class Sakai:
         login_client.transport.session.verify = False
 
         try:
-            session_details = login_client.service.loginToServer(self.SAKAI['username'], self.SAKAI['password']).split(',')
-            if self.debug:
-                print(session_details)
+            session_id = login_client.service.login(self.SAKAI['username'], self.SAKAI['password'])
 
-            sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(session_details[1]), transport=transport)
+            sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(self.SAKAI['url']), transport=transport)
             sakai_client.transport.session.verify = False
 
-            logging.debug("Getting Sakai site title for {} on server {}" .format(SITE_ID, session_details[1]))
+            logging.debug("Getting Sakai site title for {} on server {}" .format(SITE_ID, self.SAKAI['url']))
 
-            title_result = sakai_client.service.getSiteTitle(session_details[0], SITE_ID)
+            title_result = sakai_client.service.getSiteTitle(session_id, SITE_ID)
 
             if title_result and not title_result.startswith("org.sakaiproject.exception.IdUnusedException"):
                 logging.debug("Title for site {} is {}".format(SITE_ID, title_result))
@@ -109,7 +107,7 @@ class Sakai:
                 logging.warning("Site {} title request failed with result: {}".format(SITE_ID, title_result))
 
             # logout
-            logout = login_client.service.logout(session_details[0])
+            logout = login_client.service.logout(session_id)
 
             if self.debug:
                 print(logout)
@@ -125,6 +123,7 @@ class Sakai:
 
         # Use the archive server configuration rather than general Sakai configuration
         auth = self.ARCHIVE
+        archive_url = auth['url']
 
         if SITE_ID.startswith("!"):
             raise SecurityError(f"Not archiving special sites: {SITE_ID}")
@@ -139,24 +138,22 @@ class Sakai:
         transport = zeep.Transport(session=session, timeout=7200)
 
         # Zeep client for login and out
-        login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(auth['url']), transport=transport)
+        login_client = zeep.Client(wsdl=f"{archive_url}/sakai-ws/soap/login?wsdl", transport=transport)
         login_client.transport.session.verify = False
 
         try:
-            session_details = login_client.service.loginToServer(auth['username'], auth['password']).split(',')
-            if self.debug:
-                print(session_details)
+            session_id = login_client.service.login(auth['username'], auth['password'])
 
             # Check max permitted content size
             max_size = self.APP['export']['limit']
 
-            sakai_content = zeep.Client(wsdl="{}/sakai-ws/soap/contenthosting?wsdl".format(session_details[1]), transport=transport)
+            sakai_content = zeep.Client(wsdl=f"{archive_url}/sakai-ws/soap/contenthosting?wsdl", transport=transport)
             sakai_content.transport.session.verify = False
 
-            logging.info("Checking Sakai site resources size for {} on server {}" .format(SITE_ID, session_details[1]))
+            logging.info(f"Checking Sakai site resources size for {SITE_ID} on server {archive_url}")
 
             # Returns size in KB, -1 if invalid site id
-            size_result = sakai_content.service.getSiteCollectionSize(session_details[0], SITE_ID)
+            size_result = sakai_content.service.getSiteCollectionSize(session_id, SITE_ID)
 
             if int(size_result) >= 0:
                 size_result = size_result * 1024
@@ -166,32 +163,32 @@ class Sakai:
                     if force:
                         logging.warning(f"Resources size in {SITE_ID} of {format_bytes(size_result)} exceeds limit {format_bytes(max_size)}, [{force=}] proceeeding ...")
                     else:
-                        logout = login_client.service.logout(session_details[0])
+                        logout = login_client.service.logout(session_id)
                         raise SizeExceededError(f"Resources size in {SITE_ID} of {format_bytes(size_result)} exceeds limit {format_bytes(max_size)}")
 
             # Go ahead with archive
             archive_ws = self.APP['archive']['endpoint']
-            sakai_client = zeep.Client(wsdl="{}/{}?wsdl".format(session_details[1], archive_ws), transport=transport)
+            sakai_client = zeep.Client(wsdl=f"{archive_url}/{archive_ws}?wsdl", transport=transport)
             sakai_client.transport.session.verify = False
 
-            logging.info("Archiving Sakai site {} on server {}" .format(SITE_ID, session_details[1]))
+            logging.info(f"Archiving Sakai site {SITE_ID} on server {archive_url}")
 
             start_time = time.time()
-            archive_result = sakai_client.service.archiveSite(session_details[0], SITE_ID)
+            archive_result = sakai_client.service.archiveSite(session_id, SITE_ID)
 
             if (archive_result == "success"):
-                logging.info("Archive for site {} completed".format(SITE_ID))
+                logging.info(f"Archive for site {SITE_ID} completed")
                 succeeded = True
             else:
-                logging.error("Archive for site {} failed with result: {}".format(SITE_ID, archive_result))
+                logging.error(f"Archive for site {SITE_ID} failed with result: {archive_result}")
 
             logging.info("\tElapsed time {}".format(str(timedelta(seconds=(time.time() - start_time)))))
 
             # logout
-            logout = login_client.service.logout(session_details[0])
+            logout = login_client.service.logout(session_id)
 
             if self.debug:
-                print(logout)
+                print(f"Logout result: {logout}")
 
             return succeeded
 
@@ -254,15 +251,14 @@ class Sakai:
             login_client = zeep.Client(wsdl="{}/sakai-ws/soap/login?wsdl".format(self.SAKAI['url']), transport=transport)
             login_client.transport.session.verify = False
 
-            session_details = login_client.service.loginToServer(self.SAKAI['username'], self.SAKAI['password']).split(',')
-            logging.debug(f'session_details {session_details}')
+            session_id = login_client.service.login(self.SAKAI['username'], self.SAKAI['password'])
 
-            sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(session_details[1]), transport=transport)
+            sakai_client = zeep.Client(wsdl="{}/sakai-ws/soap/sakai?wsdl".format(self.SAKAI['url']), transport=transport)
             sakai_client.transport.session.verify = False
 
             for k in property_set:
                 if k['name'] in ALLOWED_PROPS:
-                    succeeded = sakai_client.service.setSiteProperty(session_details[0], SITE_ID, k['name'], k['value']) == "success"
+                    succeeded = sakai_client.service.setSiteProperty(session_id, SITE_ID, k['name'], k['value']) == "success"
                     if succeeded:
                         logging.info(f"Site {SITE_ID} property {k['name']}={k['value']}")
                         props_updated += 1
@@ -270,7 +266,7 @@ class Sakai:
                     logging.warning(f"Ignoring property {k['name']}: not in allowed set of properties")
 
             # logout
-            logout = login_client.service.logout(session_details[0])
+            logout = login_client.service.logout(session_id)
             logging.debug(f'logout: {logout}')
 
             logging.info(f'Updated {props_updated} site_properties : {SITE_ID}')
