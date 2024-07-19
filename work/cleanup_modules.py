@@ -57,7 +57,7 @@ def run(SITE_ID, APP, import_id):
     content_toc = json.loads(get_toc(APP, import_id, brightspace_session))
 
     # Quiz Images
-    module_title = APP['quizzes']['image_collection']
+    module_title = APP['quizzes']['media_collection']
     module_id = get_module_id(content_toc, module_title)
     if module_id:
         delete_module(APP, import_id, module_id, brightspace_session)

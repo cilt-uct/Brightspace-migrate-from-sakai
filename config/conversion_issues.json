@@ -727,6 +727,21 @@
       ]
     },
     {
+      "key": "c20",
+      "active": true,
+      "tool": "sakai.samigo",
+      "icon-class": "icon-settings",
+      "description": "Tests & Quizzes items contain inline audio",
+      "detail-heading": "Assessments",
+      "found": "One or more assessments contain inline audio files. These must be re-inserted from Course Offering Files.",
+      "not_found": "Good to go! T&Q does not contain inline audio",
+      "args": [
+        "site_folder",
+        "samigo_soup",
+	"sakai_url"
+      ]
+    },
+    {
       "key": "d1",
       "active": false,
       "tool": "sakai.forums",

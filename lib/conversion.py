@@ -757,6 +757,51 @@ def c19(gradebook_soup):
     if gradebook_soup.find("GradebookItem", attrs={"externalAppName": "sakai.samigo"}):
         return True
 
+# AMA-1149 Inline audio in T&Q questions
+def c20(site_folder, samigo_soup, sakai_url):
+    data = set()
+
+    # Questions
+    items = samigo_soup.find_all("assessment")
+    for collection in items:
+        file_path = os.path.join(site_folder, 'qti', 'assessment' + collection.get('id') + '.xml')
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+
+        # <questestinterop><assessment ident="160024" title="Case 10 Urinary System Histology quiz">
+        title = root.find(".//assessment").get("title")
+
+        for item in root.findall(".//mattext[@texttype='text/plain']"):
+            # could be plain text so check that it at least contains an image tag
+            if item.text and "<audio" in item.text:
+                html = BeautifulSoup(item.text, 'html.parser')
+                for el in html.findAll("source"):
+                    img_src = el.get('src')
+                    if img_src and img_src.startswith(f"{sakai_url}/access/content/") and img_src.endswith(".wav"):
+                        data.add(title)
+
+    # Question Pools
+    file = "samigo_question_pools.xml"
+    file_path = os.path.join(site_folder, file)
+    if os.path.isfile(file_path):
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+        for qp in root.findall(".//QuestionPool"):
+            qp_title = qp.get("title")
+            # <QuestionPool id="11771" ownerId="d21166da-9b65-4457-9cca-148f4c5e4ee9" sourcebank_ref="11771::Yr 2 July Immunology mcq" title="Yr 2 July Immunology mcq">
+            for item in qp.findall(".//mattext"):
+                if item.text and "<audio" in item.text:
+                    html = BeautifulSoup(item.text.replace("<![CDATA[", "").replace("]]>", ""), 'html.parser')
+                    for el in html.findAll("source"):
+                        img_src = el.get('src')
+                        if img_src and img_src.startswith(f"{sakai_url}/access/content/") and img_src.endswith(".wav"):
+                            data.add(f"Question Pool: {qp_title}")
+
+    if len(data) > 0:
+        return sorted(data)
+    else:
+        return None
+
 
 # D1 Forum / Topic attachments
 def d1(discussions_soup):

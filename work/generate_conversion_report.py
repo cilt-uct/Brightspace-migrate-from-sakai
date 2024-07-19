@@ -323,7 +323,7 @@ def process(conf, issue_key, SITE_ID, APP, link_id, now_st):
     restricted_ext = lib.utils.read_yaml(APP['content']['restricted-ext'])
 
     # ignored collections
-    ignored_collections = ["attachment", APP['quizzes']['image_collection'], APP['qna']['collection']]
+    ignored_collections = ["attachment", APP['quizzes']['media_collection'], APP['qna']['collection']]
 
     # run through all the tools and see
     for k in conf['tools']:

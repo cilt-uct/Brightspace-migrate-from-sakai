@@ -245,3 +245,38 @@ def add_resource(SITE_ID, site_folder, file_path, display_name, content_type, co
     content_tree.write(content_src, encoding='utf-8', xml_declaration=True)
 
     return
+
+# Rename files in attachment.xml
+def rename_attachments(SITE_ID, site_folder, collection, rename_list):
+
+    if len(rename_list) == 0:
+        # Nothing to do
+        return
+
+    attach_src = f'{site_folder}/attachment.xml'
+
+    attach_tree = ET.parse(attach_src)
+    attach_root = attach_tree.getroot()
+
+    rewrite = False
+
+    # Iterate
+    for attach_id in rename_list:
+        # print(f"Moving {attach_id} to {move_list[attach_id]})")
+
+        attach_item = attach_root.find(f".//resource[@id='{attach_id}']")
+        if attach_item is not None:
+
+            new_id = rename_list[attach_id]
+            rel_id = new_id.replace(f"/group/{SITE_ID}/","")
+
+            attach_item.set('id', new_id)
+            attach_item.set('rel-id', rel_id)
+
+            print(f"Renaming {attach_id} to {new_id} in attachment.xml")
+
+            rewrite = True
+
+    # Rewrite if updated
+    if rewrite:
+        attach_tree.write(attach_src, encoding='utf-8', xml_declaration=True)

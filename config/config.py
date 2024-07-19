@@ -200,9 +200,9 @@ APP = {
     'content' : 'content_'
   },
 
-  # Name of the collection used for T&Q inline images (attachments and cross-site)
+  # Name of the collection used for T&Q inline images and audio (attachments and cross-site)
   'quizzes': {
-        'image_collection' : 'quiz_images'
+        'media_collection' : 'quiz_media'
   },
 
   'lessons': {
