@@ -72,17 +72,11 @@ def run(SITE_ID, APP, **kwargs):
             shutil.rmtree(src_folder)
             logging.info(f" - removed {src_folder}")
 
-        # Content output folder
-        content_folder = r'{}{}-content/'.format(APP['output'], SITE_ID)
-        if os.path.isdir(content_folder):
-            shutil.rmtree(content_folder)
-            logging.info(f" - removed {content_folder}")
-
-        # rubrics output folder
-        rubrics_folder = r'{}{}-rubrics/'.format(APP['output'], SITE_ID)
-        if os.path.isdir(rubrics_folder):
-            shutil.rmtree(rubrics_folder)
-            logging.info(f" - removed {rubrics_folder}")
+        # Output folders (e.g. content, rubrics, qti)
+        for output_folder in glob.glob('{}/{}-*/'.format(APP['output'], SITE_ID)):
+            if os.path.isdir(output_folder):
+                shutil.rmtree(output_folder)
+                logging.info(f" - removed {output_folder}")
 
         # Zipfiles
         for zipfile in glob.glob('{}/*{}*.zip'.format(APP['output'], SITE_ID)):
@@ -126,9 +120,12 @@ def main():
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID on which to work")
     parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-f', '--force', help="Cleanup regardless of cleanup config setting", action='store_true')
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
+    if args['force']:
+        APP['clean_up'] = True
 
     run(args['SITE_ID'], APP)
 

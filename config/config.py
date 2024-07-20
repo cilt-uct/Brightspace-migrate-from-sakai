@@ -197,7 +197,8 @@ APP = {
   'zip': {
     'site': 'completed_site_',
     'rubrics' : 'rubrics_',
-    'content' : 'content_'
+    'content' : 'content_',
+    'qti' : 'qti_'
   },
 
   # Name of the collection used for T&Q inline images and audio (attachments and cross-site)

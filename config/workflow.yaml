@@ -106,6 +106,9 @@ STEPS:
   # Rubrics
   - action: export_rubrics
 
+  # QTI
+  - action: export_qti
+
   # Conversion report
   - action: generate_conversion_report
     use_date: 1
