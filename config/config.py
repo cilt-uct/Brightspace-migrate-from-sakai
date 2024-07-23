@@ -136,7 +136,7 @@ APP = {
           'add_opencast_url': '/d2l/api/series/',
           'update_html_file': '/d2l/api/content/{}/topics/{}/file',
           'course_info_url': '/d2l/api/course/{}',
-          'course_content_src': 9944,
+          'course_content_src': 78969, # AMA-481 : 9944,
           'retries': 10,
           'retry_delay': 180,
   },
