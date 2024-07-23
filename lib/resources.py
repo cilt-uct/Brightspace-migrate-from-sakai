@@ -30,10 +30,8 @@ def get_content_owner(site_folder, sakai_id):
         return (None, None)
 
     content_src = f'{site_folder}/content.xml'
-    content_tree = ET.parse(content_src)
-    content_root = content_tree.getroot()
 
-    item = content_root.find(f".//resource[@id='{sakai_id}']")
+    item = find_content(site_folder, sakai_id)
     if item is None:
         raise Exception(f"Resource {sakai_id} not found in {content_src}")
 
@@ -55,24 +53,11 @@ def get_content_owner(site_folder, sakai_id):
 
 def resource_exists(site_folder, sakai_id):
 
-    if sakai_id.startswith("/url/"):
-        # Not a real Sakai ID - used in Lessons
-        return False
+    el = find_content(site_folder, sakai_id)
 
-    content_src = f'{site_folder}/content.xml'
-    content_tree = ET.parse(content_src)
-    content_root = content_tree.getroot()
+    return (el is not None)
 
-    if content_root.find(f".//resource[@id='{sakai_id}']") is not None:
-        return True
-
-    if content_root.find(f".//collection[@id='{sakai_id}']") is not None:
-        return True
-
-    return False
-
-# Return display name for a content item, if available otherwise None
-def get_content_displayname(site_folder, sakai_id):
+def find_content(site_folder, sakai_id):
 
     if sakai_id.startswith("/url/"):
         # Not a real Sakai ID - used in Lessons
@@ -82,12 +67,35 @@ def get_content_displayname(site_folder, sakai_id):
     content_tree = ET.parse(content_src)
     content_root = content_tree.getroot()
 
-    if sakai_id.endswith("/"):
-        # Collection
-        item = content_root.find(f".//collection[@id='{sakai_id}']")
+    if "'" not in sakai_id:
+        # Fast search
+        el = content_root.find(f".//resource[@id='{sakai_id}']")
+        if el is not None:
+            return el
+
+        el = content_root.find(f".//collection[@id='{sakai_id}']")
+        if el is not None:
+            return el
+
+        return None
     else:
-        # Resource
-        item = content_root.find(f".//resource[@id='{sakai_id}']")
+        # Iterate through because of escaping issues with lxml.find()
+        for el in content_root.findall('.//resource') + content_root.findall('.//collection'):
+            if el.get('id') == sakai_id:
+                return el
+
+        return None
+
+# Return display name for a content item, if available otherwise None
+def get_content_displayname(site_folder, sakai_id):
+
+    if sakai_id.startswith("/url/"):
+        # Not a real Sakai ID - used in Lessons
+        return None
+
+    content_src = f'{site_folder}/content.xml'
+
+    item = find_content(site_folder, sakai_id)
 
     if item is None:
         raise Exception(f"Resource {sakai_id} not found in {content_src}")
