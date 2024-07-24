@@ -249,7 +249,8 @@ def run(SITE_ID, APP, link_id):
                         if json_response and 'status' in json_response and json_response['status'] == 'success':
                             logging.info(f"- added Opencast Lecture Videos tool to {target_site_id}")
                         else:
-                            logging.warning(f"- error adding Opencast Lecture Videos tool to {target_site_id}: {json_response}")
+                            logging.error(f"- error adding Opencast Lecture Videos tool to {target_site_id}: {json_response}")
+                            raise Exception(f"Unable to add Lecture Videos tool to target site {target_site_id} for {SITE_ID}")
                     else:
                         logging.debug(f"Site {SITE_ID} does not have Opencast LTI tool")
 

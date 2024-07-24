@@ -133,7 +133,7 @@ APP = {
           'import_url': '/d2l/api/course/import_package',
           'course_info_order_url': '/d2l/api/content/order/course_info',
           'course_outline_order_url': '/d2l/api/content/order/course_outline',
-          'add_opencast_url': '/d2l/api/series/',
+          'add_opencast_url': '/d2l/api/oc/series/',
           'update_html_file': '/d2l/api/content/{}/topics/{}/file',
           'course_info_url': '/d2l/api/course/{}',
           'course_content_src': 78969, # AMA-481 : 9944,
