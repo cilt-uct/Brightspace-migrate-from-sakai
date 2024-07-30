@@ -1,5 +1,6 @@
 beautifulsoup4==4.11.1
 cssutils==2.4.0
+emails==0.6
 ffprobe_python==1.0.3
 funcy==1.17
 Jinja2==3.1.4
