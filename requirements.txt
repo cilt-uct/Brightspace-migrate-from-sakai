@@ -11,7 +11,8 @@ paramiko==3.4.0
 PyMySQL==1.1.1
 python_oembed==0.2.4
 PyYAML==6.0.1
-Requests==2.32.0
+Requests==2.32.3
+ruff>=0.3.4
 tqdm==4.66.3
 urllib3==1.26.19
 validators==0.22.0
