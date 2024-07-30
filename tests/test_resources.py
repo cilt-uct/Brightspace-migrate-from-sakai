@@ -33,8 +33,8 @@ class ResourcesSpecialCharsTestCase(unittest.TestCase):
         # Resource with apostrophe
         resource_id = "/group/4bc86af2-7ed2-4659-bc86-9cdbda4fb494/apos'trophe2/test'file.txt.txt"
         self.assertTrue(resource_exists(site_folder, resource_id))
-        self.assertEquals(get_content_displayname(site_folder, resource_id), "test'file.txt.txt")
-        self.assertEquals(get_content_owner(site_folder, resource_id), ("marquard", "01404877"))
+        self.assertEqual(get_content_displayname(site_folder, resource_id), "test'file.txt.txt")
+        self.assertEqual(get_content_owner(site_folder, resource_id), ("marquard", "01404877"))
 
         # Folder with quote
         collection_id = '/group/4bc86af2-7ed2-4659-bc86-9cdbda4fb494/quoted"name2/'
