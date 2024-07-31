@@ -16,6 +16,17 @@ def get_resource_ids(xml_src):
     else:
         return []
 
+# Return a map of resource IDs to size
+def get_resource_sizes(xml_src):
+
+    if os.path.exists(xml_src):
+        tree = ET.parse(xml_src)
+        root = tree.getroot()
+        ids = {x.get('id'):x.get('content-length') for x in root.findall(".//resource")}
+        return ids
+    else:
+        return {}
+
 # Get the userid and if available EID (username) of the user who owns this content ID
 # 1. From content.xml, get resource with id=sakai_id
 # - creator userid is base64-decode of <property name="CHEF:creator" value="...">

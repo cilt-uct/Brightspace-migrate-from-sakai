@@ -15,10 +15,11 @@ sys.path.append(parent)
 
 import config.config
 import config.logging_config
-from lib.resources import get_resource_ids
+from lib.resources import get_resource_sizes
 
 def orphaned(APP, SITE_ID, content_src):
-    content_ids = get_resource_ids(content_src)
+    content_sizes = get_resource_sizes(content_src)
+    content_ids = sorted(content_sizes.keys(), key=lambda s: s.casefold())
     used_ids = {}
 
     # Look at each XML file
@@ -31,7 +32,7 @@ def orphaned(APP, SITE_ID, content_src):
     xml_files = archive_files + qti_files
 
     for xml_file in xml_files:
-        print(f"Checking file refs in {xml_file.name}")
+        # print(f"Checking file refs in {xml_file.name}")
 
         with open(xml_file.path, 'r') as file:
             content = file.read()
@@ -44,25 +45,32 @@ def orphaned(APP, SITE_ID, content_src):
 
                     if id in content:
                         used_ids[id] = 'found-plain'
-                        print(f"{id} found in {xml_file.name}")
+                        # print(f"{id} found in {xml_file.name}")
                     elif url_id in content:
                         used_ids[id] = 'found-escaped'
-                        print(f"{id} found escaped in {xml_file.name}")
+                        # print(f"{id} found escaped in {xml_file.name}")
 
     # Now check the ids that weren't found
 
-    #print(f"Used IDS: {used_ids}")
+    # Referenced files
+    for id in content_ids:
+        #print(f"used? {id}")
+        if id in used_ids:
+            print(f"USED: {content_sizes[id]} {id}")
 
+    print("")
+
+    # Orphaned files
     for id in content_ids:
         #print(f"used? {id}")
         if id not in used_ids:
-            print(f"ORPHANED: {id}")
+            print(f"ORPHANED: {content_sizes[id]} {id}")
 
     return
 
 
 def run(SITE_ID, APP):
-    logging.info('Content: identify orphaned resources : {}'.format(SITE_ID))
+    logging.info(f'Content: identify orphaned resources : {SITE_ID}\n')
 
     src_folder  = r'{}{}-archive/'.format(APP['archive_folder'], SITE_ID)
 
