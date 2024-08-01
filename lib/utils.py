@@ -13,6 +13,7 @@ import time
 import requests
 import csv
 import lxml.etree as ET
+import unicodedata
 
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -127,7 +128,7 @@ def remove_unwanted_characters(file):
 
     # weird characters
     data = data.replace('\x1e', '').replace('&amp;#xb;' ,'').replace('&#xb;','').replace('&amp;#x2;' ,'').replace('&#x2;' ,'').replace('&#160;','').replace('&#11;','').replace('&amp;#x8;' ,'')
-    data = data.replace('&amp;#x1;', '').replace('&#x1;' ,'').replace('&amp;#x1f;', '').replace('&#x1f;' ,'').replace('&amp;#x4;', '').replace('&#x4;' ,'')
+    data = data.replace('&amp;#x1;', '').replace('&#x1;' ,'').replace('&#x1e;' ,'').replace('&amp;#x1f;', '').replace('&#x1f;' ,'').replace('&amp;#x4;', '').replace('&#x4;' ,'')
     data = data.replace('&amp;#x7;', '').replace('&#x7;' ,'')
 
     # newline and tab
@@ -509,12 +510,19 @@ def get_user_by_email(APP, SITE_ID, email):
 #     </semantics>
 # </math>
 
+def assert_valid_characters(s):
+    for ch in s:
+        if (unicodedata.category(ch)[0] == "C") and (ord(ch) not in (9, 10)):
+            print(f"Invalid char: {ord(ch)} {ch}")
+            raise Exception(f"invalid char {ord(ch)} in {s}")
+
 def replace_wiris(html_str):
 
     html = BeautifulSoup(html_str, 'html.parser')
 
     for el in html.findAll("img", {"class" : "Wirisformula"}):
         math_ml_raw = el['data-mathml'].replace("«", "<").replace("»", ">").replace("¨", "\"").replace("§", "&")
+        assert_valid_characters(math_ml_raw)
         math_ml = BeautifulSoup(math_ml_raw,'html.parser')
         el.replace_with(math_ml)
 
