@@ -17,7 +17,7 @@ from lib.utils import remove_unwanted_characters, middleware_api
 from lib.local_auth import getAuth
 from lib.lessons import get_archive_lti_link, ItemType, supported_media_type
 from lib.resources import resource_exists, get_content_displayname
-from lib.d2l import create_lti_quicklink, web_login, get_toc, get_instance_org_id
+from lib.d2l import create_lti_quicklink, web_login, get_toc, get_instance_org_id, lti_available, get_lti_tool_providers
 
 # See https://docs.valence.desire2learn.com/res/content.html
 
@@ -189,6 +189,8 @@ def run(SITE_ID, APP, import_id, transfer_id):
 
     placeholder_items = []
 
+    lti_content = False
+
     with open(lessons_src, "r", encoding="utf8") as fp:
         soup = BeautifulSoup(fp, 'xml')
         items = soup.find_all('item', attrs={"type": "5"})
@@ -203,6 +205,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
             # At least one LTI content item
             if html.find('p', attrs={"data-type": "lti-content"}):
                 placeholder_items.append(item['id'])
+                lti_content = True
                 continue
 
             # Or at least one link to an audio or video file
@@ -230,6 +233,14 @@ def run(SITE_ID, APP, import_id, transfer_id):
     if not placeholder_items:
         logging.info("No placeholders or audio/video links in Lessons content")
         return
+
+    lti1x_providers = None
+
+    # Check the available LTI 1.x legacy tool providers
+    if lti_content:
+        lti1x_providers = get_lti_tool_providers(APP, import_id)
+        lti1x_launches = [ x['LaunchPoint'] for x in lti1x_providers ]
+        logging.info(f"Available LTI 1.x tool providers in {import_id}: {lti1x_launches}")
 
     # Login to fetch files directly
     WEB_AUTH = getAuth('BrightspaceWeb', ['username', 'password'])
@@ -340,7 +351,12 @@ def run(SITE_ID, APP, import_id, transfer_id):
                     logging.warning(f"LTI placeholder: {sakai_id} '{placeholder_name}' unsupported tool embedding")
 
                 if sakai_link_data and launch_url:
-                    logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}' {sakai_link_data['launch']}")
+                    logging.info(f"LTI placeholder: {sakai_id} '{placeholder_name}' {launch_url}")
+
+                    # TODO Support LTI Advantage targets
+                    if not lti_available(launch_url, lti1x_providers):
+                        logging.warning(f"- skipping Quicklink creation for {launch_url}: no matching tool provider found")
+                        continue
 
                     # Create a new quicklink in the target site
                     custom = sakai_link_data['custom']

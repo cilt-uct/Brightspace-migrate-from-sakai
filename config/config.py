@@ -251,6 +251,7 @@ APP = {
   },
 
   # Map content item URLs to tool providers
+  # This enables updating ACLs in third party systems based on URLs used in LTI quicklinks
   'lti': {
           'content_item_urls': {
               'https://media.uct.ac.za/lti/player/' : 'opencast'

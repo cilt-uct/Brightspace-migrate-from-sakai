@@ -46,6 +46,38 @@ def d2l_api_version(APP, product):
 
     return json_response['data']['LatestVersion']
 
+# Get a list of Legacy LTI tool providers (LTI 1.1.x)
+# Shown in External Learning Tools / Manage Tool Providers
+#  /d2l/lms/lti/manage/tp_list.d2l?ou=6606
+# https://docs.valence.desire2learn.com/res/lti.html
+# GET /d2l/api/le/(version)/lti/link/(orgUnitId)/
+def get_lti_tool_providers(APP, org_id):
+
+    payload = {
+        'url': f"{APP['brightspace_api']['le_url']}/lti/tp/{org_id}/",
+        'method': 'GET',
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+    if 'status' not in json_response:
+        raise Exception(f'Unable to get lti links: {json_response}')
+
+    if json_response['status'] != 'success':
+        raise Exception(f'Unable to get lti links: {json_response}')
+
+    return json_response['data']
+
+def lti_available(launch_url, lti1x_providers):
+
+    if lti1x_providers is None:
+        return False
+
+    for provider in lti1x_providers:
+        if provider['LaunchPoint'] in launch_url:
+            return True
+
+    return False
 
 # Get a list of LTI links in a site
 def get_lti_links(APP, org_id):
