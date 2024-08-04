@@ -11,7 +11,7 @@ Sakai_url=https://sakai.some.domain
 Sakai_username=admin
 Sakai_password=SECRET
 
-# Sakai Site Archive webservice endpoint
+# Sakai Site Archive SOAP CXF webservice endpoint
 SakaiArchive_url=https://sakai.some.domain
 SakaiArchive_username=admin
 SakaiArchive_password=SECRET
