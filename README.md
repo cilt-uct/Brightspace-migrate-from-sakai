@@ -117,60 +117,6 @@ Check the Fix version for each JIRA to see which you need, and merge the commits
 
 The migration code is tested with UCT 21.x Sakai branch: https://github.com/cilt-uct/sakai/tree/21.x
 
-### SAK-47123 Add SakaiScript method for archiving a site
-https://sakaiproject.atlassian.net/browse/SAK-47123
-https://github.com/sakaiproject/sakai/commit/b75cb193377d878b43e0a82ca0636de9c9b81c6d
-
-### SAK-47702 Add Sakai namespace prefix to site archive XML files
-https://sakaiproject.atlassian.net/browse/SAK-47702
-https://github.com/sakaiproject/sakai/commit/4d45774dc2cb56035c2bf9f0e819d9e30a8c4aed
-https://github.com/sakaiproject/sakai/commit/5e71970b2f9daeb372817a394e84d367cc8287f6
-
-### SAK-48751 Add DAV namespace to Sakai archive xml files
-https://sakaiproject.atlassian.net/browse/SAK-48751
-https://github.com/sakaiproject/sakai/pull/11438
-https://github.com/sakaiproject/sakai/pull/11438/commits/be93e2bb8e04fac6542b56751a12921dd3d0003b
-
-### SAK-48756 Lessons archiving fix
-https://sakaiproject.atlassian.net/browse/SAK-48756
-https://github.com/sakaiproject/sakai/pull/11441
-https://github.com/sakaiproject/sakai/pull/11441/commits/18de2e623b2ad7f4a68cf90c3381ada52a10aaf1
-
-### SAK-47948 Archive support for GradebookNG
-https://sakaiproject.atlassian.net/browse/SAK-47948
-https://github.com/sakaiproject/sakai/pull/11506
-
-### SAK-47901 Use ISO8601 for archive date formats
-https://sakaiproject.atlassian.net/browse/SAK-47901
-https://github.com/sakaiproject/sakai/pull/11443
-
-### SAK-49164 Samigo escape label filename attribute for EMI QTI export
-https://sakaiproject.atlassian.net/browse/SAK-49164
-https://github.com/sakaiproject/sakai/pull/11816
-
-### SAK-49813 Use XML 1.1 serialization
-https://sakaiproject.atlassian.net/browse/SAK-49813
-https://github.com/sakaiproject/sakai/pull/12417
-
-### SAK-50020 Add providers to the site archive
-https://sakaiproject.atlassian.net/browse/SAK-50020
-https://github.com/sakaiproject/sakai/pull/12552
-
-### SAK-50021 Special handling for attachment archiving for T&Q and user files
-https://sakaiproject.atlassian.net/browse/SAK-50021
-
-### SAK-50022 Archive embedded and cross-site files for Lessons content
-https://sakaiproject.atlassian.net/browse/SAK-50022
-
-### SAK-50023 Improve error checking for chat archiving
-https://sakaiproject.atlassian.net/browse/SAK-50023
-
-### SAK-50024 Archive assignment attachments and supplementary items
-https://sakaiproject.atlassian.net/browse/SAK-50024
-
-### SAK-48939 Archive published assessments and question pools
-https://sakaiproject.atlassian.net/browse/SAK-48939
-
 ## Cron Jobs (How to Run it)
 Add these cron jobs on the server running the scripts:
 ```
