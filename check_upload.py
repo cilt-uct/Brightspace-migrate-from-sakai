@@ -10,12 +10,14 @@ import logging
 
 from pathlib import Path
 from datetime import timedelta
-from subprocess import Popen
+from subprocess import Popen, DEVNULL
 
 import config.config
 import config.logging_config
 import lib.local_auth
 import lib.db
+
+from lib.utils import process_check
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -32,13 +34,15 @@ def upload(APP, mdb, link_id, site_id, title):
             cmd.append("-d")
 
         # async
-        p = Popen(cmd)
+        p = Popen(cmd, stdout=DEVNULL, stderr=DEVNULL)
         logging.info("Upload : starting PID[{}] for {} : {} ({})".format(p.pid, link_id, site_id, title))
+
+        return p
 
     except Exception as e:
         logging.exception(e)
 
-def check_upload(APP):
+def check_upload(APP, process_list):
 
     logging.debug("##### Checking for uploads")
 
@@ -81,7 +85,8 @@ def check_upload(APP):
             logging.info(f"Upload for '{site_title}' {site_id}")
 
             # run upload workflow
-            upload(APP, mdb, site['link_id'], site_id, site_title)
+            p = upload(APP, mdb, site['link_id'], site_id, site_title)
+            process_list.append(p)
 
         except Exception as e:
             logging.exception(e)
@@ -105,9 +110,12 @@ def main():
 
     logging.info(f"Scanning for new uploads every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
 
+    process_list = []
+
     while not os.path.exists(exit_flag_file):
-        check_upload(APP)
+        check_upload(APP, process_list)
         time.sleep(scan_interval)
+        process_check(process_list)
 
     os.remove(exit_flag_file)
     logging.info("Done")

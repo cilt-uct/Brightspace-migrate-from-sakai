@@ -554,3 +554,16 @@ def fix_unwanted_url_chars(currenturl, url_prefix):
         joined_link = re.sub(key, value, joined_link)
 
     return joined_link
+
+# Poll processes and log and remove those which have finished
+def process_check(process_list):
+
+    completed = []
+    for p in process_list:
+        p.poll()
+        if p.returncode is not None:
+            logging.info(f"Process {p.pid} terminated with code {p.returncode}")
+            completed.append(p)
+
+    for c in completed:
+        process_list.remove(c)

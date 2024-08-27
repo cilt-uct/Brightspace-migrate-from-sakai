@@ -15,7 +15,7 @@ from pathlib import Path
 from stat import S_ISREG
 from pymysql.cursors import DictCursor
 from datetime import datetime, timedelta
-from subprocess import Popen
+from subprocess import Popen, DEVNULL
 
 import config.config
 import config.logging_config
@@ -23,7 +23,7 @@ import lib.local_auth
 import lib.db
 import lib.sakai
 
-from lib.utils import send_template_email, create_jira
+from lib.utils import send_template_email, create_jira, process_check
 from lib.d2l import middleware_d2l_api, d2l_api_version, web_login, get_import_history, get_first_import_status, get_first_import_job_log
 
 
@@ -165,7 +165,7 @@ def check_for_update(APP, mdb, link_id, site_id, started_by, notification, searc
 
             # log error in database and create corresponding jira
             migration_site_expired(APP, mdb.db_config, link_id, site_id, started_by, notification, log, title, url)
-            return False
+            return None
 
         # if we have an refsite_id and import is complete then let's run the rest of the update workflow
         if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Complete"):
@@ -176,17 +176,17 @@ def check_for_update(APP, mdb, link_id, site_id, started_by, notification, searc
                 cmd.append("-d")
 
             # async
-            p = Popen(cmd)
+            p = Popen(cmd, stdout=DEVNULL, stderr=DEVNULL)
             logging.info("Import completed: starting PID[{}] for {} : {} ({})".format(p.pid, link_id, site_id, title))
-            return True
+            return p
 
         if (refsite_id > 0) and ('status' in import_status) and (import_status['status'] == "Failed"):
             migration_site_failed(APP, mdb.db_config, link_id, site_id, started_by, notification, import_status, title, url)
-            return False
+            return None
 
     except Exception as e:
         logging.exception(e)
-        return False
+        return None
 
 def get_import_status_collection(brightspace_url, WEB_AUTH, orgunit_ids):
 
@@ -207,7 +207,7 @@ def get_import_status_collection(brightspace_url, WEB_AUTH, orgunit_ids):
 
     return status_list
 
-def check_imported(APP, sakai_ws):
+def check_imported(APP, sakai_ws, process_list):
 
     # Number of hours for Brightspace to import a site - longer than that and we assume it failed
     expiry_minutes = APP['import']['expiry']
@@ -283,7 +283,7 @@ def check_imported(APP, sakai_ws):
                 continue
 
             # check if it exist in Brightspace and then run update workflow on it.
-            check_for_update(APP, mdb, site['link_id'], site['site_id'],
+            p = check_for_update(APP, mdb, site['link_id'], site['site_id'],
                                     site['started_by_email'],
                                     site['notification'],
                                     site['transfer_site_id'],
@@ -293,6 +293,9 @@ def check_imported(APP, sakai_ws):
                                     json.loads(site['workflow']),
                                     site['title'], site['url'],
                                     import_status)
+
+            if p is not None:
+                process_list.append(p)
 
         except Exception as e:
 
@@ -352,9 +355,12 @@ def main():
 
     logging.info(f"Scanning for new imports every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
 
+    process_list = []
+
     while not os.path.exists(exit_flag_file):
-        check_imported(APP, sakai_ws)
+        check_imported(APP, sakai_ws, process_list)
         time.sleep(scan_interval)
+        process_check(process_list)
 
     os.remove(exit_flag_file)
     logging.info("Done")

@@ -8,7 +8,7 @@ import time
 import logging
 
 from datetime import timedelta
-from subprocess import Popen
+from subprocess import Popen, DEVNULL
 from pathlib import Path
 
 import config.config
@@ -16,7 +16,9 @@ import config.logging_config
 import lib.local_auth
 import lib.db
 
-def check_migrations(APP):
+from lib.utils import process_check
+
+def check_migrations(APP, process_list):
 
     logging.debug("Checking form migration records")
 
@@ -70,7 +72,8 @@ def check_migrations(APP):
                 # if APP['debug']:
                 #     cmd.append("-d")
 
-                p = Popen(cmd)
+                p = Popen(cmd, stderr=DEVNULL, stdout=DEVNULL)
+                process_list.append(p)
                 logging.info("\tRunning PID[{}] {} : {}".format(p.pid, site['link_id'],site['site_id']))
 
                 time.sleep(5)
@@ -98,9 +101,12 @@ def main():
 
     logging.info(f"Scanning for new migrations every {scan_interval} seconds until {Path(exit_flag_file).name} exists")
 
+    process_list = []
+
     while not os.path.exists(exit_flag_file):
-        check_migrations(APP)
+        check_migrations(APP, process_list)
         time.sleep(scan_interval)
+        process_check(process_list)
 
     os.remove(exit_flag_file)
     logging.info("Done")
