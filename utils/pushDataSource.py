@@ -7,7 +7,6 @@
 import requests
 import os
 import sys
-import re
 import progressbar
 import csv
 import logging
@@ -19,6 +18,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from lib.local_auth import getAuth
+import config.logging_config
 
 class PushDataSource:
     def __init__(self,BlueWSURL,BlueAPIKey) -> None:
@@ -27,6 +27,8 @@ class PushDataSource:
         self.BlueAPIKey = BlueAPIKey
         self.TransactionId = ''
         self.DataSourceID = ''
+
+        logging.getLogger('zeep.wsdl.bindings.soap').setLevel(logging.ERROR)
         self.client = zeep.Client(wsdl=self.BlueWSURL+"/BlueWebService.svc?wsdl")
 
     def getDataSourceList(self):
@@ -34,7 +36,6 @@ class PushDataSource:
         ds = response['body']['DataSources']['IDataSource']
         return ds
 
-    # GetDataBlockInformation()
     def getDataBlockInformation(self, datasource_id):
         response = self.client.service.GetDataBlockInformation(_soapheaders={'APIKeyHeader': self.BlueAPIKey, 'DatasourceId' : datasource_id})
         dbi = response['body']['DataBlockInfoList']['DataBlockInfo']
@@ -42,32 +43,20 @@ class PushDataSource:
 
     def RegisterImport(self,DataSourceID,AbortOnEmpty='true',ReplaceBlueRole='false',ReplaceDataSourceAccessKey='false',ReplaceLanguagePreferences='false'):
         self.DataSourceID = DataSourceID
-        payload = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">
-                        <soapenv:Header>
-                            <tem:APIKeyHeader>"""+self.BlueAPIKey+"""</tem:APIKeyHeader>
-                        </soapenv:Header>
-                        <soapenv:Body>
-                            <tem:RegisterImportRequest>
-                                <tem:AbortOnEmpty>"""+AbortOnEmpty+"""</tem:AbortOnEmpty>
-                                <tem:DataSourceID>"""+DataSourceID+"""</tem:DataSourceID>
-                                <tem:ReplaceBlueRole>"""+ReplaceBlueRole+"""</tem:ReplaceBlueRole>
-                                <tem:ReplaceDataSourceAccessKey>"""+ReplaceDataSourceAccessKey+"""</tem:ReplaceDataSourceAccessKey>
-                                <tem:ReplaceLanguagePreferences>"""+ReplaceLanguagePreferences+"""</tem:ReplaceLanguagePreferences>
 
-                            </tem:RegisterImportRequest>
-                        </soapenv:Body>
-                    </soapenv:Envelope>"""
-        headers = {'Content-Type': 'text/xml;charset=UTF-8',
-                   'SOAPAction': '"http://tempuri.org/IBlueWebService/RegisterImport"'}
-        response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
-        print(f"RegisterImport : {response}")
+        response = self.client.service.RegisterImport(
+                _soapheaders={'APIKeyHeader': self.BlueAPIKey},
+                AbortOnEmpty = AbortOnEmpty,
+                DataSourceID = DataSourceID,
+                ReplaceBlueRole = ReplaceBlueRole,
+                ReplaceDataSourceAccessKey = ReplaceDataSourceAccessKey,
+                ReplaceLanguagePreferences = ReplaceLanguagePreferences
+        )
 
-        if response.status_code==200:
-            m = re.search('<TransactionID>(.+?)</TransactionID>', response.text)
-            if m:
-                self.TransactionId = m.group(1)
-                print(f"self.TransactionId : {self.TransactionId}")
-                return True
+        if 'TransactionID' in response['body']:
+            self.TransactionId = response['body']['TransactionID']
+            return True
+
         return False
 
     def PushObjectDataV2(self, DataSourceID, csv_file):
@@ -93,7 +82,6 @@ class PushDataSource:
             DataSourceID = str(DataSourceID)
             Header = str(Header)  # Header should already be a string, but convert it just in case
 
-            # payload = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:blue="http://schemas.datacontract.org/2004/07/Blue.Integration">
             payload = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                             xmlns:tem="http://tempuri.org/"
                             xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays"
@@ -126,88 +114,39 @@ class PushDataSource:
                 return False
 
     def PrepareDataToFinzalizeImportV2(self):
-        payload = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">
-                        <soapenv:Header>
-                            <tem:TransactionID>"""+self.TransactionId+"""</tem:TransactionID>
-                            <tem:APIKeyHeader>"""+self.BlueAPIKey+"""</tem:APIKeyHeader>
-                        </soapenv:Header>
-                        <soapenv:Body>
-                            <tem:BasicRequest/>
-                        </soapenv:Body>
-                        </soapenv:Envelope>"""
-        headers = {
-        'Content-Type': 'text/xml;charset=UTF-8',
-        'SOAPAction': '"http://tempuri.org/IBlueWebService/PrepareDataToFinzalizeImportV2"'
-        }
-        response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
-        print(f"PrepareDataToFinzalizeImportV2 : {response}")
-        if response.status_code==200:
+        response = self.client.service.PrepareDataToFinzalizeImportV2(
+                _soapheaders={'APIKeyHeader': self.BlueAPIKey, 'TransactionID': self.TransactionId}
+        )
+
+        if response['body']['Message'] == "Success":
             return True
         else:
-            print(response.content)
             self.CancelImport()
             return False
 
     def FinalizeImport(self):
-        payload = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">
-                    <soapenv:Header>
-                        <tem:TransactionID>"""+self.TransactionId+"""</tem:TransactionID>
-                        <tem:APIKeyHeader>"""+self.BlueAPIKey+"""</tem:APIKeyHeader>
-                    </soapenv:Header>
-                    <soapenv:Body>
-                        <tem:FinalizeImportRequest/>
-                    </soapenv:Body>
-                    </soapenv:Envelope>"""
-        headers = {
-        'Content-Type': 'text/xml;charset=UTF-8',
-        'SOAPAction': '"http://tempuri.org/IBlueWebService/FinalizeImport"'
-        }
-        response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
-        if response.status_code==200:
+        response = self.client.service.FinalizeImport(
+                _soapheaders={'APIKeyHeader': self.BlueAPIKey, 'TransactionID': self.TransactionId}
+        )
+
+        if response['header']['Message'] == "Success":
             return True
         else:
             self.CancelImport()
             return False
 
-
     def CancelImport(self):
-        payload = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">
-                        <soapenv:Header>
-                            <tem:TransactionID>"""+self.TransactionId+"""</tem:TransactionID>
-                            <tem:APIKeyHeader>"""+self.BlueAPIKey+"""</tem:APIKeyHeader>
-                        </soapenv:Header>
-                        <soapenv:Body>
-                            <tem:CancelImportRequest/>
-                        </soapenv:Body>
-                    </soapenv:Envelope>"""
-        headers = {
-        'Content-Type': 'text/xml;charset=UTF-8',
-        'SOAPAction': '"http://tempuri.org/IBlueWebService/CancelImport"'
-        }
-        requests.request("POST", self.EndPoint, headers=headers, data = payload)
-        return 0
+        self.client.service.CancelImport(
+                _soapheaders={'APIKeyHeader': self.BlueAPIKey, 'TransactionID': self.TransactionId}
+        )
+        return
 
     def GetProgressStatus(self):
-        payload = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">
-                        <soapenv:Header>
-                            <tem:APIKeyHeader>"""+self.BlueAPIKey+"""</tem:APIKeyHeader>
-                        </soapenv:Header>
-                        <soapenv:Body>
-                            <tem:ProgressStatusRequest>
-                                <tem:DataSourceId>"""+self.DataSourceID+"""</tem:DataSourceId>
-                            </tem:ProgressStatusRequest>
-                        </soapenv:Body>
-                    </soapenv:Envelope>"""
-        headers = {
-        'Content-Type': 'text/xml;charset=UTF-8',
-        'SOAPAction': '"http://tempuri.org/IBlueWebService/GetProgressStatus"'
-        }
-        response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
-        if response.status_code==200:
-            m = re.search('<ProgressStatus>(.+?)</ProgressStatus>', response.text)
-            if m:
-                return int(m.group(1))
-        return False
+        response = self.client.service.GetProgressStatus(
+                _soapheaders={'APIKeyHeader': self.BlueAPIKey},
+                DataSourceId = self.DataSourceID
+        )
+        return response['body']['ProgressStatus']
 
 #######
 
@@ -238,18 +177,21 @@ def push_datasource(PDS, csv_file, datasource_id):
 
     if PDS.RegisterImport(datasource_id):
         status = 0
-        print("The process was started")
+        print("The process was started\n")
         bar = progressbar.ProgressBar(maxval=100, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
         bar.start()
         if PDS.PushObjectDataV2(datablock_name, csv_file):
             bar.update(PDS.GetProgressStatus())
+
             if PDS.PrepareDataToFinzalizeImportV2():
                 bar.update(PDS.GetProgressStatus())
                 if PDS.FinalizeImport():
                     status = PDS.GetProgressStatus()
-                    print(f"PDS.GetProgressStatus : {status}")
+                    #print(f"PDS.GetProgressStatus : {status}")
                     bar.update(status)
+
         bar.finish()
+
         if status == 100:
             print("The datasource has updated successfully")
         else:
@@ -257,13 +199,21 @@ def push_datasource(PDS, csv_file, datasource_id):
 
 def main():
 
-    parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
+    parser = argparse.ArgumentParser(description="Update an Explorance Blue Data Source from a CSV file",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument('--id')
+    parser.add_argument('--csv')
+    parser.add_argument('--dev', action='store_true')
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('-l', '--list', action='store_true')
     args = vars(parser.parse_args())
 
-    blue_api = getAuth('BlueTest', ['apikey', 'url'])
+    if args['debug']:
+        config.logging_config.logger.setLevel(logging.DEBUG)
+
+    blue_source = "BlueTest" if args['dev'] else "Blue"
+    blue_api = getAuth(blue_source, ['apikey', 'url'])
 
     if not blue_api['valid']:
         raise Exception("Missing configuration")
@@ -279,10 +229,13 @@ def main():
 
     # Push a CSV file to a datasource
     # (Live Data9 = Courses Instructors)
-    csv_file = "/home/01404877/courses-instructors.20241004_0330.csv"
-    datasource_id = "Data25"
+    # (Test Data25 = Courses Instructors)
 
-    push_datasource(PDS, csv_file, datasource_id)
+    if not args['csv'] or not args['id']:
+        print("Must specify both CSV and ID")
+        return
+
+    push_datasource(PDS, args['csv'], args['id'])
 
 if __name__ == '__main__':
     main()
