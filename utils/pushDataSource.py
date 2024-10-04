@@ -2,38 +2,32 @@
 
 # Push a CSV into an Explorance Blue data source
 # https://jira.cilt.uct.ac.za/browse/AMA-1092
+# Temporary home before this is moved into middleware
 
 import requests
 import os
 import sys
 import re
-import json
 import progressbar
 import csv
 import logging
 import zeep
-from html import escape
+import argparse
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-import config.config
-import config.logging_config
 from lib.local_auth import getAuth
 
 class PushDataSource:
     def __init__(self,BlueWSURL,BlueAPIKey) -> None:
         self.BlueWSURL = BlueWSURL
         self.EndPoint = self.BlueWSURL+"/BlueWebService.svc/file"
-        self.wsdl = self.BlueWSURL+"/BlueWebService.svc?wsdl"
         self.BlueAPIKey = BlueAPIKey
         self.TransactionId = ''
         self.DataSourceID = ''
-        self.client = zeep.Client(wsdl=self.wsdl)
-
-    def GetDataSourceID(self):
-        return 0
+        self.client = zeep.Client(wsdl=self.BlueWSURL+"/BlueWebService.svc?wsdl")
 
     def getDataSourceList(self):
         response = self.client.service.GetDataSourceList(_soapheaders={'APIKeyHeader': self.BlueAPIKey})
@@ -67,10 +61,9 @@ class PushDataSource:
                    'SOAPAction': '"http://tempuri.org/IBlueWebService/RegisterImport"'}
         response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
         print(f"RegisterImport : {response}")
-        print(f"RegisterImport : {payload}")
+
         if response.status_code==200:
             m = re.search('<TransactionID>(.+?)</TransactionID>', response.text)
-            # print(m)
             if m:
                 self.TransactionId = m.group(1)
                 print(f"self.TransactionId : {self.TransactionId}")
@@ -78,17 +71,14 @@ class PushDataSource:
         return False
 
     def PushObjectDataV2(self, DataSourceID, csv_file):
-        # print(f"THIS IS TRANS AC ID: {self.TransactionId}")
-        # with open("C:/Users/laithdodin/Python_Projects/BlueWebServices/UCT Sandbox/Data.json") as file:
-        with open(csv_file) as file:
-        # with open("data.json") as file:
+
+        with open(csv_file, encoding="utf-8") as file:
             reader = csv.DictReader(file)
             Header = "<tem:ColumnNamesList>"
             for fieldname in reader.fieldnames:
                 Header += f"<arr:string>{fieldname}</arr:string>"
             Header += "</tem:ColumnNamesList>"
 
-            # print(Header)
             xml_data  = "<tem:Data>"
             for row in reader:
                 xml_data  += "<blue:IDataRow><blue:IDataRowValue>"
@@ -96,15 +86,13 @@ class PushDataSource:
                 for k, v in row.items():
                     xml_data  += f"<blue:IDataObj><blue:IDataObjValue>{v}</blue:IDataObjValue></blue:IDataObj>"
                 xml_data  += "</blue:IDataRowValue></blue:IDataRow>"
+
             xml_data  += "</tem:Data>"
 
             TransactionId = self.TransactionId
-            # TransactionId = '6821714594214839372'
             DataSourceID = str(DataSourceID)
             Header = str(Header)  # Header should already be a string, but convert it just in case
-            row = row
 
-            print(f"TransactionId : {TransactionId} - DataSourceID : {DataSourceID} - Header : {Header} - row : {row}")
             # payload = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:blue="http://schemas.datacontract.org/2004/07/Blue.Integration">
             payload = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                             xmlns:tem="http://tempuri.org/"
@@ -128,7 +116,7 @@ class PushDataSource:
                 'SOAPAction': '"http://tempuri.org/IBlueWebService/PushObjectDataV2"'
                 }
 
-            response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
+            response = requests.request("POST", self.EndPoint, headers=headers, data=payload.encode("utf-8"))
 
             if response.status_code==200:
                 return True
@@ -196,7 +184,7 @@ class PushDataSource:
         'Content-Type': 'text/xml;charset=UTF-8',
         'SOAPAction': '"http://tempuri.org/IBlueWebService/CancelImport"'
         }
-        response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
+        requests.request("POST", self.EndPoint, headers=headers, data = payload)
         return 0
 
     def GetProgressStatus(self):
@@ -223,20 +211,9 @@ class PushDataSource:
 
 #######
 
-def main():
+def push_datasource(PDS, csv_file, datasource_id):
 
-    blue_api = getAuth('BlueTest', ['apikey', 'url'])
-
-    if not blue_api['valid']:
-        raise Exception("Missing configuration")
-
-    logging.info(f"Explorance endpoint {blue_api['url']}")
-
-    csv_file = "courses-small.csv"
-    datasource_id = "Data25"
     datablock_name = None
-
-    PDS = PushDataSource(blue_api['url'], blue_api['apikey'])
 
     ds_list = PDS.getDataSourceList()
     ds_found = False
@@ -277,6 +254,35 @@ def main():
             print("The datasource has updated successfully")
         else:
             print("You have an error please check the logs from Blue")
+
+def main():
+
+    parser = argparse.ArgumentParser(description="Check for restricted exensions in attachments",
+                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-l', '--list', action='store_true')
+    args = vars(parser.parse_args())
+
+    blue_api = getAuth('BlueTest', ['apikey', 'url'])
+
+    if not blue_api['valid']:
+        raise Exception("Missing configuration")
+
+    logging.info(f"Explorance endpoint {blue_api['url']}")
+    PDS = PushDataSource(blue_api['url'], blue_api['apikey'])
+
+    # List datasources
+    if args['list']:
+        ds_list = PDS.getDataSourceList()
+        print(f"Datasources: {ds_list}")
+        return
+
+    # Push a CSV file to a datasource
+    # (Live Data9 = Courses Instructors)
+    csv_file = "/home/01404877/courses-instructors.20241004_0330.csv"
+    datasource_id = "Data25"
+
+    push_datasource(PDS, csv_file, datasource_id)
 
 if __name__ == '__main__':
     main()
