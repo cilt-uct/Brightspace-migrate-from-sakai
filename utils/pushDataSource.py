@@ -1,21 +1,50 @@
+#! /usr/bin/python3
+
+# Push a CSV into an Explorance Blue data source
+# https://jira.cilt.uct.ac.za/browse/AMA-1092
+
 import requests
+import os
+import sys
 import re
 import json
 import progressbar
 import csv
-
+import logging
+import zeep
 from html import escape
+
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+import config.config
+import config.logging_config
+from lib.local_auth import getAuth
 
 class PushDataSource:
     def __init__(self,BlueWSURL,BlueAPIKey) -> None:
         self.BlueWSURL = BlueWSURL
         self.EndPoint = self.BlueWSURL+"/BlueWebService.svc/file"
+        self.wsdl = self.BlueWSURL+"/BlueWebService.svc?wsdl"
         self.BlueAPIKey = BlueAPIKey
         self.TransactionId = ''
         self.DataSourceID = ''
+        self.client = zeep.Client(wsdl=self.wsdl)
 
     def GetDataSourceID(self):
         return 0
+
+    def getDataSourceList(self):
+        response = self.client.service.GetDataSourceList(_soapheaders={'APIKeyHeader': self.BlueAPIKey})
+        ds = response['body']['DataSources']['IDataSource']
+        return ds
+
+    # GetDataBlockInformation()
+    def getDataBlockInformation(self, datasource_id):
+        response = self.client.service.GetDataBlockInformation(_soapheaders={'APIKeyHeader': self.BlueAPIKey, 'DatasourceId' : datasource_id})
+        dbi = response['body']['DataBlockInfoList']['DataBlockInfo']
+        return dbi
 
     def RegisterImport(self,DataSourceID,AbortOnEmpty='true',ReplaceBlueRole='false',ReplaceDataSourceAccessKey='false',ReplaceLanguagePreferences='false'):
         self.DataSourceID = DataSourceID
@@ -48,10 +77,10 @@ class PushDataSource:
                 return True
         return False
 
-    def PushObjectDataV2(self,DataSourceID):
+    def PushObjectDataV2(self, DataSourceID, csv_file):
         # print(f"THIS IS TRANS AC ID: {self.TransactionId}")
         # with open("C:/Users/laithdodin/Python_Projects/BlueWebServices/UCT Sandbox/Data.json") as file:
-        with open("courses-instructors.20240925_1518.csv") as file:
+        with open(csv_file) as file:
         # with open("data.json") as file:
             reader = csv.DictReader(file)
             Header = "<tem:ColumnNamesList>"
@@ -89,25 +118,7 @@ class PushDataSource:
                             </soapenv:Header>
                             <soapenv:Body>
                                 <tem:DataObjectTransferRequestV2>
-                                    <blue:IDataRow>
-                                        <blue:IDataRowValue>
-                                            <blue:IDataObj>
-                                                <blue:IDataObjValue>{row['Identifier']}</blue:IDataObjValue>
-                                            </blue:IDataObj>
-                                            <blue:IDataObj>
-                                                <blue:IDataObjValue>{row['User_UserName']}</blue:IDataObjValue>
-                                            </blue:IDataObj>
-                                            <blue:IDataObj>
-                                                <blue:IDataObjValue>{row['User_DisplayName']}</blue:IDataObjValue>
-                                            </blue:IDataObj>
-                                            <blue:IDataObj>
-                                                <blue:IDataObjValue>{row['Role_Id']}</blue:IDataObjValue>
-                                            </blue:IDataObj>
-                                            <blue:IDataObj>
-                                                <blue:IDataObjValue>{row['Role_Name']}</blue:IDataObjValue>
-                                            </blue:IDataObj>
-                                        </blue:IDataRowValue>
-                                    </blue:IDataRow>
+                                {xml_data}
                                 </tem:DataObjectTransferRequestV2>
                             </soapenv:Body>
                             </soapenv:Envelope>"""
@@ -118,10 +129,7 @@ class PushDataSource:
                 }
 
             response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
-            # print(f"self.BlueAPIKey APIKEY : {self.BlueAPIKey}")
-            # print(f"PushObjectDataV2 payload : {payload}")
-            # print(f"PushObjectDataV2 response : {response}")
-            # print(f"PushObjectDataV2  response.content : {response.content}")
+
             if response.status_code==200:
                 return True
             else:
@@ -206,36 +214,69 @@ class PushDataSource:
         'Content-Type': 'text/xml;charset=UTF-8',
         'SOAPAction': '"http://tempuri.org/IBlueWebService/GetProgressStatus"'
         }
-        # print(f"GetProgressStatus : {payload}")
         response = requests.request("POST", self.EndPoint, headers=headers, data = payload)
-        # print(f"GetProgressStatus : {response}")
         if response.status_code==200:
             m = re.search('<ProgressStatus>(.+?)</ProgressStatus>', response.text)
             if m:
                 return int(m.group(1))
         return False
 
+#######
 
+def main():
 
-PDS = PushDataSource("https://ucttest.bluera.com/ucttestWS","b244d2aa-61d3-4974-aaf7-2892f1b54299")
+    blue_api = getAuth('BlueTest', ['apikey', 'url'])
 
-# https://uct.bluera.com/uctWS//BlueWebService.svc
-#Data137 => BlueNote Test WS
-if PDS.RegisterImport("Data23"):
-    status = 0
-    print("The process was started")
-    bar = progressbar.ProgressBar(maxval=100, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-    bar.start()
-    if PDS.PushObjectDataV2("WSTest"):
-        bar.update(PDS.GetProgressStatus())
-        if PDS.PrepareDataToFinzalizeImportV2():
+    if not blue_api['valid']:
+        raise Exception("Missing configuration")
+
+    logging.info(f"Explorance endpoint {blue_api['url']}")
+
+    csv_file = "courses-small.csv"
+    datasource_id = "Data25"
+    datablock_name = None
+
+    PDS = PushDataSource(blue_api['url'], blue_api['apikey'])
+
+    ds_list = PDS.getDataSourceList()
+    ds_found = False
+    for ds in ds_list:
+        if ds['SourceID'] == datasource_id:
+            ds_found = True
+            print(f"Data source: {ds}")
+            break
+
+    if not ds_found:
+        raise Exception(f"Data source ID {datasource_id} not found")
+
+    db_list = PDS.getDataBlockInformation(datasource_id)
+    for db in db_list:
+        if db['ConnectorType'] == 'CSVFile':
+            # Use this data block
+            print(f"Data block: {db}")
+            datablock_name = db['DataBlockName']
+
+    if datablock_name is None:
+        raise Exception(f"No CSV data block found in data source {datasource_id}")
+
+    if PDS.RegisterImport(datasource_id):
+        status = 0
+        print("The process was started")
+        bar = progressbar.ProgressBar(maxval=100, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+        bar.start()
+        if PDS.PushObjectDataV2(datablock_name, csv_file):
             bar.update(PDS.GetProgressStatus())
-            if PDS.FinalizeImport():
-                status = PDS.GetProgressStatus()
-                print(f"PDS.GetProgressStatus : {status}")
-                bar.update(status)
-    bar.finish()
-    if status == 100:
-        print("The datasource has updated successfully")
-    else:
-        print("You have an error please check the logs from Blue")
+            if PDS.PrepareDataToFinzalizeImportV2():
+                bar.update(PDS.GetProgressStatus())
+                if PDS.FinalizeImport():
+                    status = PDS.GetProgressStatus()
+                    print(f"PDS.GetProgressStatus : {status}")
+                    bar.update(status)
+        bar.finish()
+        if status == 100:
+            print("The datasource has updated successfully")
+        else:
+            print("You have an error please check the logs from Blue")
+
+if __name__ == '__main__':
+    main()
