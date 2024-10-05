@@ -155,25 +155,27 @@ def push_datasource(PDS, csv_file, datasource_id):
     datablock_name = None
 
     ds_list = PDS.getDataSourceList()
-    ds_found = False
+    ds_caption = None
     for ds in ds_list:
         if ds['SourceID'] == datasource_id:
-            ds_found = True
-            print(f"Data source: {ds}")
+            ds_caption = ds['Caption']
+            logging.debug(f"Data source: {ds}")
             break
 
-    if not ds_found:
+    if ds_caption is None:
         raise Exception(f"Data source ID {datasource_id} not found")
 
     db_list = PDS.getDataBlockInformation(datasource_id)
     for db in db_list:
         if db['ConnectorType'] == 'CSVFile':
             # Use this data block
-            print(f"Data block: {db}")
+            logging.debug(f"Data block: {db}")
             datablock_name = db['DataBlockName']
 
     if datablock_name is None:
         raise Exception(f"No CSV data block found in data source {datasource_id}")
+
+    logging.info(f"Importing CSV {csv_file} into data source {datasource_id} '{ds_caption}' data block {datablock_name}")
 
     if PDS.RegisterImport(datasource_id):
         status = 0
@@ -224,18 +226,25 @@ def main():
     # List datasources
     if args['list']:
         ds_list = PDS.getDataSourceList()
-        print(f"Datasources: {ds_list}")
+        print(f"Datasources:\n{ds_list}")
         return
 
     # Push a CSV file to a datasource
     # (Live Data9 = Courses Instructors)
     # (Test Data25 = Courses Instructors)
 
-    if not args['csv'] or not args['id']:
-        print("Must specify both CSV and ID")
-        return
+    csv_file = args['csv']
+    ds_id = args['id']
 
-    push_datasource(PDS, args['csv'], args['id'])
+    if not csv_file or not ds_id:
+        logging.error("Must specify both CSV and ID")
+        exit(1)
+
+    if not os.path.exists(csv_file):
+        logging.error(f"CSV file {csv_file} not found")
+        exit(1)
+
+    push_datasource(PDS, csv_file, ds_id)
 
 if __name__ == '__main__':
     main()
