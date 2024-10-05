@@ -10,6 +10,7 @@ class PushDataSource:
         self.BlueAPIKey = BlueAPIKey
         self.TransactionId = ''
         self.DataSourceID = ''
+        self.DataSourceList = None
 
         logging.getLogger('zeep.wsdl.bindings.soap').setLevel(logging.ERROR)
         self.client = zeep.Client(wsdl=BlueWSURL+"/BlueWebService.svc?wsdl")
@@ -21,7 +22,19 @@ class PushDataSource:
     def getDataSourceList(self):
         response = self.client.service.GetDataSourceList(_soapheaders={'APIKeyHeader': self.BlueAPIKey})
         ds = response['body']['DataSources']['IDataSource']
+        self.DataSourceList = ds
         return ds
+
+    def getDataSourceId(self, datasource_name):
+
+        if not self.DataSourceList:
+            self.getDataSourceList()
+
+        for ds in self.DataSourceList:
+            if ds['Caption'] == datasource_name:
+                return ds['SourceID']
+
+        return None
 
     def getDataBlockInformation(self, datasource_id):
         response = self.client.service.GetDataBlockInformation(_soapheaders={'APIKeyHeader': self.BlueAPIKey, 'DatasourceId' : datasource_id})
@@ -116,49 +129,51 @@ class PushDataSource:
         )
         return response['body']['ProgressStatus']
 
-#######
+    # Update a data source from a CSV file
+    def PushCSV(self, datasource_id, csv_file):
 
-def push_datasource(PDS, csv_file, datasource_id):
+        datablock_name = None
 
-    datablock_name = None
+        if not self.DataSourceList:
+            self.getDataSourceList()
 
-    ds_list = PDS.getDataSourceList()
-    ds_caption = None
-    for ds in ds_list:
-        if ds['SourceID'] == datasource_id:
-            ds_caption = ds['Caption']
-            logging.debug(f"Data source: {ds}")
-            break
+        # Validate id exists
+        ds_caption = None
+        for ds in self.DataSourceList:
+            if ds['SourceID'] == datasource_id:
+                ds_caption = ds['Caption']
+                logging.debug(f"Data source: {ds}")
+                break
 
-    if ds_caption is None:
-        raise Exception(f"Data source ID {datasource_id} not found")
+        if ds_caption is None:
+            raise Exception(f"Data source ID {datasource_id} not found")
 
-    db_list = PDS.getDataBlockInformation(datasource_id)
-    for db in db_list:
-        if db['ConnectorType'] == 'CSVFile':
-            # Use this data block
-            logging.debug(f"Data block: {db}")
-            datablock_name = db['DataBlockName']
+        db_list = self.getDataBlockInformation(datasource_id)
+        for db in db_list:
+            if db['ConnectorType'] == 'CSVFile':
+                # Use this data block
+                logging.debug(f"Data block: {db}")
+                datablock_name = db['DataBlockName']
 
-    if datablock_name is None:
-        raise Exception(f"No CSV data block found in data source {datasource_id}")
+        if datablock_name is None:
+            raise Exception(f"No CSV data block found in data source {datasource_id}")
 
-    logging.info(f"Importing CSV {csv_file} into data source {datasource_id} '{ds_caption}' data block {datablock_name}")
+        logging.info(f"Importing CSV {csv_file} into data source {datasource_id} '{ds_caption}' data block {datablock_name}")
 
-    if PDS.RegisterImport(datasource_id):
-        status = 0
-        logging.info(f"Starting import to data source {datasource_id} block {datablock_name}")
-        if PDS.PushObjectDataV2(datablock_name, csv_file):
-            if PDS.PrepareDataToFinzalizeImportV2():
-                if PDS.FinalizeImport():
-                    status = PDS.GetProgressStatus()
+        if self.RegisterImport(datasource_id):
+            status = 0
+            logging.info(f"Starting import to data source {datasource_id} block {datablock_name}")
+            if self.PushObjectDataV2(datablock_name, csv_file):
+                if self.PrepareDataToFinzalizeImportV2():
+                    if self.FinalizeImport():
+                        status = self.GetProgressStatus()
 
-        if status == 100:
-            logging.info(f"Data source {datasource_id} updated successfully")
-            return True
+            if status == 100:
+                logging.info(f"Data source {datasource_id} updated successfully")
+                return True
 
-        logging.error(f"You have an error, please check the logs from Blue. Status={status}")
+            logging.error(f"You have an error, please check the logs from Blue. Status={status}")
+            return False
+
+        logging.error("Failed to register data source import")
         return False
-
-    logging.error("Failed to register data source import")
-    return False

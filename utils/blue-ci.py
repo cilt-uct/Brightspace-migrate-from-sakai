@@ -13,8 +13,7 @@ import config.config
 
 from lib.local_auth import getAuth
 from lib.d2l import middleware_d2l_api
-from lib.explorance import PushDataSource, push_datasource
-
+from lib.explorance import PushDataSource
 
 def setup_logging(APP, logger, log_file):
 
@@ -222,7 +221,7 @@ def main():
 
     # Now push into Blue Data Source
     blue_source = "BlueTest" if args['dev'] else "Blue"
-    ds_id = "Data25" if args['dev'] else "Data9"
+    ds_name = "Courses Instructors"
 
     blue_api = getAuth(blue_source, ['apikey', 'url'])
 
@@ -232,13 +231,10 @@ def main():
     logging.info(f"Explorance endpoint {blue_api['url']}")
     PDS = PushDataSource(blue_api['url'], blue_api['apikey'])
 
-    # Push a CSV file to a datasource
-    # (Test Data25 = Courses Instructors)
-    # (Live Data9 = Courses Instructors)
+    ds_id = PDS.getDataSourceId(ds_name)
+    push_result = PDS.PushCSV(ds_id, csv_file)
 
-    push_datasource(PDS, csv_file, ds_id)
-
-    logging.info("Done.")
+    logging.info(f"Done, success={push_result}")
 
 if __name__ == '__main__':
     main()
