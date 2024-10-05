@@ -11,7 +11,10 @@ sys.path.append(parent)
 
 import config.config
 
+from lib.local_auth import getAuth
 from lib.d2l import middleware_d2l_api
+from lib.explorance import PushDataSource, push_datasource
+
 
 def setup_logging(APP, logger, log_file):
 
@@ -159,6 +162,7 @@ def main():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('--dev', action='store_true')
     args = vars(parser.parse_args())
 
     if args['debug']:
@@ -213,6 +217,26 @@ def main():
         w = csv.DictWriter(csv_f, result_set[0].keys(), dialect='unix')
         w.writeheader()
         w.writerows(result_set)
+
+    logging.info("Finished CSV export")
+
+    # Now push into Blue Data Source
+    blue_source = "BlueTest" if args['dev'] else "Blue"
+    ds_id = "Data25" if args['dev'] else "Data9"
+
+    blue_api = getAuth(blue_source, ['apikey', 'url'])
+
+    if not blue_api['valid']:
+        raise Exception("Missing configuration")
+
+    logging.info(f"Explorance endpoint {blue_api['url']}")
+    PDS = PushDataSource(blue_api['url'], blue_api['apikey'])
+
+    # Push a CSV file to a datasource
+    # (Test Data25 = Courses Instructors)
+    # (Live Data9 = Courses Instructors)
+
+    push_datasource(PDS, csv_file, ds_id)
 
     logging.info("Done.")
 
