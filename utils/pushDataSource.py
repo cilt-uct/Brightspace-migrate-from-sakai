@@ -4,10 +4,8 @@
 # https://jira.cilt.uct.ac.za/browse/AMA-1092
 # Temporary home before this is moved into middleware
 
-import requests
 import os
 import sys
-import progressbar
 import csv
 import logging
 import zeep
@@ -22,14 +20,17 @@ import config.logging_config
 
 class PushDataSource:
     def __init__(self,BlueWSURL,BlueAPIKey) -> None:
-        self.BlueWSURL = BlueWSURL
-        self.EndPoint = self.BlueWSURL+"/BlueWebService.svc/file"
+
         self.BlueAPIKey = BlueAPIKey
         self.TransactionId = ''
         self.DataSourceID = ''
 
         logging.getLogger('zeep.wsdl.bindings.soap').setLevel(logging.ERROR)
-        self.client = zeep.Client(wsdl=self.BlueWSURL+"/BlueWebService.svc?wsdl")
+        self.client = zeep.Client(wsdl=BlueWSURL+"/BlueWebService.svc?wsdl")
+
+        self.client.set_ns_prefix("tem", "http://tempuri.org/")
+        self.client.set_ns_prefix("arr", "http://schemas.microsoft.com/2003/10/Serialization/Arrays")
+        self.client.set_ns_prefix("blue", "http://schemas.datacontract.org/2004/07/Blue.Integration")
 
     def getDataSourceList(self):
         response = self.client.service.GetDataSourceList(_soapheaders={'APIKeyHeader': self.BlueAPIKey})
@@ -59,57 +60,38 @@ class PushDataSource:
 
         return False
 
-    def PushObjectDataV2(self, DataSourceID, csv_file):
+    def PushObjectDataV2(self, datablock_name, csv_file):
 
         with open(csv_file, encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-            Header = "<tem:ColumnNamesList>"
-            for fieldname in reader.fieldnames:
-                Header += f"<arr:string>{fieldname}</arr:string>"
-            Header += "</tem:ColumnNamesList>"
+            d_reader = csv.DictReader(file)
+            fieldnames = d_reader.fieldnames
 
-            xml_data  = "<tem:Data>"
-            for row in reader:
-                xml_data  += "<blue:IDataRow><blue:IDataRowValue>"
+            array_of_string_type = self.client.get_type("arr:ArrayOfstring")
+            array_of_datarow_type = self.client.get_type("blue:ArrayOfIDataRow")
+            array_of_dataobj_type = self.client.get_type("blue:ArrayOfIDataObj")
+            datarow_type = self.client.get_type("blue:IDataRow")
+            dataobj_type = self.client.get_type("blue:IDataObj")
 
+            row_list = []
+            for row in d_reader:
+                row_obj = []
                 for k, v in row.items():
-                    xml_data  += f"<blue:IDataObj><blue:IDataObjValue>{v}</blue:IDataObjValue></blue:IDataObj>"
-                xml_data  += "</blue:IDataRowValue></blue:IDataRow>"
+                    row_obj.append(dataobj_type(v))
+                row_list.append(datarow_type(array_of_dataobj_type(row_obj)))
 
-            xml_data  += "</tem:Data>"
+            response = self.client.service.PushObjectDataV2(
+                _soapheaders={
+                    'APIKeyHeader': self.BlueAPIKey,
+                    'TransactionId': self.TransactionId,
+                    'DataBlockName': datablock_name,
+                    'ColumnNamesList': array_of_string_type(fieldnames)
+                },
+                Data = array_of_datarow_type(row_list)
+            )
 
-            TransactionId = self.TransactionId
-            DataSourceID = str(DataSourceID)
-            Header = str(Header)  # Header should already be a string, but convert it just in case
-
-            payload = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-                            xmlns:tem="http://tempuri.org/"
-                            xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays"
-                            xmlns:blue="http://schemas.datacontract.org/2004/07/Blue.Integration">
-                            <soapenv:Header>
-                                <tem:TransactionId>{TransactionId}</tem:TransactionId>
-                                <tem:DataBlockName>{DataSourceID}</tem:DataBlockName>
-                                {Header}
-                                <tem:APIKeyHeader>{self.BlueAPIKey}</tem:APIKeyHeader>
-                            </soapenv:Header>
-                            <soapenv:Body>
-                                <tem:DataObjectTransferRequestV2>
-                                {xml_data}
-                                </tem:DataObjectTransferRequestV2>
-                            </soapenv:Body>
-                            </soapenv:Envelope>"""
-
-            headers = {
-                'Content-Type': 'text/xml;charset=UTF-8',
-                'SOAPAction': '"http://tempuri.org/IBlueWebService/PushObjectDataV2"'
-                }
-
-            response = requests.request("POST", self.EndPoint, headers=headers, data=payload.encode("utf-8"))
-
-            if response.status_code==200:
+            if response['body']['Message'] == "Success":
                 return True
             else:
-                print(response.content)
                 self.CancelImport()
                 return False
 
@@ -179,25 +161,16 @@ def push_datasource(PDS, csv_file, datasource_id):
 
     if PDS.RegisterImport(datasource_id):
         status = 0
-        print("The process was started\n")
-        bar = progressbar.ProgressBar(maxval=100, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-        bar.start()
+        logging.info(f"Starting import to data source {datasource_id} block {datablock_name}")
         if PDS.PushObjectDataV2(datablock_name, csv_file):
-            bar.update(PDS.GetProgressStatus())
-
             if PDS.PrepareDataToFinzalizeImportV2():
-                bar.update(PDS.GetProgressStatus())
                 if PDS.FinalizeImport():
                     status = PDS.GetProgressStatus()
-                    #print(f"PDS.GetProgressStatus : {status}")
-                    bar.update(status)
-
-        bar.finish()
 
         if status == 100:
-            print("The datasource has updated successfully")
+            logging.info(f"Data source {datasource_id} updated successfully")
         else:
-            print("You have an error please check the logs from Blue")
+            logging.error(f"You have an error, please check the logs from Blue. Status={status}")
 
 def main():
 
