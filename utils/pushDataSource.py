@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--dev', action='store_true')
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('-l', '--list', action='store_true')
+    parser.add_argument('-b', '--blocks', action='store_true')
     args = vars(parser.parse_args())
 
     if args['debug']:
@@ -46,6 +47,18 @@ def main():
     if args['list']:
         ds_list = PDS.getDataSourceList()
         print(f"Datasources:\n{ds_list}")
+
+        if args['blocks']:
+            for ds in ds_list:
+                ds_id = ds['SourceID']
+                ds_name = ds['Caption']
+                print(f"Datasource id {ds_id}")
+
+                db_list = PDS.getDataBlockInformation(ds_id)
+                print(f"Datasource \'{ds_name}\' id {ds_id} data blocks:\n{db_list}")
+
+            print("Done blocks.")
+
         return
 
     # Push a CSV file to a datasource
