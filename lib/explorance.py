@@ -36,9 +36,15 @@ class PushDataSource:
 
         return None
 
+    # This only seems to work for CSV datablocks
     def getDataBlockInformation(self, datasource_id):
-        response = self.client.service.GetDataBlockInformation(_soapheaders={'APIKeyHeader': self.BlueAPIKey, 'DatasourceId' : datasource_id})
-        dbi = response['body']['DataBlockInfoList']['DataBlockInfo']
+        dbi = None
+        try:
+            response = self.client.service.GetDataBlockInformation(_soapheaders={'APIKeyHeader': self.BlueAPIKey, 'DatasourceId' : datasource_id})
+            dbi = response['body']['DataBlockInfoList']['DataBlockInfo']
+        except Exception:
+            logging.debug(f"DataBlockInfoList unavailable for data source {datasource_id}")
+
         return dbi
 
     def RegisterImport(self,DataSourceID,AbortOnEmpty='true',ReplaceBlueRole='false',ReplaceDataSourceAccessKey='false',ReplaceLanguagePreferences='false'):
@@ -88,9 +94,14 @@ class PushDataSource:
                 Data = array_of_datarow_type(row_list)
             )
 
-            if response['body']['Message'] == "Success":
+            if 'Message' in response['body']:
+                logging.info(f"Import message: {response['body']['Message']}")
+
+            if response['body']['Result']:
                 return True
             else:
+                if 'body' in response and 'Message' in response['body']:
+                    logging.error(f"Failed: {response['body']['Message']}")
                 self.CancelImport()
                 return False
 
@@ -99,7 +110,10 @@ class PushDataSource:
                 _soapheaders={'APIKeyHeader': self.BlueAPIKey, 'TransactionID': self.TransactionId}
         )
 
-        if response['body']['Message'] == "Success":
+        if response['body']['HasWarningMessage']:
+            logging.info(f"Import warning: {response['body']['Message']}")
+
+        if response['body']['Result']:
             return True
         else:
             self.CancelImport()
