@@ -63,7 +63,7 @@ class MigrationDb:
                         return False
 
         except Exception as e:
-            logging.exception(f"Could not valid mysql connection: {e}")
+            logging.exception(f"Could not validate mysql connection: {e}")
             return False
 
         return True
