@@ -6,6 +6,9 @@ import os
 import logging
 import requests
 import json
+import xmltodict
+import tempfile
+import zipfile
 from requests.auth import HTTPDigestAuth
 from urllib.parse import quote
 
@@ -33,6 +36,48 @@ class Opencast(object):
         self.server = server
         self.username = username
         self.password = password
+
+    # get asset properties
+    def get_asset(self, eventId):
+        url = f'{self.server}/assets/episode/{eventId}'
+
+        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+
+        if response.status_code == 200:
+            json = xmltodict.parse(response.text)
+            return json
+
+        return None
+
+    # get a named file within an asset .zip file
+    def get_asset_zip_contents(self, url, filename):
+        url = url
+        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+
+        json_s = ""
+
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            print(f"Saving zip to {tmp.name}")
+            tmp.write(response.content)
+            tmp.close()
+            zip_in = zipfile.ZipFile(tmp.name, 'r')
+            json_s = zip_in.read(filename)
+            zip_in.close()
+            os.unlink(tmp.name)
+
+        return json_s
+
+    # get a set of events
+    def get_events(self, seriesId):
+        url = f'{self.server}/api/events?filter=series:{seriesId}&sort=date:ASC&withpublications=true'
+
+        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+
+        if response.status_code == 200:
+            json = response.json()
+            return json
+
+        return None
 
     # get event data
     def get_event(self, eventId):
