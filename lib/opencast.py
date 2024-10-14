@@ -57,7 +57,6 @@ class Opencast(object):
         json_s = ""
 
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            print(f"Saving zip to {tmp.name}")
             tmp.write(response.content)
             tmp.close()
             zip_in = zipfile.ZipFile(tmp.name, 'r')
@@ -93,6 +92,17 @@ class Opencast(object):
     # get series id
     def get_series_acl(self, seriesId):
         url = f'{self.server}/api/series/{seriesId}/acl'
+        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+
+        if response.status_code == 200:
+            json = response.json()
+            return json
+
+        return None
+
+    # get series metadata
+    def get_series_metadata(self, seriesId, metadata_type):
+        url = f'{self.server}/api/series/{seriesId}/metadata?type={metadata_type}'
         response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
 
         if response.status_code == 200:
