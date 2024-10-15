@@ -160,6 +160,9 @@ def remove_unwanted_characters_html(data):
 
 def remove_unwanted_characters_tq(file):
 
+    if not os.path.exists(file):
+        return
+
     fin = open(file, "rt")
     data = fin.read()
     fin.close()

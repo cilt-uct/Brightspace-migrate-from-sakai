@@ -23,8 +23,12 @@ def run(SITE_ID, APP):
 
     logging.info('T&Q: Replace unwanted XML characters in : {}'.format(SITE_ID))
 
+    # QTI files
     for x in dir_list:
         remove_unwanted_characters_tq('{}{}-archive/qti/{}'.format(APP['archive_folder'], SITE_ID, x))
+
+    # Question pools
+    remove_unwanted_characters_tq('{}{}-archive/samigo_question_pools.xml'.format(APP['archive_folder'], SITE_ID))
 
 def main():
     APP = config.config.APP
