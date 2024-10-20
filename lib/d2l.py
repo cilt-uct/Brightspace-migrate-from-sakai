@@ -274,6 +274,21 @@ def get_toc(APP, org_id, session):
     r = session.get(api_url, timeout=300)
     return r.text if r.status_code == 200 else None
 
+def get_content_toc(APP, org_id):
+
+    payload = {
+        'url': f"{APP['brightspace_api']['le_url']}/{org_id}/content/toc",
+        'method': 'GET',
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload)
+    if 'status' not in json_response or json_response['status'] != 'success':
+        raise Exception(f"API call {payload} failed: {json_response}")
+
+    toc = json_response['data']
+
+    return toc
+
 # Top-level org id for this instance
 # TODO could get this via API call
 # GET /d2l/api/lp/(version)/organization/info¶
@@ -479,3 +494,46 @@ def enroll_in_site(APP, eid, import_id, role_id):
         return True
 
     raise Exception(f"Could not enroll user {eid} in {import_id}: {json_response}")
+
+# Adds a root module
+# POST /d2l/api/le/(version)/(orgUnitId)/content/root/¶
+def add_module(APP, org_id, new_module):
+
+    payload = {
+        'url': f"{APP['brightspace_api']['le_url']}/{org_id}/content/root/",
+        'method': 'POST',
+        'payload': json.dumps(new_module)
+    }
+
+    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+    if 'status' not in json_response:
+        raise Exception(f'Unable to update org unit info: {json_response}')
+    else:
+        if json_response['status'] != 'success':
+            raise Exception(f'Unable to update org unit info: {json_response}')
+
+    return json_response['data']
+
+# Add a topic
+# https://docs.valence.desire2learn.com/res/content.html#post--d2l-api-le-(version)-(orgUnitId)-content-modules-(moduleId)-structure-
+# POST /d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)/structure/¶
+def add_topic(APP, org_id, module_id, new_topic):
+
+    payload = {
+        'url': f"{APP['brightspace_api']['le_url']}/{org_id}/content/modules/{module_id}/structure/",
+        'method': 'POST',
+        'payload': json.dumps(new_topic)
+    }
+
+    print(f"payload: {payload}")
+
+    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+
+    if 'status' not in json_response:
+        raise Exception(f'Unable to update org unit info: {json_response}')
+    else:
+        if json_response['status'] != 'success':
+            raise Exception(f'Unable to update org unit info: {json_response}')
+
+    return json_response['data']

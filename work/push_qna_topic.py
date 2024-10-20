@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import json
 import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -9,52 +8,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.logging_config
-from lib.d2l import middleware_d2l_api, get_course_info
-
-# Adds a root module
-# POST /d2l/api/le/(version)/(orgUnitId)/content/root/¶
-
-def add_module(APP, org_id, new_module):
-
-    payload = {
-        'url': f"{APP['brightspace_api']['le_url']}/{org_id}/content/root/",
-        'method': 'POST',
-        'payload': json.dumps(new_module)
-    }
-
-    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
-
-    if 'status' not in json_response:
-        raise Exception(f'Unable to update org unit info: {json_response}')
-    else:
-        if json_response['status'] != 'success':
-            raise Exception(f'Unable to update org unit info: {json_response}')
-
-    return json_response['data']
-
-# Add a topic
-# https://docs.valence.desire2learn.com/res/content.html#post--d2l-api-le-(version)-(orgUnitId)-content-modules-(moduleId)-structure-
-# POST /d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)/structure/¶
-def add_topic(APP, org_id, module_id, new_topic):
-
-    payload = {
-        'url': f"{APP['brightspace_api']['le_url']}/{org_id}/content/modules/{module_id}/structure/",
-        'method': 'POST',
-        'payload': json.dumps(new_topic)
-    }
-
-    print(f"payload: {payload}")
-
-    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
-
-    if 'status' not in json_response:
-        raise Exception(f'Unable to update org unit info: {json_response}')
-    else:
-        if json_response['status'] != 'success':
-            raise Exception(f'Unable to update org unit info: {json_response}')
-
-    return json_response['data']
-
+from lib.d2l import get_course_info, add_module, add_topic
 
 def run(SITE_ID, APP, import_id):
 
