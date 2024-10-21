@@ -23,7 +23,8 @@ import lib.local_auth
 import lib.db
 import lib.sakai
 
-from lib.utils import send_template_email, create_jira, process_check
+from lib.utils import send_template_email, process_check
+from lib.jira_rest import create_jira
 from lib.d2l import middleware_d2l_api, d2l_api_version, web_login, get_import_history, get_first_import_status, get_first_import_job_log
 
 

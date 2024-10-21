@@ -23,8 +23,8 @@ import lib.db
 import lib.sakai
 
 from config.logging_config import formatter, logger
-from lib.utils import create_jira, send_email, send_template_email, get_log, get_size, create_folders
-from lib.jira_rest import MyJira, close_jira
+from lib.utils import send_email, send_template_email, get_log, get_size, create_folders
+from lib.jira_rest import MyJira, create_jira, close_jira
 
 
 FILE_REGEX = re.compile(".*(file-.*):\s(.*)")

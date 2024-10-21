@@ -12,6 +12,9 @@ STEPS:
     subject: 'Vula to Amathuba: Test Conversion Started [{{ title }}]'
     state: 'running'
 
+  # Test exception
+  # - action: error
+
   # Initial cleanup
   - action: test_and_quiz_fix_xml
 

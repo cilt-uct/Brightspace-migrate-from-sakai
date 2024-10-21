@@ -21,8 +21,8 @@ import lib.db
 import lib.sakai
 
 from config.logging_config import formatter, logger
-from lib.utils import get_log, send_template_email, send_email, create_jira
-from lib.jira_rest import close_jira
+from lib.utils import get_log, send_template_email, send_email
+from lib.jira_rest import create_jira, close_jira
 
 
 def update_record(db_config, link_id, site_id, state, log):

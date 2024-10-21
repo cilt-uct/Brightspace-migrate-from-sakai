@@ -15,7 +15,6 @@ import csv
 import lxml.etree as ET
 import unicodedata
 
-from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -24,7 +23,6 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.jira_rest import MyJira
 from lib.local_auth import getAuth
 
 class myFile(object):
@@ -241,56 +239,6 @@ def zipfolder(zip_file, path):
     zipobj.close()
 
     return True
-
-
-def create_jira(APP, url, site_id, site_title, jira_state, jira_log, failure_type: str = None, failure_detail: str = None, user: str = None):
-    now = datetime.now()
-    jira_date_str = now.strftime("%a, %-d %b %-y %H:%M")
-
-    try:
-        jira_log = json.loads(jira_log)
-        if APP['jira']['last'] > 0:
-            N = APP['jira']['last']
-            jira_log = jira_log[-N:]
-    except (TypeError, ValueError):
-        pass
-
-    if isinstance(jira_log, list):
-        jira_log_str = "\n".join(jira_log)
-    else:
-        jira_log_str = jira_log
-
-    sakai_url = APP['sakai_url']
-    site_msg = f'+SITE:+ {site_id}\n'
-    link_msg = f'+LINK:+ {sakai_url}/portal/site/{url}\n'
-    fail_type_msg = f'+FAILURE TYPE:+ {failure_type}\n'
-    fail_detail_msg = f'+FAILURE DETAIL:+ {failure_detail}\n'
-    started_by = f'+STARTED-BY:+ {user if user else "Unknown"}\n\n'
-    log_msg = f'+LOG:+\n{{noformat}}\n{jira_log_str}\n{{noformat}}'
-
-    with MyJira() as j:
-        fields = {
-            'project': {'key': APP['jira']['key']},
-            'summary': "{} {} {} {}".format(APP['jira']['prefix'], site_title, jira_date_str, " [Expired]" if jira_state == 'expire' else ''),
-            'description': site_msg + link_msg + fail_type_msg + fail_detail_msg + started_by + log_msg,
-            'issuetype': {'name': 'Task'},
-            'assignee': {'name': APP['jira']['assignee']},
-            'customfield_10001': str(site_id),
-            'labels': []
-        }
-
-        if jira_state == 'expire':
-            fields['labels'].append('expire')
-            del fields["assignee"]
-
-        if site_id in url:
-            fields['labels'].append('self-service')
-
-        if j.createIssue(fields) is not None:
-            return True
-
-    return False
-
 
 def rewrite_tool_ref(tool_xml_path, find_id, replace_id):
 

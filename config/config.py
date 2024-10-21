@@ -80,12 +80,13 @@ APP = {
     'import' : Path(SCRIPT_FOLDER) / 'import.exit',
   },
 
+  # Create migration failure issues in this JIRA project.
+  # Set the project default assignee setting in JIRA.
   'jira': {
     'enabled': True,
-    'prefix': 'Migration [ERR]',
     'key': 'MIG',
-    'assignee': 'smarquard',
-    'last' : 15
+    'prefix': 'Migration [ERR]',
+    'last' : 20
   },
 
   'report': {
