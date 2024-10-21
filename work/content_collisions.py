@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## Check for collections named the same as files
-## https://jira.cilt.uct.ac.za/browse/AMA-321
+## https://cilt.atlassian.net/browse/AMA-321
 
 import sys
 import os

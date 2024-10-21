@@ -2,7 +2,7 @@
 
 ## Fix characters in file/folder IDs that are disallowed in Brightspace
 ## - mp4s with colons in the name e.g. "2022:10:17 zoom.mp4"
-## https://jira.cilt.uct.ac.za/browse/AMA-517
+## https://cilt.atlassian.net/browse/AMA-517
 
 import sys
 import os

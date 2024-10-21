@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## Raise exception for content paths over 230 characters
-## https://jira.cilt.uct.ac.za/browse/AMA-748
+## https://cilt.atlassian.net/browse/AMA-748
 
 import sys
 import os

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## Check for zero-byte files
-## https://jira.cilt.uct.ac.za/browse/AMA-419
+## https://cilt.atlassian.net/browse/AMA-419
 
 import sys
 import os

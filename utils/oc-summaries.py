@@ -176,7 +176,7 @@ def create_summaries(APP, series_id, summary = True, mcq = False):
             #print(f"Published event with captions: {eventId} {event['start']} {event}")
 
             # Get this from published json in due course
-            # https://jira.cilt.uct.ac.za/browse/OPENCAST-3254
+            # https://cilt.atlassian.net/browse/OPENCAST-3254
             asset = oc_client.get_asset(eventId)
 
             # Extract the URL containing "nibity"

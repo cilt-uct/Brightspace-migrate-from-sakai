@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## Limit on number of files we're prepared to convert
-## https://jira.cilt.uct.ac.za/browse/AMA-1079
+## https://cilt.atlassian.net/browse/AMA-1079
 
 import sys
 import os

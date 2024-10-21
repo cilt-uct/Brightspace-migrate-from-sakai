@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 # Push a CSV into an Explorance Blue data source
-# https://jira.cilt.uct.ac.za/browse/AMA-1092
+# https://cilt.atlassian.net/browse/AMA-1092
 # Temporary home before this is moved into middleware
 
 import os

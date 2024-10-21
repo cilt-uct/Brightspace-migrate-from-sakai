@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## Check for collections that have a name or a single or double full stop (dot)
-## https://jira.cilt.uct.ac.za/browse/AMA-651
+## https://cilt.atlassian.net/browse/AMA-651
 ## https://sakaiproject.atlassian.net/browse/SAK-49101
 
 import sys

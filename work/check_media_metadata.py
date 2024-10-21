@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ## Transcode media to supported formats
-## https://jira.cilt.uct.ac.za/browse/AMA-552
+## https://cilt.atlassian.net/browse/AMA-552
 
 import sys
 import os
