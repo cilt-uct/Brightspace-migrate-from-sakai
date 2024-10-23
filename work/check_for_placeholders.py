@@ -119,25 +119,27 @@ def get_media_id(content_toc, file_path, displayname):
                     # TODO use the folder display name
                     module_search = list(filter(lambda x: x['Title'] == path, resource_node['Modules']))
 
-                    if module_search:
+                    if module_search and len(module_search) == 1:
                         print(f"Moving down to {path}")
                         resource_node = module_search[0]
+                        continue
+
+                    # Is it unique at this level?
+                    print(f"Checking uniqueness for last time, no match or multiple matches for '{path}'")
+                    topics = jpe_resources.find(resource_node)
+                    topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
+
+                    if not topic_match:
+                        raise Exception(f"Path element '{path}' from '{file_path}' not found in Resources module in ToC")
+
+                    if len(topic_match)==1:
+                        print(f"Unique match for {filename}")
                     else:
-                        # Is it unique at this level?
-                        print(f"Checking uniqueness for last time, no match for '{path}'")
-                        topics = jpe_resources.find(resource_node)
-                        topic_match = list(filter(lambda x: x.value['TypeIdentifier'] == 'ContentService', topics))
-                        if not topic_match:
-                            raise Exception(f"Path element '{path}' from '{file_path}' not found in Resources module in ToC")
+                        print(f"Using first match of {len(topic_match)} for {filename}")
+                        logging.warning(f"Using non-unique match for {filename} in {file_path} for media id")
 
-                        if len(topic_match)==1:
-                            print(f"Unique match for {filename}")
-                        else:
-                            print(f"Using first match of {len(topic_match)} for {filename}")
-                            logging.warning(f"Using non-unique match for {filename} in {file_path} for media id")
-
-                        media_url = topic_match[0].value['Url']
-                        break
+                    media_url = topic_match[0].value['Url']
+                    break
 
     if not media_url:
         raise Exception("Cannot find media url for {filename}")
