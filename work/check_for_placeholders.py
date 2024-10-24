@@ -314,7 +314,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
             if placeholder_type == "placeholder":
 
                 if not resource_exists(archive_path, sakai_id):
-                    # Should always exist because we created a plceholder for it
+                    # Should always exist because we created a placeholder for it
                     raise Exception(f"Placeholder id '{sakai_id}' in Lessons item {itemid} not found in site resources")
 
                 file_display_name = get_content_displayname(archive_path, sakai_id)
@@ -379,11 +379,20 @@ def run(SITE_ID, APP, import_id, transfer_id):
                         tool = custom.replace("tool=","")
 
                     # https://docs.valence.desire2learn.com/res/lti.html#LTI.CreateLtiLinkData
+                    custom = [ { "Name": "tool", "Value": tool } ]
+
+                    # Filter out items where 'Value' is None
+                    custom = [item for item in custom if item['Value'] is not None]
+
+                    # Assign None if the array is empty
+                    if not custom:
+                        custom = None
+
                     lti_link_data = {
                             "Url" : sakai_link_data['launch'],
                             "Title" : sakai_link_data['title'],
                             "Description" : sakai_link_data['description'],
-                            "CustomParameters": [ { "Name": "tool", "Value": tool } ]
+                            "CustomParameters": custom
                     }
 
                     quicklink_url = create_lti_quicklink(APP, import_id, lti_link_data)

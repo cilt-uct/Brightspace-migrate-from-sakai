@@ -140,6 +140,19 @@ def create_lti_quicklink(APP, org_id, lti_data):
             if param_key not in lti_data:
                 lti_data[param_key] = required_fields[param_key]
 
+        if 'CustomParameters' in lti_data:
+            custom = lti_data['CustomParameters']
+
+            # Filter out items where 'Value' is None
+            if custom:
+                custom = [item for item in custom if item['Value'] is not None]
+
+            # Assign None if the array is empty
+            if not custom:
+                custom = None
+
+            lti_data['CustomParameters'] = custom
+
         payload = {
             'url': f"{APP['brightspace_api']['le_url']}/lti/link/{org_id}",
             'method': 'POST',
