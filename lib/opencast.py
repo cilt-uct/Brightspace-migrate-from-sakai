@@ -9,7 +9,6 @@ import json
 import xmltodict
 import tempfile
 import zipfile
-from requests.auth import HTTPDigestAuth
 from urllib.parse import quote
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -37,11 +36,28 @@ class Opencast(object):
         self.username = username
         self.password = password
 
+        # Set up basic auth
+        self.oc_session = requests.Session()
+        self.oc_session.auth = (username, password)
+
+        # Validate connection
+        info_url = f"{server}/info/me.json"
+        response = self.oc_session.get(info_url)
+        if response.status_code != 200:
+            raise Exception(f"Unexpected response from {info_url}: {response.status_code}")
+
+        json = response.json()
+        logging.info(f"Authenticated to {server} as {json['user']['username']}")
+
+        # Check that user has API role for external API endpoints
+        if 'ROLE_API' not in json['roles']:
+            raise Exception(f"Authenticated user {username} does not have ROLE_API")
+
     # get asset properties
     def get_asset(self, eventId):
         url = f'{self.server}/assets/episode/{eventId}'
 
-        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+        response = self.oc_session.get(url)
 
         if response.status_code == 200:
             json = xmltodict.parse(response.text)
@@ -51,16 +67,18 @@ class Opencast(object):
 
     # get a named file within an asset .zip file
     def get_asset_zip_contents(self, url, filename):
-        url = url
-        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
 
-        json_s = ""
+        response = self.oc_session.get(url)
+        json_s = None
 
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             tmp.write(response.content)
             tmp.close()
             zip_in = zipfile.ZipFile(tmp.name, 'r')
-            json_s = zip_in.read(filename)
+
+            if filename in zip_in.namelist():
+                json_s = zip_in.read(filename)
+
             zip_in.close()
             os.unlink(tmp.name)
 
@@ -70,7 +88,7 @@ class Opencast(object):
     def get_events(self, seriesId):
         url = f'{self.server}/api/events?filter=series:{seriesId}&sort=date:ASC&withpublications=true'
 
-        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+        response = self.oc_session.get(url)
 
         if response.status_code == 200:
             json = response.json()
@@ -81,7 +99,7 @@ class Opencast(object):
     # get event data
     def get_event(self, eventId):
         url = f'{self.server}/api/events/{eventId}'
-        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+        response = self.oc_session.get(url)
 
         if response.status_code == 200:
             json = response.json()
@@ -92,7 +110,7 @@ class Opencast(object):
     # get series id
     def get_series_acl(self, seriesId):
         url = f'{self.server}/api/series/{seriesId}/acl'
-        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+        response = self.oc_session.get(url)
 
         if response.status_code == 200:
             json = response.json()
@@ -103,7 +121,7 @@ class Opencast(object):
     # get series metadata
     def get_series_metadata(self, seriesId, metadata_type):
         url = f'{self.server}/api/series/{seriesId}/metadata?type={metadata_type}'
-        response = requests.get(url, auth=HTTPDigestAuth(self.username, self.password), headers={'X-Requested-Auth':'Digest'})
+        response = self.oc_session.get(url)
 
         if response.status_code == 200:
             json = response.json()
@@ -118,10 +136,8 @@ class Opencast(object):
         url_encoded_data = quote(json_data)
         payload = f"acl={url_encoded_data}"
 
-        response = requests.put(url = f'{self.server}/api/series/{series_id}/acl',
-                                auth=HTTPDigestAuth(self.username, self.password),
+        response = self.oc_session.put(url = f'{self.server}/api/series/{series_id}/acl',
                                 headers={'Content-Type': 'application/x-www-form-urlencoded',
-                                         'X-REQUESTED-AUTH': 'Digest',
                                          'Accept': 'application/v1.3.0+json'},
                                 data=payload)
 
