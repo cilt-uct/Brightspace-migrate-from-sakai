@@ -10,6 +10,7 @@ import xmltodict
 import tempfile
 import zipfile
 from urllib.parse import quote
+from requests.adapters import HTTPAdapter
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -38,6 +39,9 @@ class Opencast(object):
 
         # Set up basic auth
         self.oc_session = requests.Session()
+
+        # Set up retries
+        self.oc_session.mount(self.server, HTTPAdapter(max_retries=5))
         self.oc_session.auth = (username, password)
 
         # Validate connection
