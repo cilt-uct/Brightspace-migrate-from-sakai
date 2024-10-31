@@ -176,6 +176,31 @@ def get_topic_id(content_toc, topic_path):
 
     return topic_id
 
+def dict_to_name_value_array(input_dict):
+    return [{'Name': key, 'Value': value} for key, value in input_dict.items()]
+
+def construct_CustomParameters(input_string):
+    result = []
+    lines = input_string.strip().splitlines()
+    seen_keys = set()  # To track keys and prevent duplicates
+
+    for line in lines:
+        key, value = line.split('=', 1)
+        if key not in seen_keys and value:  # Skip if the key is duplicate or value is empty/None
+            result.append({'Name': key, 'Value': value})
+            seen_keys.add(key)
+
+    return result
+
+def set_quicklink_url(cfg, base_url, parms):
+    for entry in parms:
+        if entry['Name'] == 'tool' and entry['Value'].startswith('/play/'):
+            event_id = entry['Value'].split('/play/', 1)[1]
+            for domain, url in cfg['opencast']['match'].items():
+                if url == base_url:
+                    return f"https://{domain}{cfg['opencast']['content_item_path']}{event_id}"
+    return base_url
+
 
 def run(SITE_ID, APP, import_id, transfer_id):
 
@@ -237,6 +262,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
         return
 
     lti1x_providers = None
+    lti1x_launches = None
 
     # Check the available LTI 1.x legacy tool providers
     if lti_content:
@@ -370,29 +396,24 @@ def run(SITE_ID, APP, import_id, transfer_id):
                         if '@graph' in content_json and len(content_json['@graph']) > 0:
                             ci_0 = content_json['@graph'][0]
                             if 'custom' in ci_0:
-                                tool = ci_0['custom']['tool']
+                                tool = dict_to_name_value_array(ci_0['custom'])
                         else:
                             if 'custom' in content_json:
-                                tool = content_json['custom']['tool']
-
-                    if tool is None and custom.startswith("tool="):
-                        tool = custom.replace("tool=","")
+                                tool = dict_to_name_value_array(content_json['custom'])
 
                     # https://docs.valence.desire2learn.com/res/lti.html#LTI.CreateLtiLinkData
-                    custom = [ { "Name": "tool", "Value": tool } ]
-
-                    # Filter out items where 'Value' is None
-                    custom = [item for item in custom if item['Value'] is not None]
+                    if tool is None:
+                        tool = construct_CustomParameters(sakai_link_data['custom'])
 
                     # Assign None if the array is empty
-                    if not custom:
-                        custom = None
+                    if not tool:
+                        tool = None
 
                     lti_link_data = {
-                            "Url" : sakai_link_data['launch'],
+                            "Url" : set_quicklink_url(APP, sakai_link_data['launch'], tool),
                             "Title" : sakai_link_data['title'],
                             "Description" : sakai_link_data['description'],
-                            "CustomParameters": custom
+                            "CustomParameters": tool
                     }
 
                     quicklink_url = create_lti_quicklink(APP, import_id, lti_link_data)

@@ -123,7 +123,11 @@ APP = {
   # Opencast
   'opencast': {
       'base_url' : 'https://media.uct.ac.za',
-      'content_item_path' : '/lti/player/'
+      'content_item_path' : '/lti/player/',
+      'match' : {
+        'media.uct.ac.za': 'https://media.uct.ac.za/lti',
+        'mediadev.uct.ac.za': 'https://mediadev.uct.ac.za/lti'
+      }
   },
 
   # Local middleware
