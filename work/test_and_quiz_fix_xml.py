@@ -18,14 +18,15 @@ from lib.utils import remove_unwanted_characters_tq
 
 def run(SITE_ID, APP):
 
-    path = r'{}{}-archive/qti'.format(APP['archive_folder'], SITE_ID)
-    dir_list = os.listdir(path)
-
     logging.info('T&Q: Replace unwanted XML characters in : {}'.format(SITE_ID))
 
-    # QTI files
-    for x in dir_list:
-        remove_unwanted_characters_tq('{}{}-archive/qti/{}'.format(APP['archive_folder'], SITE_ID, x))
+    path = r'{}{}-archive/qti'.format(APP['archive_folder'], SITE_ID)
+    if os.path.exists(path):
+        dir_list = os.listdir(path)
+
+        # QTI files
+        for x in dir_list:
+            remove_unwanted_characters_tq('{}{}-archive/qti/{}'.format(APP['archive_folder'], SITE_ID, x))
 
     # Question pools
     remove_unwanted_characters_tq('{}{}-archive/samigo_question_pools.xml'.format(APP['archive_folder'], SITE_ID))

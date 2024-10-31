@@ -120,6 +120,9 @@ def make_well_formed(html, title = None, template = "styled"):
 
 def remove_unwanted_characters(file):
 
+    if not os.path.exists(file):
+        return
+
     fin = open(file, "rt")
     data = fin.read()
     fin.close()
@@ -513,7 +516,11 @@ def process_check(process_list):
     for p in process_list:
         p.poll()
         if p.returncode is not None:
-            logging.info(f"Process {p.pid} terminated with code {p.returncode}")
+            if p.returncode == 0:
+                logging.info(f"Process {p.pid} terminated successfully with code 0")
+            else:
+                logging.error(f"Process {p.pid} terminated with code {p.returncode}")
+
             completed.append(p)
 
     for c in completed:
