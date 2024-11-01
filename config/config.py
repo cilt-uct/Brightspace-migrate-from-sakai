@@ -123,11 +123,7 @@ APP = {
   # Opencast
   'opencast': {
       'base_url' : 'https://media.uct.ac.za',
-      'content_item_path' : '/lti/player/',
-      'match' : {
-        'media.uct.ac.za': 'https://media.uct.ac.za/lti',
-        'mediadev.uct.ac.za': 'https://mediadev.uct.ac.za/lti'
-      }
+      'content_item_path' : '/lti/player/'
   },
 
   # Local middleware
@@ -258,9 +254,17 @@ APP = {
   # Map content item URLs to tool providers
   # This enables updating ACLs in third party systems based on URLs used in LTI quicklinks
   'lti': {
-          'content_item_urls': {
-              'https://media.uct.ac.za/lti/player/' : 'opencast'
+      'content_item_urls': {
+          'https://media.uct.ac.za/lti/player/' : 'opencast'
+      },
+      'match' : {
+          'https://media.uct.ac.za/lti' : {
+              'url': 'https://media.uct.ac.za/lti/player/', 'valid': ['tool']
+          },
+          'https://mediadev.uct.ac.za/lti' : {
+              'url': 'https://mediadev.uct.ac.za/lti/player/', 'valid': ['tool']
           }
+      }
   },
 
   'path': Path().absolute(),
