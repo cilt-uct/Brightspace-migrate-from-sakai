@@ -176,9 +176,12 @@ def get_topic_id(content_toc, topic_path):
 
     return topic_id
 
+# take {'tool': '/play/[MPID]'} > [{'Name':'tool', 'Value':'/play/[MPID]'}]
 def dict_to_name_value_array(input_dict):
     return [{'Name': key, 'Value': value} for key, value in input_dict.items()]
 
+# take "dl_tool=ltitools/deeplink/index.html\ntool=/play/[MPID]"
+#    > [{'Name':'dl_tool', 'Value':'ltitools/deeplink/index.html'}, {'Name':'tool', 'Value':'/play/[MPID]'}]
 def construct_CustomParameters(input_string):
     result = []
     lines = input_string.strip().splitlines()
@@ -192,6 +195,8 @@ def construct_CustomParameters(input_string):
 
     return result
 
+# If the base_url for the LTI tool is a "[opencast]/lti" link and it refers to a "play" tool
+# then return unique URL with the [domain][content_item_path][event_id] - which will play correctly
 def set_quicklink_url(cfg, base_url, parms):
     for entry in parms:
         if entry['Name'] == 'tool' and entry['Value'].startswith('/play/'):
@@ -392,6 +397,9 @@ def run(SITE_ID, APP, import_id, transfer_id):
                     tool = None
 
                     if content_item:
+                        # use the content item json object
+                        # if it contains LTI tool custom parameter configurations
+                        #     then construct a "Name", "Value" dictionary object as required by D2L
                         content_json = json.loads(content_item)
                         if '@graph' in content_json and len(content_json['@graph']) > 0:
                             ci_0 = content_json['@graph'][0]
@@ -401,7 +409,9 @@ def run(SITE_ID, APP, import_id, transfer_id):
                             if 'custom' in content_json:
                                 tool = dict_to_name_value_array(content_json['custom'])
 
-                    # https://docs.valence.desire2learn.com/res/lti.html#LTI.CreateLtiLinkData
+                    # Construct LTI custom parameter from the sakai link data
+                    # return a "Name", "Value" dictionary object required by:
+                    #     https://docs.valence.desire2learn.com/res/lti.html#LTI.CreateLtiLinkData
                     if tool is None:
                         tool = construct_CustomParameters(sakai_link_data['custom'])
 
@@ -410,12 +420,16 @@ def run(SITE_ID, APP, import_id, transfer_id):
                         tool = None
 
                     lti_link_data = {
+                            # Get unique Url if Opencast LTI match and "play" tool link
                             "Url" : set_quicklink_url(APP, sakai_link_data['launch'], tool),
                             "Title" : sakai_link_data['title'],
                             "Description" : sakai_link_data['description'],
                             "CustomParameters": tool
                     }
 
+                    # Create a new QuickLink - the "Url" is used as a unique value
+                    # if the Url exists - don't create a new link
+                    # - in this case the unique Url is constructed with "set_quicklink_url"
                     quicklink_url = create_lti_quicklink(APP, import_id, lti_link_data)
                     logging.info(f"Quicklink for {lti_link_data['Url']} is {quicklink_url}")
 
