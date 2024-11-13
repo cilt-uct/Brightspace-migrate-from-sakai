@@ -176,6 +176,44 @@ def get_topic_id(content_toc, topic_path):
 
     return topic_id
 
+# take {'tool': '/play/[MPID]'} > [{'Name':'tool', 'Value':'/play/[MPID]'}]
+def dict_to_name_value_array(input_dict):
+    return [{'Name': key, 'Value': value} for key, value in input_dict.items()]
+
+# take "tool=/play/[MPID]" > [{'Name':'tool', 'Value':'/play/[MPID]'}]
+def construct_CustomParameters(input_string):
+    result = []
+    lines = input_string.strip().splitlines()
+    seen_keys = set()  # To track keys and prevent duplicates
+
+    for line in lines:
+        key, value = line.split('=', 1)
+        if key not in seen_keys and value:  # Skip if the key is duplicate or value is empty/None
+            result.append({'Name': key, 'Value': value})
+            seen_keys.add(key)
+
+    return result
+
+# If the base_url for the LTI tool is a "[opencast]/lti" link and it refers to a "play" tool
+# then return unique URL with the [domain][content_item_path][event_id] - which will play correctly
+def get_quicklink_url(cfg, base_url, parms):
+    if base_url not in cfg['lti']['match']:
+        return base_url
+
+    for entry in parms:
+        if entry['Name'] == 'tool' and entry['Value'].startswith('/play/'):
+            event_id = entry['Value'].split('/play/', 1)[1]
+            return f"{cfg['lti']['match'][base_url]['url']}{event_id}"
+
+    return base_url
+
+def filter_name_value_array(cfg, base_url, parms):
+    if base_url in cfg['lti']['match']:
+        if not cfg['lti']['match'][base_url]['valid']:
+            return parms
+        return [entry for entry in parms if entry['Name'] in cfg['lti']['match'][base_url]['valid']]
+
+    return parms
 
 def run(SITE_ID, APP, import_id, transfer_id):
 
@@ -237,6 +275,7 @@ def run(SITE_ID, APP, import_id, transfer_id):
         return
 
     lti1x_providers = None
+    lti1x_launches = None
 
     # Check the available LTI 1.x legacy tool providers
     if lti_content:
@@ -366,35 +405,40 @@ def run(SITE_ID, APP, import_id, transfer_id):
                     tool = None
 
                     if content_item:
+                        # use the content item json object
+                        # if it contains LTI tool custom parameter configurations
+                        #     then construct a "Name", "Value" dictionary object as required by D2L
                         content_json = json.loads(content_item)
                         if '@graph' in content_json and len(content_json['@graph']) > 0:
                             ci_0 = content_json['@graph'][0]
                             if 'custom' in ci_0:
-                                tool = ci_0['custom']['tool']
+                                tool = dict_to_name_value_array(ci_0['custom'])
                         else:
                             if 'custom' in content_json:
-                                tool = content_json['custom']['tool']
+                                tool = dict_to_name_value_array(content_json['custom'])
 
-                    if tool is None and custom.startswith("tool="):
-                        tool = custom.replace("tool=","")
-
-                    # https://docs.valence.desire2learn.com/res/lti.html#LTI.CreateLtiLinkData
-                    custom = [ { "Name": "tool", "Value": tool } ]
-
-                    # Filter out items where 'Value' is None
-                    custom = [item for item in custom if item['Value'] is not None]
+                    # Construct LTI custom parameter from the sakai link data
+                    # return a "Name", "Value" dictionary object required by:
+                    #     https://docs.valence.desire2learn.com/res/lti.html#LTI.CreateLtiLinkData
+                    if tool is None:
+                        tool = construct_CustomParameters(sakai_link_data['custom'])
 
                     # Assign None if the array is empty
-                    if not custom:
-                        custom = None
+                    if not tool:
+                        tool = None
 
                     lti_link_data = {
-                            "Url" : sakai_link_data['launch'],
+                            # Get unique Url if LTI match and "play" tool link
+                            "Url" : get_quicklink_url(APP, sakai_link_data['launch'], tool),
                             "Title" : sakai_link_data['title'],
                             "Description" : sakai_link_data['description'],
-                            "CustomParameters": custom
+                            # filter unwanted parameters if LTI match
+                            "CustomParameters": filter_name_value_array(APP, sakai_link_data['launch'], tool)
                     }
 
+                    # Create a new QuickLink - the "Url" is used as a unique value
+                    # if the Url exists - don't create a new link
+                    # - in this case the unique Url is constructed with "set_quicklink_url"
                     quicklink_url = create_lti_quicklink(APP, import_id, lti_link_data)
                     logging.info(f"Quicklink for {lti_link_data['Url']} is {quicklink_url}")
 
