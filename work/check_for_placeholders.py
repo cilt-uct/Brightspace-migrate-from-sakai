@@ -400,7 +400,6 @@ def run(SITE_ID, APP, import_id, transfer_id):
                         continue
 
                     # Create a new quicklink in the target site
-                    custom = sakai_link_data['custom']
                     content_item = sakai_link_data['contentitem']
                     tool = None
 
