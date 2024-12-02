@@ -12,8 +12,8 @@ PvNiekerk
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 <link rel="stylesheet" href="/shared/HTML-Template-Library/HTML-Templates-V3/_assets/thirdpartylib/bootstrap-4.3.1/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="/shared/HTML-Template-Library/HTML-Templates-V3/_assets/thirdpartylib/fontawesome-free-5.9.0-web/css/all.min.css"/>
-<link rel="stylesheet" href="/shared/HTML-Template-Library/HTML-Templates-V3/_assets/css/styles.min.css?v=20220819"/>
-<link rel="stylesheet" href="/shared/HTML-Template-Library/HTML-Templates-V3/_assets/css/custom.min.css?v=20220819"/>
+<link rel="stylesheet" href="/shared/HTML-Template-Library/HTML-Templates-V3/_assets/css/styles.min.css?v=20241202001"/>
+<link rel="stylesheet" href="/shared/HTML-Template-Library/HTML-Templates-V3/_assets/css/custom.min.css?v=20241202001"/>
 </head>
 <body>
   <div id="content" class="container-fluid">
