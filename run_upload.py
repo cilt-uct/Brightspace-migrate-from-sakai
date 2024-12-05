@@ -227,7 +227,7 @@ def start_workflow(workflow_file, link_id, site_id, APP):
         # Failed
         logging.error("Upload workflow did not complete")
 
-        # Reset to queued state
+        # Reset to queued state which will cause a retry
         update_record(mdb.db_config, link_id, site_id, "queued", lib.utils.get_log(log_file))
 
     finally:

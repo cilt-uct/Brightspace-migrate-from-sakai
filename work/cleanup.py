@@ -36,8 +36,9 @@ def cleanup_sftp(APP, sftp_folder, site_id):
     logging.getLogger("paramiko").setLevel(logging.WARNING)
 
     try:
-        ssh_client.connect(SFTP['hostname'], 22, SFTP['username'], SFTP['password'])
+        ssh_client.connect(SFTP['hostname'], 22, SFTP['username'], SFTP['password'], timeout=60)
         sftp = ssh_client.open_sftp()
+        sftp.get_channel().settimeout(300)
 
         for entry in sftp.listdir_attr(sftp_folder):
             prefix = "{}{}".format(APP['zip']['site'], site_id)

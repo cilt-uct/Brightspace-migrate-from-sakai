@@ -191,7 +191,9 @@ APP = {
     'show_progress': False,
     'log': True,
     'inbox': '/incoming/BulkCourseImport/Inbox',
-    'outbox': '/incoming/BulkCourseImport/Outbox'
+    'outbox': '/incoming/BulkCourseImport/Outbox',
+    # Expiry time in minutes to complete upload
+    'expiry' : 300
   },
 
   # to differentiate zip files (added to front)

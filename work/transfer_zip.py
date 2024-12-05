@@ -105,7 +105,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
         paramiko.util.log_to_file(f"{APP['log_folder']}/{SITE_ID}_ftp.log", level = "DEBUG")
 
     try:
-        ssh_client.connect(SFTP['hostname'], 22, SFTP['username'], SFTP['password'])
+        ssh_client.connect(SFTP['hostname'], 22, SFTP['username'], SFTP['password'], timeout=60)
         sftp = ssh_client.open_sftp()
         sftp.get_channel().settimeout(300)
 

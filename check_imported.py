@@ -223,6 +223,10 @@ def check_imported(APP, sakai_ws, process_list):
 
     start_time = time.time()
 
+    busy_updating = mdb.get_state_count('updating')
+    if busy_updating:
+        logging.info(f"{busy_updating} site(s) updating")
+
     want_to_process = mdb.get_records(expiry_minutes=expiry_minutes, state='importing')
 
     if not want_to_process:
