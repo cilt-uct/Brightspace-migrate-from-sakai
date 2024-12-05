@@ -41,7 +41,7 @@ def run(SITE_ID, APP):
 
             with open(f'{file.path}', 'r+', encoding='utf8') as f:
                 # read and replace content
-                content = f.read().replace('/library/editor/ckeditor/plugins/smiley/images/', '/shared/HTML-Template-Library/HTML-Templates-V3/_assets/img/smiley/')
+                content = f.read().replace('/library/editor/ckeditor/plugins/smiley/images/', '/shared/HTML-Template-Library/HTML-Templates-V4/_assets/img/smiley/')
                 content = content.replace(f'{sakai_url}/shared/','/shared/')
                 # reset file cursor and write to file
                 f.seek(0)
