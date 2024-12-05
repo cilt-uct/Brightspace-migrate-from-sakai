@@ -54,7 +54,7 @@ def run(SITE_ID, APP):
                     # there is no banner
                     col_tag = html.new_tag('div', **{"class":"col-12 banner-img"})
                     p_tag = html.new_tag('p')
-                    img_tag = html.new_tag('img', alt="banner", src='/shared/HTML-Template-Library/HTML-Templates-V3/_assets/img/banner_03.jpg')
+                    img_tag = html.new_tag('img', alt="banner", src='/shared/HTML-Template-Library/HTML-Templates-V4/_assets/img/banner_001_basic.jpg')
 
                     p_tag.append(img_tag)
                     col_tag.append(p_tag)
