@@ -39,7 +39,7 @@ def run(SITE_ID, APP):
             html = make_well_formed(html)
 
             for el in html.body.findAll("img", {"src" : "/library/image/genericProf.png"}):
-                el['src'] = '/shared/HTML-Template-Library/HTML-Templates-V3/_assets/img/genericProf.png'
+                el['src'] = '/shared/HTML-Template-Library/HTML-Templates-V4/_assets/img/genericProf.png'
 
             # write_test_case(html)
             item.set('html', str(html))

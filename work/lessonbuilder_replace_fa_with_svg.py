@@ -19,7 +19,7 @@ sys.path.append(parent)
 import config.logging_config
 from lib.utils import remove_unwanted_characters, make_well_formed
 
-shared_path = '/shared/HTML-Template-Library/HTML-Templates-V3/_assets/img/'
+shared_path = '/shared/HTML-Template-Library/HTML-Templates-V4/_assets/img/'
 
 def replace_with_img(html, path, img, _cls = None):
     for icon in html.select(path):
