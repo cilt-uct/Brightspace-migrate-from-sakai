@@ -6,6 +6,21 @@ The entire process is tied to the **Migrate to Brightspace [LTI] (tsugi-migrate-
 
 The LTI tool contains the database (see [Database Schema](#database-schema)) that is used to store the state of the conversion process.
 
+## Brightspace dependencies
+
+### Bulk Course Import
+
+These conversion scripts use the Brightspace [Bulk Course Import service](https://community.d2l.com/brightspace/kb/articles/25615-set-up-bulk-course-import).
+
+### Shared Files
+
+The templates and scripts create HTML content for import which references shared files and HTML page templates in the Brightspace shared files location.
+These templates support migration of content from Sakai Lessons to a look and feel which matches Brightspace pages. Please see 
+[thirdpartylib](https://github.com/cilt-uct/Brightspace-HTML-Templates/tree/main/thirdpartylib) and 
+[HTML-Template-Library](https://github.com/cilt-uct/Brightspace-HTML-Templates/tree/main/HTML-Template-Library)
+
+These should be copied to the /shared/ location in Brightspace Admin Tools / Shared Files.
+
 ## Python dependencies
 
 To install the required versions of the python module dependencies used by these scripts, use
