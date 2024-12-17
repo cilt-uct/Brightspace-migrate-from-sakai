@@ -29,7 +29,8 @@ def has_restricted(name, disallowed):
 
 def check_resources(src_folder, paths_map, collection, restricted_ext):
 
-    disallowed_chars = (':', '+', u"\u000B")
+    disallowed_chars = (':', '+', u"\u000B", u"\u0008")
+    disallowed_display_chars = (u"\u000B", u"\u0008")
 
     # Video and audio types we expect to be imported into Media Library
     supported_audio = restricted_ext['SUPPORTED_AUDIO']
@@ -73,6 +74,15 @@ def check_resources(src_folder, paths_map, collection, restricted_ext):
         # for the media handling code later (check_for_placeholders).
         if display_name_value and '&' in display_name_value:
             display_name_value = display_name_value.replace("&ndash;","-").replace("&mdash;","-")
+            display_name_el.set('value', base64.b64encode(display_name_value.encode('utf-8')))
+            rewrite = True
+
+        # Remove some unprintable characters from display names
+        if display_name_value and has_restricted(display_name_value, disallowed_display_chars):
+            logging.debug(f"{display_name_value} has restricted chars")
+            for char in disallowed_display_chars:
+                display_name_value = display_name_value.replace(char, "")
+
             display_name_el.set('value', base64.b64encode(display_name_value.encode('utf-8')))
             rewrite = True
 
@@ -166,6 +176,7 @@ def check_resources(src_folder, paths_map, collection, restricted_ext):
 
     if rewrite:
         # Update file
+        logging.debug(f"Updating {xml_src}")
         xml_old = xml_src.replace(".xml",".old")
         shutil.copyfile(xml_src, xml_old)
         content_tree.write(xml_src, encoding='utf-8', xml_declaration=True)
@@ -195,6 +206,8 @@ def main():
     args = vars(parser.parse_args())
 
     APP['debug'] = APP['debug'] or args['debug']
+    if APP['debug']:
+        config.logging_config.logger.setLevel(logging.DEBUG)
 
     run(args['SITE_ID'], APP)
 
