@@ -10,6 +10,8 @@ import json
 import copy
 import markdown
 import pytz
+import tempfile
+
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -53,9 +55,27 @@ def has_captions(event):
 
     return False
 
+def intro_embolden(section_txt, context, phrase):
+
+    # Replace first occurrence only
+    if section_txt.startswith(context):
+        #print(f"BOLD")
+        return section_txt.replace(phrase, f"**{phrase}**", 1)
+
+    return section_txt
+
 def txt_to_html(section_txt):
 
+    #print(f"Section text:\n{section_txt}")
+
+    # Section emphasis
+    section_txt = intro_embolden(section_txt, "Here's a concise summary", "concise summary")
+    section_txt = intro_embolden(section_txt, "Here are some practice questions based on the lecture transcript", "practice questions")
+    section_txt = intro_embolden(section_txt, "Here are the key points, concepts, and definitions from the lecture transcript", "key points, concepts, and definitions")
+
+    # Bullet points
     section_txt = section_txt.replace("\n   - ", "\n\t- ").replace("\n- ", "\n\t- ")
+
     return markdown.markdown(section_txt)
 
 def get_first_module(content_toc, module_title):
@@ -78,10 +98,15 @@ def get_first_topic(module, topic_title):
     # There could be multiple matches
     return topic_list[0]
 
-def update_topic(APP, org_id, topic_id, topic_html):
+def update_topic(APP, org_id, module_id, topic_id, topic_html):
 
     update_endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['update_html_file'].format(org_id, topic_id))
-    filename = f"summaries-{os.getpid()}.html"
+
+    # We need to give this a unique name otherwise Brightspace will append "- Copy"
+    suffix = datetime.today().strftime('%Y%m%d_%H:%M:%S')
+    filename = f"lecture-summaries_{module_id}_{suffix}.html"
+
+    print(f"Updating topic {topic_id} with new filename {filename}")
 
     json_response = middleware_api(APP, update_endpoint, payload_data={'html': topic_html, 'name' : filename }, method='PUT')
     if 'status' not in json_response or json_response['status'] != 'success':
@@ -89,13 +114,30 @@ def update_topic(APP, org_id, topic_id, topic_html):
 
     return
 
-def add_topic(APP, org_id, topic_id, topic_html):
+def add_topic(APP, org_id, base_path, module_id, topic_name, topic_html):
 
-    print("NOT IMPLEMENTED - add topic")
+    add_endpoint = "{}{}".format(APP['middleware']['base_url'], APP['middleware']['add_topic_from_file'].format(org_id, module_id))
+    #filename = f"summaries-{os.getpid()}.html"
 
-    return
+    detail = json.dumps( { "Title": topic_name, "ShortTitle": topic_name, "IsHidden": True, "Url": f"{base_path}lecture-summaries_{module_id}.html" } )
 
-def add_or_replace_topic(APP, org_id, module_name, topic_name, topic_html):
+    # Write the HTML to a temporary file
+    with tempfile.NamedTemporaryFile(mode='w+t') as tmp_f:
+        tmp_f.write(topic_html)
+        tmp_f.seek(0)
+
+        print(f"URL: {add_endpoint}\ndetail: {detail}")
+
+        json_response = middleware_api(APP, add_endpoint, files = {"file": tmp_f, "detail": (None, detail)}, method='POST')
+
+        #print(f"Add topic: {json_response}")
+
+        if 'data' in json_response and 'Id' in json_response['data']:
+            return json_response['data']['Id']
+
+    return None
+
+def add_or_replace_topic(APP, series_id, org_id, course_info, module_name, topic_name, topic_html):
 
     content_toc = get_content_toc(APP, org_id)
 
@@ -110,21 +152,26 @@ def add_or_replace_topic(APP, org_id, module_name, topic_name, topic_html):
     logging.info(f"Updating topic '{topic_name}' in {org_id} module id {module_id}")
 
     topic = get_first_topic(module, topic_name)
+    topic_id = None
 
     if topic is None:
         # Create
-        print("CREATE")
-        add_topic(APP, org_id, module_id, topic_html)
+        logging.debug(f"CREATE: {course_info}")
+        base_path = course_info['Path']
+        topic_id = add_topic(APP, org_id, base_path, module_id, topic_name, topic_html)
     else:
         # Replace
-        print("REPLACE")
-        update_topic(APP, org_id, topic["TopicId"], topic_html)
+        logging.debug(f"REPLACE: {course_info}")
+        topic_id = topic["TopicId"]
+        update_topic(APP, org_id, module_id, topic_id, topic_html)
 
     # Get the TOC. If the topic doesn't exist, create it with new contents like this:
     #   POST /d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)/structure/¶
 
     # If it does exist, update its contents like this:
     # PUT /d2l/api/le/(version)/(orgUnitId)/content/topics/(topicId)/file¶
+
+    logging.info(f"Series {series_id} summaries: https://amathuba.uct.ac.za/d2l/le/lessons/{org_id}/topics/{topic_id}")
 
     return
 
@@ -277,6 +324,12 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
         accordion.append(card_item)
         card_index += 1
 
+    if event_model:
+        # Set the AI model label
+        model_span = tmpl.find("span", id="oc-model-label")
+        if model_span:
+            model_span.string = event_model
+
     # Remove the template card and generate the new HTML
     card_template.decompose()
     new_html = str(tmpl)
@@ -285,7 +338,9 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
 
     # Create or update the topic page
     if update:
-        add_or_replace_topic(APP, org_id, "Lecture Recordings", "Lecture Summaries", new_html)
+        add_or_replace_topic(APP, series_id, org_id, course_info, "Lecture Videos", "Lecture Summaries", new_html)
+    else:
+        print(f"New HTML:\n{new_html}")
 
     return
 
@@ -307,6 +362,7 @@ def main():
 
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('--mcq', action='store_true')
+    parser.add_argument('--update', action='store_true')
     args = vars(parser.parse_args())
 
     if args['debug']:
@@ -314,6 +370,7 @@ def main():
 
     series_id = args['series']
     series_list = args['list']
+    update = args['update'] or False
 
     ocAuth = getAuth('Opencast', ['username', 'password'])
     if ocAuth['valid']:
@@ -322,13 +379,13 @@ def main():
         raise Exception('Opencast authentication required')
 
     if series_id:
-        create_summaries(APP, oc_client, series_id, summary = True, update = False)
+        create_summaries(APP, oc_client, series_id, summary = True, update = update)
 
     if series_list:
         with open(series_list, "r") as list_file:
             for series_id in list_file:
                 series_id = series_id.replace("\n","")
-                create_summaries(APP, oc_client, series_id, summary = True, update = False)
+                create_summaries(APP, oc_client, series_id, summary = True, update = update)
 
     logging.info("Done")
 

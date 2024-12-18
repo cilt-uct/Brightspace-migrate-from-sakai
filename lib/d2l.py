@@ -16,7 +16,7 @@ from lib.local_auth import getAuth
 # See https://docs.valence.desire2learn.com/about.html#principal-version-table
 
 # Call middleware API and return JSON response with optional retries
-def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None, method = None, headers = None):
+def middleware_api(APP, url, payload_data = None, files = None, retries = None, retry_delay = None, method = None, headers = None):
 
     AUTH = getAuth(APP['auth']['middleware'], ['username', 'password'])
     if not AUTH['valid']:
@@ -44,12 +44,19 @@ def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = 
     while (retry <= retries):
 
         try:
+            # JSON PUT or POST
             if payload_data is not None:
                 if method == 'PUT':
                     response = requests.put(url, json=payload_data, auth=(AUTH['username'], AUTH['password']), headers=_headers)
                 else:
                     response = requests.post(url, json=payload_data, auth=(AUTH['username'], AUTH['password']), headers=_headers)
-            else:
+
+            # AMA-1234 Multipart operation with an attached file body
+            if payload_data is None and files is not None:
+                response = requests.post(url, files=files, auth=(AUTH['username'], AUTH['password']))
+
+            if payload_data is None and files is None:
+                # Default GET request
                 response = requests.get(url, auth=(AUTH['username'], AUTH['password']), headers=headers)
 
             last_status = response.status_code
