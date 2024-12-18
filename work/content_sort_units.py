@@ -14,7 +14,7 @@ sys.path.append(parent)
 import config.config
 import config.logging_config
 import lib.db
-from lib.utils import middleware_api
+from lib.d2l import middleware_api
 
 def run(SITE_ID, LINK_ID, APP):
 

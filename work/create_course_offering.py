@@ -22,8 +22,8 @@ sys.path.append(parent)
 import config.logging_config
 import lib.db
 import lib.sakai
-from lib.utils import middleware_api, sis_course_title, site_has_tool
-from lib.d2l import middleware_d2l_api, enroll_in_site, get_brightspace_roles
+from lib.utils import sis_course_title, site_has_tool
+from lib.d2l import middleware_api, middleware_d2l_api, enroll_in_site, get_brightspace_roles
 
 def cheap_hash(input_str):
     return hashlib.md5(input_str.encode('utf-8')).hexdigest()[:8]

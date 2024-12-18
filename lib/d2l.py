@@ -10,10 +10,76 @@ current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
-from lib.utils import middleware_api
+from lib.local_auth import getAuth
 
 # D2L API versions
 # See https://docs.valence.desire2learn.com/about.html#principal-version-table
+
+# Call middleware API and return JSON response with optional retries
+def middleware_api(APP, url, payload_data = None, retries = None, retry_delay = None, method = None, headers = None):
+
+    AUTH = getAuth(APP['auth']['middleware'], ['username', 'password'])
+    if not AUTH['valid']:
+        raise Exception("Middleware Authentication required")
+
+    if retries is None:
+        retries = APP['middleware']['retries']
+
+    if retry_delay is None:
+        retry_delay = APP['middleware']['retry_delay']
+
+    logging.debug(f"Calling endpoint {url} retries {retries} delay {retry_delay}")
+
+    retry = 0
+    json_response = None
+    last_status = None
+
+    _headers = {}
+    if headers:
+        _headers.update(headers)
+
+    if "Content-Type" not in _headers:
+        _headers["Content-Type"] = "application/json"
+
+    while (retry <= retries):
+
+        try:
+            if payload_data is not None:
+                if method == 'PUT':
+                    response = requests.put(url, json=payload_data, auth=(AUTH['username'], AUTH['password']), headers=_headers)
+                else:
+                    response = requests.post(url, json=payload_data, auth=(AUTH['username'], AUTH['password']), headers=_headers)
+            else:
+                response = requests.get(url, auth=(AUTH['username'], AUTH['password']), headers=headers)
+
+            last_status = response.status_code
+
+            if last_status == 401:
+                logging.error(f"API call {url} is 401 Unauthorized (username {AUTH['username']}")
+                return {'status': 'ERR', 'data': 'Unauthorized'}
+
+            if (last_status < 500) and '{' in response.text and '}' in response.text:
+                # Succeeded
+                json_response = response.json()
+                return json_response
+            else:
+                logging.warning(f"{url} returned {last_status}: '{response.text}'")
+
+            # retry
+            retry += 1
+            if (retry <= retries):
+                logging.warning(f"Retry {retry} for call to {url} after response code {last_status}")
+                time.sleep(retry_delay)
+
+        except Exception as err:
+            logging.exception(err)
+            retry += 1
+            if (retry <= retries):
+                logging.warning(f"Retry {retry} for call to {url} after exception")
+                time.sleep(retry_delay)
+
+    logging.error(f"API call {url} failed: {last_status} {json_response}")
+    return None
 
 # Call a D2L endpoint via middleware proxy
 def middleware_d2l_api(APP, payload_data = None, retries = None, retry_delay = None, headers = None):

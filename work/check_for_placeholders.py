@@ -13,11 +13,11 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import config.logging_config
-from lib.utils import remove_unwanted_characters, middleware_api
+from lib.utils import remove_unwanted_characters
 from lib.local_auth import getAuth
 from lib.lessons import get_archive_lti_link, ItemType, supported_media_type
 from lib.resources import resource_exists, get_content_displayname
-from lib.d2l import create_lti_quicklink, web_login, get_toc, get_instance_org_id, lti_available, get_lti_tool_providers
+from lib.d2l import middleware_api, create_lti_quicklink, web_login, get_toc, get_instance_org_id, lti_available, get_lti_tool_providers
 
 # See https://docs.valence.desire2learn.com/res/content.html
 
