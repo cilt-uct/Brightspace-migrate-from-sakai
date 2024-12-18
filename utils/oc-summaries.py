@@ -22,7 +22,7 @@ sys.path.append(parent)
 import config.config
 
 from lib.local_auth import getAuth
-from lib.d2l import middleware_api, get_course_info, get_content_toc
+from lib.d2l import middleware_api, get_course_info, get_content_toc, create_lti_quicklink
 from lib.opencast import Opencast
 
 def setup_logging(APP, logger, log_file):
@@ -232,6 +232,33 @@ def get_enriched_events(APP, oc_client, series_id):
 
     return enriched_events
 
+def create_mp_quicklink(APP, event_id, title, org_id):
+
+    ql_url = "{}{}{}".format(APP['opencast']['base_url'], APP['opencast']['content_item_path'], event_id)
+
+    ql_data = [ {
+        'Name' : 'tool',
+        'Value' : f'/play/{event_id}'
+    } ]
+
+    print(f"QL_URL: {ql_url}")
+    print(f"DATA: {ql_data}")
+
+    lti_link_data = {
+        # Get unique Url if LTI match and "play" tool link
+        "Url" : ql_url,
+        "Title" : title,
+        "Description" : title,
+        "CustomParameters": ql_data
+    }
+
+    # Create a new QuickLink - the "Url" is used as a unique value
+    quicklink_url = create_lti_quicklink(APP, org_id, lti_link_data)
+
+    print(f"Got {quicklink_url} for payload: {lti_link_data}")
+
+    return quicklink_url
+
 
 def create_summaries(APP, oc_client, series_id, summary = True, update = False):
 
@@ -289,9 +316,11 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
         card_item = copy.copy(card_template)
 
         summary_txt = event['enriched']['summary']['content'][0]['text']
-        #mcq_txt = event['enriched']['multiple_choice']['content'][0]['text']
         kp_txt = event['enriched']['key_points']['content'][0]['text']
         pq_txt = event['enriched']['practice_questions']['content'][0]['text']
+
+        # Not doing anything with these at present
+        # mcq_txt = event['enriched']['multiple_choice']['content'][0]['text']
         # fr_txt = event['enriched']['further_reading']['content'][0]['text']
 
         #print(f"MCQ: {mcq_txt}")
@@ -307,16 +336,24 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
         # <h2 class="card-title" data-itemprop="0|0">Lecture 1 title</h2>
         # <div class="card-body" data-itemprop="0|1"><p>Lecture 1 summary</p></div>
 
-        # Append a new card
-        card_p = card_item.find("p")
-        card_p.string = f"Presenter(s): {presenters}"
+        # Create an LTI quicklink for this event
+        quicklink_url = create_mp_quicklink(APP, eventId, event_title, org_id)
+        ql_markup = f'<p><a href="{quicklink_url}" target="_blank">Watch the video</a></p>'
 
+        # Append a new card
         card_title  = card_item.find("h2", class_="card-title")
         card_title['data-itemprop']=f"{card_index}|0"
         card_title.string = event_title
 
         card_body = card_item.find("div", class_="card-body")
         card_body['data-itemprop']=f"{card_index}|1"
+
+        # Presenter and watch link
+        card_p = card_body.find("p")
+        card_p.string = f"Presenter(s): {presenters}"
+        card_body.append(BeautifulSoup(ql_markup, "html.parser"))
+
+        # Summary items
         card_body.append(BeautifulSoup(txt_to_html(summary_txt), "html.parser"))
         card_body.append(BeautifulSoup(txt_to_html(kp_txt), "html.parser"))
         card_body.append(BeautifulSoup(txt_to_html(pq_txt), "html.parser"))
