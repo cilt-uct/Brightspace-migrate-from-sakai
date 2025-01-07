@@ -3,7 +3,7 @@ cssutils==2.4.0
 emails==0.6
 ffprobe_python==1.0.3
 funcy==1.17
-Jinja2==3.1.4
+Jinja2==3.1.5
 jira==3.4.1
 jproperties==2.1.1
 jsonpath_ng==1.6.0
