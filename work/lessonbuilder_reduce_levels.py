@@ -18,7 +18,7 @@ import config.logging_config
 from lib.utils import remove_unwanted_characters
 from lib.lessons import ItemType
 
-def update_page(page, level):
+def update_page(page, level, max_levels):
     page_title = page.get("title")
     page_id = page.get("pageid")
 
@@ -36,8 +36,8 @@ def update_page(page, level):
             print(f"{child_page_count} child page{'s' if child_page_count > 1 else ''}")
 
     for child_page in child_pages:
-        update_page(child_page, level + 1)
-        if level >= 3:
+        update_page(child_page, level + 1, max_levels)
+        if level >= max_levels:
             move_down(page, page_title, page_id, child_page)
 
 def move_down(page, page_title, page_id, child_page):
@@ -135,7 +135,9 @@ def run(SITE_ID, APP):
     global debug
     debug = APP['debug'] # :p
 
-    logging.info('Lessons: Fix 3 levels : {}'.format(SITE_ID))
+    max_levels = APP['lessons']['max_depth']
+
+    logging.info(f'Lessons: Reduce depth to max {max_levels} levels : {SITE_ID}')
 
     xml_src = r'{}{}-archive/lessonbuilder.xml'.format(APP['archive_folder'], SITE_ID)
     xml_old = r'{}{}-archive/lessonbuilder.old'.format(APP['archive_folder'], SITE_ID)
@@ -170,7 +172,7 @@ def run(SITE_ID, APP):
                 print(f"top_parent_list {top_parent_list} {top_parent_list is not None}")
 
             if top_parent_list is not None:
-                update_page(top_parent_list, 1)
+                update_page(top_parent_list, 1, max_levels)
                 lessonbuilder_xml.write(xml_src, encoding='utf-8', xml_declaration=True)
 
                 logging.info('\tDone')
@@ -181,7 +183,7 @@ def run(SITE_ID, APP):
 
 def main():
     APP = config.config.APP
-    parser = argparse.ArgumentParser(description="This script will check lessons and restructure the XML so that it does not pass 3 levels",
+    parser = argparse.ArgumentParser(description="This script will check lessons and restructure the XML to enforce a maximum page depth",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("SITE_ID", help="The SITE_ID to change lessons for")
     parser.add_argument('-d', '--debug', action='store_true')

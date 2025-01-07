@@ -229,7 +229,8 @@ APP = {
                        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-      'ext_to_link': ['pdf','ppt','xls','pptx','xlsx']
+      'ext_to_link': ['pdf','ppt','xls','pptx','xlsx'],
+      'max_depth' : 5
   },
 
   'qna': {
