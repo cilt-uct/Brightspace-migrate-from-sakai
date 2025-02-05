@@ -84,8 +84,12 @@ def get_media_id(content_toc, file_path, displayname):
             # e.g. "abc / xyz" > "abc _ xyz"
             search_name = search_name.replace('/','_')
 
-        search_name_esc = search_name.replace('"','\\"')
 
+        # Maximum length of a page title is 150 characters (not bytes)
+        # c/f https://community.d2l.com/brightspace/kb/articles/18831-character-limitations-within-brightspace
+        search_name_esc = search_name[0:150].replace('"','\\"')
+
+        print(f"Searching for unique match for: {search_name_esc}")
         jpe_cs = f'$..Topics[?(@.Title="{search_name_esc}")]'
         jpe_resources = parse(jpe_cs)
         topics = jpe_resources.find(resource_node)
@@ -95,6 +99,7 @@ def get_media_id(content_toc, file_path, displayname):
             print(f"Unique match for {filename}")
             media_url = topic_match[0].value['Url']
         else:
+            print(f"No unique match: number of results={len(topic_match)}")
             # Find it another way
             if topic_match:
                 print(f"Multiple matches: traversing path {file_path}")
