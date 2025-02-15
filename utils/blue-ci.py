@@ -162,6 +162,7 @@ def main():
 
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('--dev', action='store_true')
+    parser.add_argument('--push', action='store_true')
     args = vars(parser.parse_args())
 
     if args['debug']:
@@ -174,9 +175,10 @@ def main():
     # UCT top-level = 6606
     ou_2023 = get_orgids_by_tree(APP, 8585)
     ou_2024 = get_orgids_by_tree(APP, 13128)
+    ou_2025 = get_orgids_by_tree(APP, 15061)
     ou_other = get_orgids_by_tree(APP, 12144)
 
-    ou_set = ou_2023 + ou_2024 + ou_other
+    ou_set = ou_2023 + ou_2024 + ou_2025 + ou_other
 
     # All course offerings
     # ou_set = get_orgids_for_type(APP, 3)
@@ -219,20 +221,21 @@ def main():
 
     logging.info("Finished CSV export")
 
-    # Now push into Blue Data Source
-    blue_source = "BlueTest" if args['dev'] else "Blue"
-    ds_name = "Courses Instructors"
+    if args['push']:
+        # Now push into Blue Data Source
+        blue_source = "BlueTest" if args['dev'] else "Blue"
+        ds_name = "Courses Instructors"
 
-    blue_api = getAuth(blue_source, ['apikey', 'url'])
+        blue_api = getAuth(blue_source, ['apikey', 'url'])
 
-    if not blue_api['valid']:
-        raise Exception("Missing configuration")
+        if not blue_api['valid']:
+            raise Exception("Missing configuration")
 
-    logging.info(f"Explorance endpoint {blue_api['url']}")
-    PDS = PushDataSource(blue_api['url'], blue_api['apikey'])
+        logging.info(f"Explorance endpoint {blue_api['url']}")
+        PDS = PushDataSource(blue_api['url'], blue_api['apikey'])
 
-    ds_id = PDS.getDataSourceId(ds_name)
-    push_result = PDS.PushCSV(ds_id, csv_file)
+        ds_id = PDS.getDataSourceId(ds_name)
+        push_result = PDS.PushCSV(ds_id, csv_file)
 
     logging.info(f"Done, success={push_result}")
 
