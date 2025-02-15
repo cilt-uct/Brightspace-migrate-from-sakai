@@ -100,6 +100,19 @@ class Opencast(object):
 
         return None
 
+    # get a set of events
+    def get_filtered_events(self, filter):
+        url = f'{self.server}/api/events?filter={filter}&sort=date:ASC'
+
+        response = self.oc_session.get(url)
+
+        if response.status_code == 200:
+            json = response.json()
+            return json
+
+        return None
+
+
     # get event data
     def get_event(self, eventId):
         url = f'{self.server}/api/events/{eventId}'
@@ -133,6 +146,21 @@ class Opencast(object):
 
         return None
 
+    # update series metadata
+    def update_series_metadata(self, seriesId, metadata_type, metadata):
+
+        payload = [ { "id": key, "value": metadata[key] } for key in metadata.keys() ]
+
+        # Update metadata
+        url = f'{self.server}/api/series/{seriesId}/metadata?type={metadata_type}'
+
+        response = self.oc_session.put(url = url,
+            headers= {'Accept': 'application/v1.3.0+json'},
+            data = {'metadata' : json.dumps(payload)}
+        )
+
+        return (response.status_code == 200)
+
     # update series id
     def update_series_acl(self, series_id, new_acls):
 
@@ -151,6 +179,16 @@ class Opencast(object):
         else:
             logging.debug("ACL update failed. Status code: " + response.text)
             return {'status': 'ERR', 'data': response.text}
+
+    # get a published attachment
+    def get_published_attachment(self, url):
+
+        response = self.oc_session.get(url)
+
+        if response.status_code == 200:
+            return response.text
+
+        return None
 
 
 # Extend the existing ACL for users in org_id
