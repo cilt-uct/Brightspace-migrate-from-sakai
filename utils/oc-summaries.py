@@ -48,9 +48,9 @@ def has_captions(event):
 
     if 'publications' in event:
         for pub in event['publications']:
-            if 'attachments' in pub:
-                for attach in pub['attachments']:
-                    if attach['mediatype'] == "text/vtt":
+            if 'media' in pub:
+                for media in pub['media']:
+                    if media['mediatype'] == "text/vtt":
                         return True
 
     return False
@@ -106,7 +106,7 @@ def update_topic(APP, org_id, module_id, topic_id, topic_html):
     suffix = datetime.today().strftime('%Y%m%d_%H:%M:%S')
     filename = f"lecture-summaries_{module_id}_{suffix}.html"
 
-    print(f"Updating topic {topic_id} with new filename {filename}")
+    logging.debug(f"Updating topic {topic_id} with new filename {filename}")
 
     json_response = middleware_api(APP, update_endpoint, payload_data={'html': topic_html, 'name' : filename }, method='PUT')
     if 'status' not in json_response or json_response['status'] != 'success':
@@ -126,7 +126,7 @@ def add_topic(APP, org_id, base_path, module_id, topic_name, topic_html):
         tmp_f.write(topic_html)
         tmp_f.seek(0)
 
-        print(f"URL: {add_endpoint}\ndetail: {detail}")
+        # print(f"URL: {add_endpoint}\ndetail: {detail}")
 
         json_response = middleware_api(APP, add_endpoint, files = {"file": tmp_f, "detail": (None, detail)}, method='POST')
 
@@ -180,14 +180,16 @@ def get_enriched_events(APP, oc_client, series_id):
     utc_zone = pytz.utc
     local_timezone =  pytz.timezone('Africa/Johannesburg')
 
+    # Get events with publications
     events = oc_client.get_events(series_id)
 
     if events is None:
-        print(f"No events for series {series_id}")
+        logging.info(f"No events for series {series_id}")
         return []
 
     enriched_events = []
-    pub = 0
+    published = 0
+    captions = 0
 
     for event in events:
 
@@ -202,33 +204,61 @@ def get_enriched_events(APP, oc_client, series_id):
 
         event['local_start'] = local_start_str
 
-        if is_published(event):
+        if is_published(event) and event['processing_state'] == "SUCCEEDED":
+
             # Published event
-            pub += 1
+            published += 1
 
             if has_captions(event):
-                # Get this from published json in due course
-                # https://cilt.atlassian.net/browse/OPENCAST-3254
-                asset = oc_client.get_asset(eventId)
 
-                # Extract the URL containing "nibity"
-                attachments = asset['mediapackage']['attachments']['attachment']
-                for attachment in attachments:
-                    if 'nibity' in attachment['@id']:
-                        nibity_url = attachment['url']
-                        json_from_zip = oc_client.get_asset_zip_contents(nibity_url, f"{eventId}.json")
-                        if not json_from_zip:
-                            logging.info(f"** {eventId} {local_start_str} attachment does not contain {eventId}.json")
-                            continue
+                captions += 1
+                legacy_features = False
 
-                        event_content = json.loads(json_from_zip)
-                        nid = list(event_content.keys())[0]
-                        event['enriched'] = event_content[nid]
-                        enriched_events.append(event)
+                if legacy_features:
+                    # 2024 pilot - from 2025 these are in published json
+                    # https://cilt.atlassian.net/browse/OPENCAST-3254
+                    asset = oc_client.get_asset(eventId)
+
+                    # Extract the URL containing "nibity"
+                    attachments = asset['mediapackage']['attachments']['attachment']
+                    for attachment in attachments:
+                        if 'nibity' in attachment['@id']:
+                            nibity_url = attachment['url']
+                            json_from_zip = oc_client.get_asset_zip_contents(nibity_url, f"{eventId}.json")
+                            if not json_from_zip:
+                                logging.info(f"** {eventId} {local_start_str} attachment does not contain {eventId}.json")
+                                continue
+
+                            event_content = json.loads(json_from_zip)
+                            nid = list(event_content.keys())[0]
+                            event['enriched'] = event_content[nid]
+                            enriched_events.append(event)
+                else:
+                    # Find attachmment with "flavor": "captions/json"
+                    for pub in event['publications']:
+                        if pub['channel'] == 'engage-player':
+                            attachments = pub['attachments']
+                            for attachment in attachments:
+                                if attachment['flavor'] == "captions/json":
+                                    features_url = attachment['url']
+                                    logging.info(f"Series {series_id} has transcript summaries {features_url}")
+                                    features_json = oc_client.get_published_attachment(features_url)
+                                    event_content = json.loads(features_json)
+                                    nid = list(event_content.keys())[0]
+                                    event['enriched'] = event_content[nid]
+                                    enriched_events.append(event)
+
+                if 'enriched' in event:
+                    logging.info(f"** {eventId} {local_start_str} is published with captions and summaries")
+                else:
+                    logging.info(f"** {eventId} {local_start_str} is published with captions but no summaries")
+
             else:
-                logging.info(f"** {eventId} {local_start_str} is published but has no captions")
+                logging.debug(f"** {eventId} {local_start_str} is published but has no captions")
+        else:
+            logging.debug(f"** {eventId} {local_start_str} is not published")
 
-    logging.info(f"Series {series_id} has {len(events)} events, {pub} published events, {len(enriched_events)} published events with captions")
+    logging.info(f"Series {series_id} has {len(events)} events, {published} published events, {captions} published with captions, {len(enriched_events)} with summaries")
 
     return enriched_events
 
@@ -241,8 +271,8 @@ def create_mp_quicklink(APP, event_id, title, org_id):
         'Value' : f'/play/{event_id}'
     } ]
 
-    print(f"QL_URL: {ql_url}")
-    print(f"DATA: {ql_data}")
+    #print(f"QL_URL: {ql_url}")
+    #print(f"DATA: {ql_data}")
 
     lti_link_data = {
         # Get unique Url if LTI match and "play" tool link
@@ -255,41 +285,76 @@ def create_mp_quicklink(APP, event_id, title, org_id):
     # Create a new QuickLink - the "Url" is used as a unique value
     quicklink_url = create_lti_quicklink(APP, org_id, lti_link_data)
 
-    print(f"Got {quicklink_url} for payload: {lti_link_data}")
+    #print(f"Got {quicklink_url} for payload: {lti_link_data}")
 
     return quicklink_url
 
 
 def create_summaries(APP, oc_client, series_id, summary = True, update = False):
 
+    # TODO change to transcript-features
+    EXT_SERIES_TRANSCRIPT_ID = "transcription-type"
+    EXT_SERIES_SITE_ID = "site-id"
+
     # Check the Amathuba site id from extended metadata
     series_metadata = oc_client.get_series_metadata(series_id, "ext/series")
 
     if series_metadata is None:
-        raise Exception(f"Opencast series {series_id} not found (missing metadata)")
+        logging.warning(f"Opencast series {series_id} not found or missing extended metadata")
+        return
+
+    org_id = None
+    featurelist = None
 
     for m_item in series_metadata:
-        if m_item['id'] == "site-id":
+
+        # Get the LMS org unit id
+        if m_item['id'] == EXT_SERIES_SITE_ID:
             org_id = m_item['value']
 
-    # Valid org_id ?
+        # Get the transcription features which have been enabled (expect an array)
+        if m_item['id'] == EXT_SERIES_TRANSCRIPT_ID:
+            featurelist = m_item['value']
 
+    ## TODO Testing
+    featurelist = "transcription,summary"
+
+    # Check for features enabled other than transcription
+    if not featurelist or (len(featurelist) == 1 and 'transcript' in featurelist):
+        logging.info(f"No transcription features selected for series {series_id}: {featurelist}")
+        return
+
+    logging.info(f"Enabled transcription features for series {series_id}: {featurelist}")
+
+    # Nowhere to publish to
+    if not org_id:
+        return
+
+    # Check valid course in Amathuba
     amathuba = False
 
-    # Check valid course
     if len(org_id) <= 6:
-        course_info = get_course_info(APP, org_id)
+        try:
+            course_info = get_course_info(APP, org_id)
+        except Exception:
+            logging.warning("No Brightspace site found for org id {org_id} for series {series_id}")
+            return
+
         logging.info(f"Series {series_id} is '{course_info['Name']}' https://amathuba.uct.ac.za/d2l/home/{org_id}")
         amathuba = True
     else:
         logging.info(f"Series {series_id} is https://vula.uct.ac.za/portal/site/{org_id}")
 
-    enriched_events = get_enriched_events(APP, oc_client, series_id)
-
-    if len(enriched_events) == 0:
+    if not amathuba:
+        logging.info("Series {series_id} site ID {org_id} is not a Brightspace ID")
         return
 
-    if not amathuba:
+    # Check for enriched events
+    enriched_events = get_enriched_events(APP, oc_client, series_id)
+
+    logging.info(f"Series {series_id} enriched events: {len(enriched_events)}")
+
+    if len(enriched_events) == 0:
         return
 
     ### Summary page
@@ -331,7 +396,7 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
         presenters = ', '.join(event['presenter'])
         event_title = f"{event['local_start']} {event['title']}"
 
-        print(f"{eventId} {event_title}")
+        logging.debug(f"Adding {eventId} '{event_title}' to summary")
 
         # <h2 class="card-title" data-itemprop="0|0">Lecture 1 title</h2>
         # <div class="card-body" data-itemprop="0|1"><p>Lecture 1 summary</p></div>
@@ -376,8 +441,8 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
     # Create or update the topic page
     if update:
         add_or_replace_topic(APP, series_id, org_id, course_info, "Lecture Videos", "Lecture Summaries", new_html)
-    else:
-        print(f"New HTML:\n{new_html}")
+    #else:
+    #    print(f"New HTML:\n{new_html}")
 
     return
 
