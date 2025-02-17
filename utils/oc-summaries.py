@@ -137,9 +137,20 @@ def add_topic(APP, org_id, base_path, module_id, topic_name, topic_html):
 
     return None
 
-def add_or_replace_topic(APP, series_id, org_id, course_info, module_name, topic_name, topic_html):
+def get_topic_date(content_toc, module_name, topic_name):
 
-    content_toc = get_content_toc(APP, org_id)
+    module = get_first_module(content_toc, module_name)
+    if module is None:
+        return None
+
+    topic = get_first_topic(module, topic_name)
+
+    if topic is None:
+        return None
+
+    return topic['LastModifiedDate']
+
+def add_or_replace_topic(APP, content_toc, series_id, org_id, course_info, module_name, topic_name, topic_html):
 
     module = get_first_module(content_toc, module_name)
 
@@ -290,7 +301,7 @@ def create_mp_quicklink(APP, event_id, title, org_id):
     return quicklink_url
 
 
-def create_summaries(APP, oc_client, series_id, update = False):
+def create_summaries(APP, oc_client, series_id, update = False, force = False):
 
     EXT_SERIES_TRANSCRIPT_PLAYBACK_ID = "transcript-features"
     EXT_SERIES_TRANSCRIPT_SUMMARY_ID = "transcript-summaries"
@@ -354,10 +365,19 @@ def create_summaries(APP, oc_client, series_id, update = False):
 
     # Check for enriched events
     enriched_events = get_enriched_events(APP, oc_client, series_id)
-
-    logging.info(f"Series {series_id} enriched events: {len(enriched_events)}")
+    last_event_date = enriched_events[-1]['start'] if enriched_events else None
+    logging.info(f"Series {series_id} enriched events: {len(enriched_events)} last {last_event_date}")
 
     if len(enriched_events) == 0:
+        return
+
+    # Do we need an update?
+    content_toc = get_content_toc(APP, org_id)
+
+    last_topic_update = get_topic_date(content_toc, "Lecture Videos", "Lecture Summaries")
+
+    if last_topic_update and last_event_date and last_topic_update >= last_event_date and not force:
+        logging.info(f"Series {series_id} summaries are up to date")
         return
 
     ### Summary page
@@ -452,7 +472,7 @@ def create_summaries(APP, oc_client, series_id, update = False):
 
     # Create or update the topic page
     if update:
-        add_or_replace_topic(APP, series_id, org_id, course_info, "Lecture Videos", "Lecture Summaries", new_html)
+        add_or_replace_topic(APP, content_toc, series_id, org_id, course_info, "Lecture Videos", "Lecture Summaries", new_html)
     #else:
     #    print(f"New HTML:\n{new_html}")
 
@@ -476,15 +496,19 @@ def main():
 
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('--mcq', action='store_true')
-    parser.add_argument('--update', action='store_true')
+    parser.add_argument('--update', action='store_true', help="Update summaries if needed")
+    parser.add_argument('--force', action='store_true', help="Force update of summaries")
+
     args = vars(parser.parse_args())
+
 
     if args['debug']:
         logger.setLevel(logging.DEBUG)
 
     series_id = args['series']
     series_list = args['list']
-    update = args['update'] or False
+    update = args['update']
+    force = args['force']
 
     ocAuth = getAuth('Opencast', ['username', 'password'])
     if ocAuth['valid']:
@@ -493,13 +517,13 @@ def main():
         raise Exception('Opencast authentication required')
 
     if series_id:
-        create_summaries(APP, oc_client, series_id, update = update)
+        create_summaries(APP, oc_client, series_id, update = update, force=force)
 
     if series_list:
         with open(series_list, "r") as list_file:
             for series_id in list_file:
                 series_id = series_id.replace("\n","")
-                create_summaries(APP, oc_client, series_id, update = update)
+                create_summaries(APP, oc_client, series_id, update = update, force = force)
 
     logging.info("Done")
 
