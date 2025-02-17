@@ -16,8 +16,11 @@ sys.path.append(parent)
 import config.config
 
 from lib.local_auth import getAuth
-from lib.d2l import middleware_d2l_api
+from lib.d2l import middleware_api, middleware_d2l_api
 from lib.opencast import Opencast
+
+# D2L Role Id for Student role
+ROLE_STUDENT = 110
 
 def setup_logging(logger, log_file):
 
@@ -35,7 +38,18 @@ def setup_logging(logger, log_file):
     sh.setFormatter(formatter)
     logger.addHandler(sh)
 
-def get_enrolment_count(APP, org_id, role_id):
+def get_enrolment_count(APP, org_id):
+
+    # Count from middleware from providers (fastest)
+    enrolled = get_provider_enrolment_count(APP, org_id)
+
+    # Fall back to Brightspace site enrolment
+    if not enrolled:
+        enrolled = get_site_enrolment_count(APP, org_id, ROLE_STUDENT)
+
+    return enrolled
+
+def get_site_enrolment_count(APP, org_id, role_id):
 
     items = []
 
@@ -97,6 +111,47 @@ def get_scheduled_series(oc_client, start_date, end_date):
 
     return series_list
 
+# Use the middleware to get the total of enrolled studentss by provider ids
+# https://cilt.atlassian.net/browse/AMA-1298
+def get_provider_enrolment_count(APP, org_id):
+
+    enrolled = 0
+    enroll_map = {}
+
+    providers_endpoint = f"{APP['middleware']['base_url']}/d2l/api/course/providers/{org_id}"
+
+    json_response = middleware_api(APP, providers_endpoint)
+    if 'status' not in json_response or json_response['status'] != 'success' or 'data' not in json_response:
+        raise Exception(f"Error getting provider details for {org_id}")
+
+    # Build a map of provider id to enrolment count, in case there are duplicates
+    provider_list = json_response['data']
+
+    if not provider_list:
+        return None
+
+    for provider in provider_list:
+        pid = f"{provider['provider']},{provider['term']}"
+        enroll_map[pid] = provider['enrolled_students']
+
+    # Add up enrolments
+    for pid in enroll_map.keys():
+        enrolled += enroll_map[pid]
+
+    return enrolled
+
+def is_orgid(org_id):
+
+    if len(org_id) > 6:
+        return False
+
+    try:
+        int(org_id)
+    except:
+        return False
+
+    return True
+
 def main():
 
     APP = config.config.APP
@@ -128,9 +183,6 @@ def main():
     # Enable captions for series above this audience size
     size_threshold = 250
 
-    # D2L Role Id for Student role
-    ROLE_STUDENT = 110
-
     # Caption Provider
     CAPTION_ID = 'nibity'
 
@@ -154,17 +206,25 @@ def main():
         series_orgid = series_metadata['site-id']
         series_events = scheduled_series[series_id]['events']
 
+        if not is_orgid(series_orgid):
+            logging.warning(f"Series {series_id} '{series_name}' events {series_events} has invalid or non-Amathuba orgid '{series_orgid}'")
+            continue
+
         if series_captions == CAPTION_ID:
             logging.debug(f"Series {series_id} '{series_name}' events {series_events} captions '{series_captions}' already enabled")
         else:
-            enrolled = get_enrolment_count(APP, series_orgid, ROLE_STUDENT)
-            logging.debug(f"Series {series_id} '{series_name}' events {series_events} has orgid {series_orgid} captions '{series_captions}' enrollment {enrolled}")
-            if enrolled >= size_threshold:
-                if update:
-                    logging.info(f"Enabling captions for series {series_id} '{series_name}' with {enrolled} students in Amathuba site {series_orgid}")
-                    oc_client.update_series_metadata(series_id, "ext/series", {'caption-type' : CAPTION_ID})
-                else:
-                    logging.info(f"Series {series_id} '{series_name}' has {enrolled} students in Amathuba site {series_orgid}")
+            enrolled = get_enrolment_count(APP, series_orgid)
+
+            if enrolled is None:
+                logging.warning(f"Series {series_id} '{series_name}' events {series_events} has orgid {series_orgid} but unable to get enrolment")
+            else:
+                logging.debug(f"Series {series_id} '{series_name}' events {series_events} has orgid {series_orgid} captions '{series_captions}' enrollment {enrolled}")
+                if enrolled >= size_threshold:
+                    if update:
+                        logging.info(f"Enabling captions for series {series_id} '{series_name}' with {enrolled} students in Amathuba site {series_orgid}")
+                        oc_client.update_series_metadata(series_id, "ext/series", {'caption-type' : CAPTION_ID})
+                    else:
+                        logging.info(f"Series {series_id} '{series_name}' has {enrolled} students in Amathuba site {series_orgid} (update=false)")
 
     logging.info("Done")
 
