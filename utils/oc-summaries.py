@@ -58,7 +58,7 @@ def has_captions(event):
 def intro_embolden(section_txt, context, phrase):
 
     # Replace first occurrence only
-    if section_txt.startswith(context):
+    if section_txt.lower().startswith(context.lower()):
         #print(f"BOLD")
         return section_txt.replace(phrase, f"**{phrase}**", 1)
 
@@ -70,8 +70,8 @@ def txt_to_html(section_txt):
 
     # Section emphasis
     section_txt = intro_embolden(section_txt, "Here's a concise summary", "concise summary")
+    section_txt = intro_embolden(section_txt, "here are the key points, concepts, and definitions", "key points, concepts, and definitions")
     section_txt = intro_embolden(section_txt, "Here are some practice questions based on the lecture transcript", "practice questions")
-    section_txt = intro_embolden(section_txt, "Here are the key points, concepts, and definitions from the lecture transcript", "key points, concepts, and definitions")
 
     # Bullet points
     section_txt = section_txt.replace("\n   - ", "\n\t- ").replace("\n- ", "\n\t- ")
@@ -241,7 +241,7 @@ def get_enriched_events(APP, oc_client, series_id):
                             for attachment in attachments:
                                 if attachment['flavor'] == "captions/json":
                                     features_url = attachment['url']
-                                    logging.info(f"Series {series_id} has transcript summaries {features_url}")
+                                    #logging.info(f"Series {series_id} has transcript summaries {features_url}")
                                     features_json = oc_client.get_published_attachment(features_url)
                                     event_content = json.loads(features_json)
                                     nid = list(event_content.keys())[0]
@@ -290,10 +290,11 @@ def create_mp_quicklink(APP, event_id, title, org_id):
     return quicklink_url
 
 
-def create_summaries(APP, oc_client, series_id, summary = True, update = False):
+def create_summaries(APP, oc_client, series_id, update = False):
 
-    # TODO change to transcript-features
-    EXT_SERIES_TRANSCRIPT_ID = "transcription-type"
+    EXT_SERIES_TRANSCRIPT_PLAYBACK_ID = "transcript-features"
+    EXT_SERIES_TRANSCRIPT_SUMMARY_ID = "transcript-summaries"
+
     EXT_SERIES_SITE_ID = "site-id"
 
     # Check the Amathuba site id from extended metadata
@@ -304,7 +305,8 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
         return
 
     org_id = None
-    featurelist = None
+    playback_featurelist = None
+    summary_featurelist = None
 
     for m_item in series_metadata:
 
@@ -313,18 +315,19 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
             org_id = m_item['value']
 
         # Get the transcription features which have been enabled (expect an array)
-        if m_item['id'] == EXT_SERIES_TRANSCRIPT_ID:
-            featurelist = m_item['value']
+        if m_item['id'] == EXT_SERIES_TRANSCRIPT_PLAYBACK_ID:
+            playback_featurelist = m_item['value']
 
-    ## TODO Testing
-    featurelist = "transcription,summary"
+        if m_item['id'] == EXT_SERIES_TRANSCRIPT_SUMMARY_ID:
+            summary_featurelist = m_item['value']
 
-    # Check for features enabled other than transcription
-    if not featurelist or (len(featurelist) == 1 and 'transcript' in featurelist):
-        logging.info(f"No transcription features selected for series {series_id}: {featurelist}")
-        return
+    # Report features enabled
+    logging.info(f"Playback features selected for series {series_id}: {playback_featurelist}")
+    logging.info(f"Summary features selected for series {series_id}: {summary_featurelist}")
 
-    logging.info(f"Enabled transcription features for series {series_id}: {featurelist}")
+    if not summary_featurelist:
+        summary_featurelist = ['summary', 'key_points']
+        logging.info(f"Using default summary features for series {series_id}: {summary_featurelist}")
 
     # Nowhere to publish to
     if not org_id:
@@ -415,13 +418,22 @@ def create_summaries(APP, oc_client, series_id, summary = True, update = False):
 
         # Presenter and watch link
         card_p = card_body.find("p")
-        card_p.string = f"Presenter(s): {presenters}"
+        if presenters:
+            card_p.string = f"Presenter(s): {presenters}"
+        else:
+            card_p.decompose()
+
         card_body.append(BeautifulSoup(ql_markup, "html.parser"))
 
         # Summary items
-        card_body.append(BeautifulSoup(txt_to_html(summary_txt), "html.parser"))
-        card_body.append(BeautifulSoup(txt_to_html(kp_txt), "html.parser"))
-        card_body.append(BeautifulSoup(txt_to_html(pq_txt), "html.parser"))
+        if 'summary' in summary_featurelist:
+            card_body.append(BeautifulSoup(txt_to_html(summary_txt), "html.parser"))
+
+        if 'key_points' in summary_featurelist:
+            card_body.append(BeautifulSoup(txt_to_html(kp_txt), "html.parser"))
+
+        if 'practice_questions' in summary_featurelist:
+            card_body.append(BeautifulSoup(txt_to_html(pq_txt), "html.parser"))
 
         accordion.append(card_item)
         card_index += 1
@@ -481,13 +493,13 @@ def main():
         raise Exception('Opencast authentication required')
 
     if series_id:
-        create_summaries(APP, oc_client, series_id, summary = True, update = update)
+        create_summaries(APP, oc_client, series_id, update = update)
 
     if series_list:
         with open(series_list, "r") as list_file:
             for series_id in list_file:
                 series_id = series_id.replace("\n","")
-                create_summaries(APP, oc_client, series_id, summary = True, update = update)
+                create_summaries(APP, oc_client, series_id, update = update)
 
     logging.info("Done")
 

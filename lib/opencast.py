@@ -90,7 +90,7 @@ class Opencast(object):
 
     # get a set of events
     def get_events(self, seriesId):
-        url = f'{self.server}/api/events?filter=series:{seriesId}&sort=date:ASC&withpublications=true'
+        url = f'{self.server}/api/events?filter=series:{seriesId}&sort=date:ASC,title:ASC&withpublications=true'
 
         response = self.oc_session.get(url)
 
