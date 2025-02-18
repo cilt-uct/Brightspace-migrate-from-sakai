@@ -252,7 +252,6 @@ def get_enriched_events(APP, oc_client, series_id):
                             for attachment in attachments:
                                 if attachment['flavor'] == "captions/json":
                                     features_url = attachment['url']
-                                    #logging.info(f"Series {series_id} has transcript summaries {features_url}")
                                     features_json = oc_client.get_published_attachment(features_url)
                                     event_content = json.loads(features_json)
                                     nid = list(event_content.keys())[0]
@@ -339,6 +338,10 @@ def create_summaries(APP, oc_client, series_id, update = False, force = False):
     if not summary_featurelist:
         summary_featurelist = ['summary', 'key_points']
         logging.info(f"Using default summary features for series {series_id}: {summary_featurelist}")
+
+    if summary_featurelist == ['none']:
+        logging.info(f"Series {series_id}: summary generation is none (disabled)")
+        return
 
     # Nowhere to publish to
     if not org_id:
