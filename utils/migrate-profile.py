@@ -8,6 +8,7 @@ import os
 import argparse
 import json
 import logging
+from datetime import datetime
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -15,22 +16,26 @@ sys.path.append(parent)
 
 import config.config
 import config.logging_config
-from lib.local_auth import getAuth
 from lib.d2l import middleware_d2l_api, get_brightspace_user
 
 # Map of user profile fields to user attribute ids
+# https://amathuba.uct.ac.za/d2l/api/lp/1.45/attributes/schemas/
+
 profile_attrib_map = {
-    'HomePhone' : '_location',
-    'Address1' : None,
-    'Address2' : None,
-    'City' : None,
-    'Province' : None,
-    'PostalCode' : None,
-    'Country' : None,
-    'Company' : None,
-    'University' : None,
-    'Hobbies' : None
+    'Company' : '_companyname',
+    'Address1' : 'addressline1',
+    'Address2' : 'addressline2',
+    'City' : 'city',
+    'Province' : 'stateprovinceregion',
+    'PostalCode' : 'zippostcode',
+    'Country' : 'country',
+    'HomePhone' : 'phone',
+    'University' : 'dateofbirth',
+    'Hobbies' : 'uctstudentnumber'
 }
+
+# Fields to clear in the profile
+profile_clear_fields = [ 'Email' ]
 
 # Get profile
 def get_profile(APP, username):
@@ -56,6 +61,10 @@ def sanitize_profile(profile):
     new_profile = profile.copy()
 
     for pf in profile_attrib_map.keys():
+        if pf in new_profile:
+            new_profile[pf] = None
+
+    for pf in profile_clear_fields:
         if pf in new_profile:
             new_profile[pf] = None
 
@@ -102,7 +111,7 @@ def set_attributes(APP, userId, attribs):
         'payload' : json.dumps(attr_block)
     }
 
-    print(f"payload: {payload}")
+    # print(f"payload: {payload}")
 
     json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
 
@@ -114,6 +123,11 @@ def set_attributes(APP, userId, attribs):
 
     return json_response['data']
 
+def convert_to_iso8601(date_str):
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    iso8601_date_str = date_obj.strftime('%Y-%m-%d')
+    return iso8601_date_str
+
 def profile_to_attrib(profile):
 
     attribs = {}
@@ -121,9 +135,14 @@ def profile_to_attrib(profile):
     for pf in profile.keys():
         if pf in profile_attrib_map and profile[pf] is not None:
             target = profile_attrib_map[pf]
-            if target is not None:
-                print(f"Setting attrib {target} to value {profile[pf]}")
-                attribs[target] = profile[pf]
+
+            if target is not None and profile[pf]:
+                if target == 'dateofbirth':
+                    attribs[target] = convert_to_iso8601(profile[pf])
+                else:
+                    attribs[target] = profile[pf]
+
+                print(f"Setting attrib {target} to value '{profile[pf]}'")
 
     return attribs
 
@@ -141,19 +160,19 @@ def migrate_user(APP, username, set_attrib, clear_profile):
     print(f"User {username} has profile {profile}")
 
     new_profile = sanitize_profile(profile)
-
     print(f"Sanitized profile: {new_profile}")
 
     attribs = profile_to_attrib(profile)
 
-    print(f"Attribute set: {attribs}")
+    if set_attrib and len(attribs) > 0:
+        print(f"Attribute set: {attribs}")
 
-    if set_attrib:
         set_attributes(APP, userid, attribs)
 
-    if clear_profile:
-        update_profile(APP, userid, new_profile)
-
+        if clear_profile:
+            update_profile(APP, userid, new_profile)
+    else:
+        logging.info(f"User {username} has no profile fields to migrate to attributes")
 
 def main():
     APP = config.config.APP
@@ -169,12 +188,12 @@ def main():
     if APP['debug']:
         config.logging_config.logger.setLevel(logging.DEBUG)
 
-    logging.info(f'Migrate CM user profile data to user attributes')
+    logging.info('Migrate CM user profile data to user attributes')
 
     username = args['user']
     update = args['update']
     if not username:
-        logging.error(f"Please specify username")
+        logging.error("Please specify username")
     else:
         migrate_user(APP, username, update, update)
 
