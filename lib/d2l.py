@@ -5,6 +5,7 @@ import time
 import requests
 import re
 import logging
+import urllib.parse
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -481,7 +482,7 @@ def get_brightspace_user(APP, username):
         return None
 
     payload = {
-        'url': f"{APP['brightspace_api']['lp_url']}/users/?userName={username}",
+        'url': f"{APP['brightspace_api']['lp_url']}/users/?userName={urllib.parse.quote_plus(username)}",
         'method': 'GET',
     }
 
