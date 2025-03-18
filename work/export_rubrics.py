@@ -234,6 +234,7 @@ def fetchLevels(db, rbc_schema, rbc_criterion_id, xmlRow):
     # <level level_id="65915" sort_order="1" level_value="1.0" name="Meets expectations"/>
     # <level level_id="65916" sort_order="2" level_value="2.0" name="Exceeds expectations"/>
 
+    row_num = 1
     for row in allRows:
 
         row_points = row['points']
@@ -247,7 +248,13 @@ def fetchLevels(db, rbc_schema, rbc_criterion_id, xmlRow):
         Row.set('level_id', str(row['id']))
         Row.set('sort_order', str(row['order_index']))
         Row.set('level_value', str(row_points))
-        Row.set('name', sanitize(row['title'].strip()))
+
+        row_name = sanitize(row['title'].strip())
+        if not row_name:
+            row_name = f"Level {row_num}"
+
+        Row.set('name', row_name)
+        row_num += 1
 
 # export rubrics for a site to xml file
 #  in: site_id
