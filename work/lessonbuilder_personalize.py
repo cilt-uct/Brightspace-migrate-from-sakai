@@ -52,7 +52,7 @@ def run(SITE_ID, APP):
     for item in lesson_tree.xpath(".//*[contains(@name,'firstname')]") + \
                 lesson_tree.xpath(".//*[contains(@name,'lastname')]") + \
                 lesson_tree.xpath(".//*[contains(@name,'fullname')]"):
-        item.set('name', re.sub("|".join(sorted(REPLACE_DICT, key = len, reverse = True)), '', item.get('name')).strip())
+        item.set('name', re.sub(r"|".join(sorted(REPLACE_DICT, key = len, reverse = True)), '', item.get('name')).strip())
 
         if APP['debug']:
             print(item.get('name'))
@@ -61,7 +61,7 @@ def run(SITE_ID, APP):
     for item in lesson_tree.xpath(".//*[contains(@description,'firstname')]") + \
                 lesson_tree.xpath(".//*[contains(@description,'lastname')]") + \
                 lesson_tree.xpath(".//*[contains(@description,'fullname')]"):
-        item.set('description', re.sub("|".join(sorted(REPLACE_DICT, key = len, reverse = True)), '', item.get('description')).strip())
+        item.set('description', re.sub(r"|".join(sorted(REPLACE_DICT, key = len, reverse = True)), '', item.get('description')).strip())
 
         if APP['debug']:
             print(item.get('description'))
@@ -74,7 +74,7 @@ def run(SITE_ID, APP):
         html = BeautifulSoup(item.get('html'), 'html.parser')
         html = make_well_formed(html)
 
-        new_html = re.sub("|".join(sorted(REPLACE_DICT, key = len, reverse = True)), '', str(html))
+        new_html = re.sub(r"|".join(sorted(REPLACE_DICT, key = len, reverse = True)), '', str(html))
 
         item.set('html', str(new_html))
 

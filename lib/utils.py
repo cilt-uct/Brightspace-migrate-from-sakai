@@ -142,7 +142,7 @@ def remove_unwanted_characters(file):
     data = data.replace("\\u000B", "").replace("\\u2018", "'").replace("\\u2019", "'")
 
     # replace freestanding & with &amp;
-    data = re.sub('\s&\s', '$amp;', data)
+    data = re.sub(r'\s&\s', '$amp;', data)
 
     # replace one-or-more spaces/non-breaking-spaces with a single space
     # data = re.sub(r'\s+', ' ', data)

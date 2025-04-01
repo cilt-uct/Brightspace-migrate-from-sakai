@@ -87,7 +87,7 @@ def run(SITE_ID, APP, link_id = None, now_st = None, zip_file = None):
     start_time = time.time()
 
     dest = r'{}/{}'.format(APP['ftp']['inbox'], os.path.basename(src))
-    tmp_dest = re.sub('(zip)$', 'tmp', dest)
+    tmp_dest = re.sub(r'(zip)$', 'tmp', dest)
 
     SFTP = getAuth('BrightspaceFTP', ['hostname', 'username', 'password'])
     if not SFTP['valid']:

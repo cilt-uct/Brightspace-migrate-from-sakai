@@ -20,7 +20,7 @@ def run(SITE_ID, APP, link_id):
     logging.info('Update site provider : {}'.format(SITE_ID))
 
     # Site providers (course or program codes) without the year attached
-    provider_set = [ re.sub(',\d{4}', '', p) for p in get_site_providers(APP, SITE_ID) ]
+    provider_set = [ re.sub(r',\d{4}', '', p) for p in get_site_providers(APP, SITE_ID) ]
 
     mdb = lib.db.MigrationDb(APP)
     if mdb.update_providers(link_id, SITE_ID, provider_set):

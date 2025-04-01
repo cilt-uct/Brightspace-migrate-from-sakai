@@ -169,7 +169,7 @@ def run(SITE_ID, APP, link_id):
                 if course == 'other':
                     # this course has multiple provider IDs (attached rosters)
                     # Use the original site title for the new name, but replace 20xx with the new year
-                    name = re.sub("(20\d{2})", term, record['name'])
+                    name = re.sub(r"(20\d{2})", term, record['name'])
                     course = f'{dept}_{cheap_hash(name)}'
                 else:
                     # single course
