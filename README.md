@@ -15,8 +15,8 @@ These conversion scripts use the Brightspace [Bulk Course Import service](https:
 ### Shared Files
 
 The templates and scripts create HTML content for import which references shared files and HTML page templates in the Brightspace shared files location.
-These templates support migration of content from Sakai Lessons to a look and feel which matches Brightspace pages. Please see 
-[thirdpartylib](https://github.com/cilt-uct/Brightspace-HTML-Templates/tree/main/thirdpartylib) and 
+These templates support migration of content from Sakai Lessons to a look and feel which matches Brightspace pages. Please see
+[thirdpartylib](https://github.com/cilt-uct/Brightspace-HTML-Templates/tree/main/thirdpartylib) and
 [HTML-Template-Library](https://github.com/cilt-uct/Brightspace-HTML-Templates/tree/main/HTML-Template-Library)
 
 These should be copied to the /shared/ location in Brightspace Admin Tools / Shared Files.
@@ -34,6 +34,23 @@ To regenerate the requirements list, use
 ```
 pip install pipreqs
 pipreqs
+```
+
+### Virtual Environment
+
+It's best to run python project in their own virtual environment, to install
+
+```
+sudo apt install python3-venv -y
+```
+To create and activate
+```
+python -m venv .venv
+source .venv/bin/activate
+```
+To de-activate
+```
+deactivate
 ```
 
 ## Workflow
@@ -136,13 +153,13 @@ The migration code is tested with UCT 21.x Sakai branch: https://github.com/cilt
 Add these cron jobs on the server running the scripts:
 ```
 # every minute check if there is a new migration to run
-* * * * * /usr/bin/flock -n /tmp/check_migrations.lockfile python3 [path to script]/check_migrations.py
+* * * * * /usr/bin/flock -n /tmp/check_migrations.lockfile [path to script]/.venv/bin/python [path to script]/check_migrations.py
 
 # every minutes check for upload to run
-* * * * * /usr/bin/flock -n /tmp/check_upload.lockfile python3 [path to script]/check_upload.py
+* * * * * /usr/bin/flock -n /tmp/check_upload.lockfile [path to script]/.venv/bin/python [path to script]/check_upload.py
 
 # every minutes check for update to run
-* * * * * /usr/bin/flock -n /tmp/check_imported.lockfile python3 [path to script]/check_imported.py
+* * * * * /usr/bin/flock -n /tmp/check_imported.lockfile [path to script]/.venv/bin/python [path to script]/check_imported.py
 
 # every hour clean up old log and tmp files
 0 * * * * [path to script]/cleanup-old.sh

@@ -22,8 +22,7 @@ import lib.db
 from config.logging_config import formatter, logger
 from lib.jira_rest import MyJira
 
-FILE_REGEX = re.compile(".*(file-.*):\s(.*)")
-
+FILE_REGEX = re.compile(r".*(file-.*):\s(.*)")
 
 def update_record(db_config, link_id, site_id, state, log):
     try:
