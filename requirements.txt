@@ -4,7 +4,7 @@ emails==0.6
 ffprobe_python==1.0.3
 funcy==1.17
 Jinja2==3.1.6
-jira==3.4.1
+jira>=3.10.5
 jproperties==2.1.1
 jsonpath_ng==1.6.0
 lxml==4.9.4
