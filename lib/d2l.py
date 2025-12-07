@@ -488,6 +488,9 @@ def get_brightspace_user(APP, username):
 
     json_response = middleware_d2l_api(APP, payload_data=payload)
 
+    if 'code' in json_response and json_response['code'] == "404":
+        return None
+
     if 'status' in json_response and json_response['status'] == "NotFound":
         return None
 
