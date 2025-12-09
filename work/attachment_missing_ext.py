@@ -125,7 +125,7 @@ def run(SITE_ID, APP):
 
                     continue
                 else:
-                    raise Exception("No extension identified to use for {src_id}")
+                    raise Exception(f"No extension identified to use for {src_id}")
 
         if file_extension == "":
             raise Exception(f"Attachment '{item.get('id')}' type {content_type} missing extension: AMA-451")
