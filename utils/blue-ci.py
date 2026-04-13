@@ -176,9 +176,10 @@ def main():
     ou_2023 = get_orgids_by_tree(APP, 8585)
     ou_2024 = get_orgids_by_tree(APP, 13128)
     ou_2025 = get_orgids_by_tree(APP, 15061)
+    ou_2026 = get_orgids_by_tree(APP, 46037)
     ou_other = get_orgids_by_tree(APP, 12144)
 
-    ou_set = ou_2023 + ou_2024 + ou_2025 + ou_other
+    ou_set = ou_2023 + ou_2024 + ou_2025 + ou_2026 + ou_other
 
     # All course offerings
     # ou_set = get_orgids_for_type(APP, 3)
