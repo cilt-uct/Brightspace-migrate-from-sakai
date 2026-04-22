@@ -54,33 +54,37 @@ def get_site_enrolment_count(APP, org_id, role_id):
     items = []
 
     # Check role by role because it may be faster than paging through a large enrolment
+    try:
+        has_more_items = True
+        bookmark = None
 
-    has_more_items = True
-    bookmark = None
+        while has_more_items:
 
-    while has_more_items:
+            payload = {
+                'url': f"{APP['brightspace_api']['lp_url']}/enrollments/orgUnits/{org_id}/users/?roleId={role_id}&isActive=1",
+                'method': 'GET'
+            }
 
-        payload = {
-            'url': f"{APP['brightspace_api']['lp_url']}//enrollments/orgUnits/{org_id}/users/?roleId={role_id}&isActive=1",
-            'method': 'GET'
-        }
+            if bookmark:
+                payload['url'] += f"&bookmark={bookmark}"
 
-        if bookmark:
-            payload['url'] += f"&bookmark={bookmark}"
+            json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
 
-        json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
-
-        if 'status' not in json_response:
-            raise Exception(f'Unable to get org unit info: {json_response}')
-        else:
-            if json_response['status'] != 'success':
+            if 'status' not in json_response:
                 raise Exception(f'Unable to get org unit info: {json_response}')
+            else:
+                if json_response['status'] != 'success':
+                    raise Exception(f'Unable to get org unit info: {json_response}')
 
-        has_more_items = json_response['data']['PagingInfo']['HasMoreItems']
-        bookmark = json_response['data']['PagingInfo']['Bookmark']
-        items += json_response['data']['Items']
+            has_more_items = json_response['data']['PagingInfo']['HasMoreItems']
+            bookmark = json_response['data']['PagingInfo']['Bookmark']
+            items += json_response['data']['Items']
 
-    return len(items)
+    except Exception as e:
+        raise Exception(f"Error getting students for {org_id}")
+
+    finally:
+        return len(items)
 
 # Convert series metadata to a key/value dict
 def metadata_dict(metadata):
