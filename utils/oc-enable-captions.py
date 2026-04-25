@@ -115,7 +115,7 @@ def get_scheduled_series(oc_client, start_date, end_date):
 
     return series_list
 
-# Use the middleware to get the total of enrolled studentss by provider ids
+# Use the middleware to get the total of enrolled students by provider ids
 # https://cilt.atlassian.net/browse/AMA-1298
 def get_provider_enrolment_count(APP, org_id):
 
@@ -151,7 +151,7 @@ def is_orgid(org_id):
 
     try:
         int(org_id)
-    except:
+    except (ValueError, TypeError):
         return False
 
     return True
@@ -206,9 +206,14 @@ def main():
         series_name = scheduled_series[series_id]['title']
         series_metadata = metadata_dict(oc_client.get_series_metadata(series_id, "ext/series"))
 
-        series_captions = series_metadata['caption-type']
-        series_orgid = series_metadata['site-id']
+        series_captions = series_metadata.get('caption-type')
+        series_orgid = series_metadata.get('site-id')
         series_events = scheduled_series[series_id]['events']
+
+        if series_captions is None or series_orgid is None:
+            logging.warning(f"Series {series_id} '{series_name}' events {series_events} missing required metadata keys: "
+                            f"caption-type={series_captions is not None}, site-id={series_orgid is not None}")
+            continue
 
         if not is_orgid(series_orgid):
             logging.warning(f"Series {series_id} '{series_name}' events {series_events} has invalid or non-Amathuba orgid '{series_orgid}'")
