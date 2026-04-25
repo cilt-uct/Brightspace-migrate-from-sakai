@@ -52,7 +52,7 @@ class GenerateConversionReportTestCase(unittest.TestCase):
     def test_main_no_issue_key(self, mock_log, mock_check, *_):
         main()
         self.assertTrue(mock_check.called)
-        self.assertTrue(mock_check.call_count>1)
+        self.assertGreater(mock_check.call_count, 1)
         self.assertFalse(mock_log.called)
         self.assertEqual(0, mock_log.call_count)
 

@@ -27,20 +27,20 @@ class QueryTestCase(unittest.TestCase):
 
         # Other YAML
         mime_types = lib.utils.read_yaml(APP['content']['mime-types'])
-        self.assertTrue(len(mime_types['FILES']) > 0)
+        self.assertGreater(len(mime_types['FILES']), 0)
 
         restricted_ext = lib.utils.read_yaml(APP['content']['restricted-ext'])
-        self.assertTrue(len(restricted_ext['RESTRICTED_EXT']) > 0)
+        self.assertGreater(len(restricted_ext['RESTRICTED_EXT']), 0)
 
         # JSON Configs
         with open(APP['report']['json']) as json_file:
             conf=json.load(json_file)
-            self.assertTrue(len(conf['issues']) > 0)
-            self.assertTrue(len(conf['tools']) > 0)
+            self.assertGreater(len(conf['issues']), 0)
+            self.assertGreater(len(conf['tools']), 0)
 
         with open(APP['lessons']['styles']) as json_file:
             conf = json.load(json_file)
-            self.assertTrue(len(conf['general']['tags.to.search']) > 0)
+            self.assertGreater(len(conf['general']['tags.to.search']), 0)
 
     # Test the email templates for valid syntax
     def test_template_syntax(self):
