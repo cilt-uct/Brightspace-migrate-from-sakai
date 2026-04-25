@@ -40,7 +40,7 @@ class QueryTestCase(unittest.TestCase):
 
         with open(APP['lessons']['styles']) as json_file:
             conf = json.load(json_file)
-            self.assertTrue(len(conf['general']['tags.to.search']) > 0)
+            self.assertGreater(len(conf['general']['tags.to.search']), 0)
 
     # Test the email templates for valid syntax
     def test_template_syntax(self):
