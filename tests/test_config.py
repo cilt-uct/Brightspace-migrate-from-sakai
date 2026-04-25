@@ -36,7 +36,7 @@ class QueryTestCase(unittest.TestCase):
         with open(APP['report']['json']) as json_file:
             conf=json.load(json_file)
             self.assertGreater(len(conf['issues']), 0)
-            self.assertTrue(len(conf['tools']) > 0)
+            self.assertGreater(len(conf['tools']), 0)
 
         with open(APP['lessons']['styles']) as json_file:
             conf = json.load(json_file)
