@@ -27,7 +27,7 @@ class QueryTestCase(unittest.TestCase):
 
         # Other YAML
         mime_types = lib.utils.read_yaml(APP['content']['mime-types'])
-        self.assertTrue(len(mime_types['FILES']) > 0)
+        self.assertGreater(len(mime_types['FILES']), 0)
 
         restricted_ext = lib.utils.read_yaml(APP['content']['restricted-ext'])
         self.assertTrue(len(restricted_ext['RESTRICTED_EXT']) > 0)
