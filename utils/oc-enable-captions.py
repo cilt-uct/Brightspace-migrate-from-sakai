@@ -80,7 +80,7 @@ def get_site_enrolment_count(APP, org_id, role_id):
             bookmark = json_response['data']['PagingInfo']['Bookmark']
             items += json_response['data']['Items']
 
-    except Exception as e:
+    except Exception:
         raise Exception(f"Error getting students for {org_id}")
 
     finally:

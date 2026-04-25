@@ -16,7 +16,6 @@ sys.path.append(parent)
 import config.config
 
 from lib.local_auth import getAuth
-from lib.d2l import middleware_api, middleware_d2l_api
 from lib.opencast import Opencast
 
 # D2L Role Id for Student role
@@ -74,7 +73,7 @@ def is_orgid(org_id):
 
     try:
         int(org_id)
-    except:
+    except (ValueError, TypeError):
         return False
 
     return True
@@ -98,8 +97,6 @@ def main():
 
     if args['debug']:
         logger.setLevel(logging.DEBUG)
-
-    update = args['update'] or False
 
     ocAuth = getAuth('Opencast', ['username', 'password'])
     if ocAuth['valid']:
@@ -138,7 +135,7 @@ def main():
             else:
                 contacts[contact] = series_id
 
-    print(f"### All contacts:")
+    print("### All contacts:")
     for contact in contacts.keys():
         print(contact)
     logging.info("Done")
