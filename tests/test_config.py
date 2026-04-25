@@ -30,7 +30,7 @@ class QueryTestCase(unittest.TestCase):
         self.assertGreater(len(mime_types['FILES']), 0)
 
         restricted_ext = lib.utils.read_yaml(APP['content']['restricted-ext'])
-        self.assertTrue(len(restricted_ext['RESTRICTED_EXT']) > 0)
+        self.assertGreater(len(restricted_ext['RESTRICTED_EXT']), 0)
 
         # JSON Configs
         with open(APP['report']['json']) as json_file:
