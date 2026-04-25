@@ -111,10 +111,6 @@ class FFProbe_UCT:
                     side_data = False
                     continue
 
-                if (side_data):
-                    continue
-                    #Skip Side data tags
-
                 if '[STREAM]' in line:
                     stream = True
                     data_lines = []
