@@ -115,7 +115,7 @@ def get_scheduled_series(oc_client, start_date, end_date):
 
     return series_list
 
-# Use the middleware to get the total of enrolled studentss by provider ids
+# Use the middleware to get the total of enrolled students by provider ids
 # https://cilt.atlassian.net/browse/AMA-1298
 def get_provider_enrolment_count(APP, org_id):
 
