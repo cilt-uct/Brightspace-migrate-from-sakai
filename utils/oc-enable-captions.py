@@ -151,7 +151,7 @@ def is_orgid(org_id):
 
     try:
         int(org_id)
-    except:
+    except (ValueError, TypeError):
         return False
 
     return True
