@@ -75,11 +75,11 @@ def main():
 
     if not csv_file or not ds_id:
         logging.error("Must specify both CSV and ID")
-        exit(1)
+        sys.exit(1)
 
     if not os.path.exists(csv_file):
         logging.error(f"CSV file {csv_file} not found")
-        exit(1)
+        sys.exit(1)
 
     PDS.PushCSV(ds_id, csv_file)
 
