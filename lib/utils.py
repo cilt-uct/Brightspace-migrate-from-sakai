@@ -288,8 +288,6 @@ def send_template_email(APP, template, to, subj, **kwargs):
         logging.warn(f"No recipient address for mail with subject {kwargs['subject']}")
         return True
 
-    return None
-
 def send_email(mail_from, to, subj, body):
     """Sends an email."""
     # Send the finalized email here.
