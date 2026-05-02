@@ -224,5 +224,3 @@ class MigrationDb:
 
         except Exception as e:
             raise Exception('Could not check on migration records') from e
-
-        return 0
