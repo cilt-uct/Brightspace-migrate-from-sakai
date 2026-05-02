@@ -75,6 +75,8 @@ def add_semester_to_course(APP, org_id, semester_id):
     else:
         raise Exception(f"Cannot get parents: {parents}")
 
+    return True
+
 def run(SITE_ID, APP, import_id):
 
     semester_id = APP['site']['semester']
