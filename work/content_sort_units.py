@@ -3,8 +3,6 @@
 import sys
 import os
 import argparse
-import lib.db
-import lib.local_auth
 import logging
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -14,6 +12,7 @@ sys.path.append(parent)
 import config.config
 import config.logging_config
 import lib.db
+import lib.local_auth
 from lib.d2l import middleware_api
 
 def run(SITE_ID, LINK_ID, APP):
