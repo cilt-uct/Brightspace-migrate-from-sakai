@@ -28,7 +28,7 @@ def create_jira(APP, url, site_id, site_title, jira_state, jira_log, failure_typ
             N = APP['jira']['last']
             jira_log = jira_log[-N:]
     except (TypeError, ValueError):
-        pass
+        logging.debug("jira_log is not valid JSON/list input; using raw jira_log value")
 
     if isinstance(jira_log, list):
         jira_log_str = "\n".join(jira_log)
