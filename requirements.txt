@@ -8,7 +8,7 @@ jira>=3.10.5
 jproperties==2.1.1
 jsonpath_ng==1.6.0
 lxml==6.1.0
-paramiko==3.4.0
+paramiko==5.0.0
 PyMySQL==1.1.1
 python_oembed==0.2.4
 PyYAML==6.0.1
