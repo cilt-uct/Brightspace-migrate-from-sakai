@@ -185,7 +185,7 @@ def main():
         raise Exception('Opencast authentication required')
 
     # Enable captions for series above this audience size
-    size_threshold = 250
+    size_threshold = 500
 
     # Caption Provider
     CAPTION_ID = 'nibity'
