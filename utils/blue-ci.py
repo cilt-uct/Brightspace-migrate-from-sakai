@@ -48,7 +48,7 @@ def get_orgids_for_type(APP, ou_type_id):
 
         # print(f"Getting courses: {payload['url']}")
 
-        json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+        json_response = middleware_d2l_api(APP, payload_data=payload, retries=5)
 
         if 'status' not in json_response:
             raise Exception(f'Unable to update org unit info: {json_response}')
@@ -70,7 +70,7 @@ def get_orgids_by_tree(APP, parent_org_id):
         'method': 'GET'
     }
 
-    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+    json_response = middleware_d2l_api(APP, payload_data=payload, retries=5)
 
     if 'status' not in json_response:
         raise Exception(f'Unable to update org unit info: {json_response}')
@@ -83,11 +83,11 @@ def get_orgids_by_tree(APP, parent_org_id):
 def get_enrolment_page1(APP, org_id):
 
     payload = {
-        'url': f"{APP['brightspace_api']['lp_url']}//enrollments/orgUnits/{org_id}/users/?isActive=1",
+        'url': f"{APP['brightspace_api']['lp_url']}//enrollments/orgUnits/{org_id}/users/",
         'method': 'GET'
     }
 
-    json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+    json_response = middleware_d2l_api(APP, payload_data=payload, retries=5)
 
     if 'status' not in json_response:
         raise Exception(f'Unable to update org unit info: {json_response}')
@@ -125,7 +125,7 @@ def get_filtered_enrolment(APP, org_id, role_set):
         while has_more_items:
 
             payload = {
-                'url': f"{APP['brightspace_api']['lp_url']}//enrollments/orgUnits/{org_id}/users/?roleId={role}&isActive=1",
+                'url': f"{APP['brightspace_api']['lp_url']}//enrollments/orgUnits/{org_id}/users/?roleId={role}",
                 'method': 'GET'
             }
 
@@ -134,7 +134,7 @@ def get_filtered_enrolment(APP, org_id, role_set):
 
             # print(f"URL: {payload['url']}")
 
-            json_response = middleware_d2l_api(APP, payload_data=payload, retries=0)
+            json_response = middleware_d2l_api(APP, payload_data=payload, retries=5)
 
             if 'status' not in json_response:
                 raise Exception(f'Unable to update org unit info: {json_response}')
@@ -180,12 +180,13 @@ def main():
     ou_other = get_orgids_by_tree(APP, 12144)
 
     ou_set = ou_2023 + ou_2024 + ou_2025 + ou_2026 + ou_other
+    #ou_set = ou_other
 
     # All course offerings
     # ou_set = get_orgids_for_type(APP, 3)
 
-    # Lecturer, Tutor, Administrator, Support Staff, LecturerTutor
-    role_set = [ 109, 114, 116, 118, 126 ]
+    # Lecturer, Tutor, LecturerTutor
+    role_set = [ 109, 114, 126 ]
 
     result_set = []
 
@@ -195,6 +196,7 @@ def main():
         org_id = ou['Identifier']
         org_name = ou['Name']
 
+        logging.info(f"getting filtered enrolment for org_id {org_id}")
         ou_enrolled = get_filtered_enrolment(APP, org_id, role_set)
 
         logging.info(f"got {len(ou_enrolled)} members matching roleset for org_id {org_id} name {org_name}")
@@ -238,7 +240,7 @@ def main():
         ds_id = PDS.getDataSourceId(ds_name)
         push_result = PDS.PushCSV(ds_id, csv_file)
 
-    logging.info(f"Done, success={push_result}")
+        logging.info(f"Done, success={push_result}")
 
 if __name__ == '__main__':
     main()
