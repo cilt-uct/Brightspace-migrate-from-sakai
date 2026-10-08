@@ -185,10 +185,11 @@ def main():
         raise Exception('Opencast authentication required')
 
     # Enable captions for series above this audience size
-    size_threshold = 500
+    waywithwords_threshold = 400
 
-    # Caption Provider
-    CAPTION_ID = 'nibity'
+    # Caption Providers
+    WAYWITHWORDS_ID = 'nibity'
+    WHISPER_ID = 'whisper'
 
     # Get today's date
     today = datetime.today()
@@ -208,7 +209,10 @@ def main():
 
         series_captions = series_metadata.get('caption-type')
         series_orgid = series_metadata.get('site-id')
+        series_ai_summaries = series_metadata.get('transcript-summaries')
+        series_ai_features = series_metadata.get('transcript-features')
         series_events = scheduled_series[series_id]['events']
+
 
         if series_captions is None or series_orgid is None:
             logging.warning(f"Series {series_id} '{series_name}' events {series_events} missing required metadata keys: "
@@ -219,21 +223,23 @@ def main():
             logging.warning(f"Series {series_id} '{series_name}' events {series_events} has invalid or non-Amathuba orgid '{series_orgid}'")
             continue
 
-        if series_captions == CAPTION_ID:
-            logging.debug(f"Series {series_id} '{series_name}' events {series_events} captions '{series_captions}' already enabled")
-        else:
-            enrolled = get_enrolment_count(APP, series_orgid)
+        if series_captions == WHISPER_ID:
+            logging.debug(f"Series {series_id} '{series_name}' events {series_events} has whisper captions")
+            continue
 
-            if enrolled is None:
-                logging.warning(f"Series {series_id} '{series_name}' events {series_events} has orgid {series_orgid} but unable to get enrolment")
-            else:
-                logging.debug(f"Series {series_id} '{series_name}' events {series_events} has orgid {series_orgid} captions '{series_captions}' enrollment {enrolled}")
-                if enrolled >= size_threshold:
-                    if update:
-                        logging.info(f"Enabling captions for series {series_id} '{series_name}' with {enrolled} students in Amathuba site {series_orgid}")
-                        oc_client.update_series_metadata(series_id, "ext/series", {'caption-type' : CAPTION_ID})
-                    else:
-                        logging.info(f"Series {series_id} '{series_name}' has {enrolled} students in Amathuba site {series_orgid} (update=false)")
+        enrolled = get_enrolment_count(APP, series_orgid)
+
+        if enrolled is None:
+            logging.warning(f"Series {series_id} '{series_name}' events {series_events} has orgid {series_orgid} but unable to get enrolment")
+            continue
+
+        # Switch series below threshold to whisper, don't enable new series for WayWithWords
+
+        logging.info(f"Series {series_id} '{series_name}' with {enrolled} students in Amathuba site {series_orgid}: captions={series_captions} summaries={series_ai_summaries} features={series_ai_features}")
+
+        if series_captions == WAYWITHWORDS_ID and enrolled < waywithwords_threshold and not series_ai_summaries and not series_ai_features:
+            logging.info(f"Enabling whisper captions for series {series_id} '{series_name}' with {enrolled} students in Amathuba site {series_orgid}: summaries='{series_ai_summaries}' features='{series_ai_features}'")
+            oc_client.update_series_metadata(series_id, "ext/series", {'caption-type' : WHISPER_ID})
 
     logging.info("Done")
 
